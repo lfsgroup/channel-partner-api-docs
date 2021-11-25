@@ -1,5 +1,6 @@
 # Responses
-TODO
+TODO stuff
+
 Error response codes returned by the API include:
 
 400	Bad Request.
