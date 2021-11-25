@@ -1,0 +1,591 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "cpa",
+    "version": "1.0",
+    "description": "channel partner api example"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8089",
+      "description": "local cpa service"
+    }
+  ],
+  "paths": {
+    "/artifacts/invoice/{payment_artifact_id}": {
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "payment_artifact_id",
+          "in": "path",
+          "required": true
+        }
+      ],
+      "post": {
+        "summary": "CreateInvoice",
+        "operationId": "post-create-invoice",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "headers": {
+              "x-correlation-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invoice"
+                }
+              }
+            }
+          }
+        },
+        "description": "Create Invoice",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/x-correlation-id"
+          }
+        ],
+        "security": [
+          {
+            "X-API-KEY": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Invoice"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "GetInvoiceByID",
+        "operationId": "get-artifacts-invoice",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Invoice"
+                },
+                "examples": {}
+              },
+              "application/xml": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "multipart/form-data": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              },
+              "text/html": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            },
+            "headers": {}
+          }
+        },
+        "description": "",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/x-correlation-id"
+          }
+        ],
+        "security": [
+          {
+            "X-API-KEY": []
+          }
+        ]
+      }
+    },
+    "{party_id}/webhooks/": {
+      "get": {
+        "summary": "GetWebhook",
+        "tags": [],
+        "responses": {},
+        "operationId": "get-webhooks",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/x-correlation-id"
+          }
+        ],
+        "security": [
+          {
+            "X-API-KEY": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "CreateWebhook",
+        "operationId": "post-webhooks",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "description": "",
+                "type": "object",
+                "x-examples": {
+                  "example-1": {
+                    "endpoint": "https://yourdomain.com/webhook",
+                    "events": [
+                      "artifact.invoice.created",
+                      "artifact.anticipated-trust-deposit.created",
+                      "artifact.matter-statement.created",
+                      "artifact.client-statement.created",
+                      "payment.card.successful",
+                      "payment.instalment.created",
+                      "party.created",
+                      "party.user.credit-application-rejected",
+                      "party.kyc-failed",
+                      "webhook.sent",
+                      "webhook.failed"
+                    ],
+                    "id": "TODO",
+                    "access_key": "TODO - secret",
+                    "description": "TODO"
+                  }
+                },
+                "properties": {
+                  "endpoint": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "events": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "access_key": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "description": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "endpoint",
+                  "events",
+                  "id",
+                  "access_key",
+                  "description"
+                ]
+              },
+              "examples": {
+                "example-1": {
+                  "value": {
+                    "endpoint": "string",
+                    "events": [
+                      {
+                        "": "string"
+                      }
+                    ],
+                    "id": "string",
+                    "access_key": "string",
+                    "description": "string",
+                    "": "string"
+                  }
+                }
+              }
+            }
+          },
+          "description": ""
+        },
+        "description": "",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/x-correlation-id"
+          }
+        ],
+        "security": [
+          {
+            "X-API-KEY": []
+          }
+        ]
+      },
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "party_id",
+          "in": "path",
+          "required": true
+        }
+      ],
+      "patch": {
+        "summary": "PatchWebhook",
+        "operationId": "patch-party_id-webhooks",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          },
+          "description": "TODO"
+        },
+        "description": "",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/x-correlation-id"
+          }
+        ],
+        "security": [
+          {
+            "X-API-KEY": []
+          }
+        ]
+      },
+      "delete": {
+        "summary": "DeleteWebhook",
+        "operationId": "delete-party_id-webhooks",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Remove the webhook",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/x-correlation-id"
+          }
+        ],
+        "security": [
+          {
+            "X-API-KEY": []
+          }
+        ]
+      }
+    },
+    "{party_id}/webhooks/list": {
+      "get": {
+        "summary": "ListWebhooks",
+        "tags": [],
+        "responses": {},
+        "operationId": "get-webhooks",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/x-correlation-id"
+          }
+        ],
+        "security": [
+          {
+            "X-API-KEY": []
+          }
+        ],
+        "description": ""
+      },
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "party_id",
+          "in": "path",
+          "required": true
+        }
+      ]
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "title": "InvoiceTodo",
+        "type": "object",
+        "description": "",
+        "examples": [
+          {
+            "id": 142,
+            "firstName": "Alice",
+            "lastName": "Smith",
+            "email": "alice.smith@gmail.com",
+            "dateOfBirth": "1997-10-31",
+            "emailVerified": true,
+            "signUpDate": "2019-08-24"
+          }
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "description": "Unique identifier for the given user."
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date",
+            "example": "1997-10-31"
+          },
+          "emailVerified": {
+            "type": "boolean",
+            "description": "Set to true if the user's email has been verified."
+          },
+          "createDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The date that the user was created."
+          }
+        },
+        "required": [
+          "id",
+          "firstName",
+          "lastName",
+          "email",
+          "emailVerified"
+        ]
+      },
+      "Invoice": {
+        "description": "",
+        "type": "object",
+        "x-examples": {
+          "example-1": {
+            "firm_id": "da21ed65-15f2-4be0-bebe-6086aa75239c",
+            "branch_id": "cafeed65-15f2-4be0-bebe-6086aa75239c",
+            "matter": {
+              "id": "bbe90352-7819-d54e-90cc-17352f70754f",
+              "number": "2021019"
+            },
+            "reference_number": "130187787317",
+            "payment_artifact_id": "3ec87123-edc0-7b4e-a9c8-e1c063397ad3",
+            "payment_artifact_number": "Inv 73",
+            "payment_artifact_type": "Invoice - entity vs artifact vs paymentArtifact? ",
+            "amount": 105,
+            "due_date": "2021-02-02 - vs artifact due date... etc...",
+            "debtor": {
+              "id": "bd7d4fb1-1b1b-4fc1-8bb1-c91ff694049b",
+              "short_name": "Johnson",
+              "title": "Mr S Johnson Test",
+              "email": "sj@test.com.au"
+            },
+            "custom_fields": [
+              {
+                "key1": "value"
+              },
+              {
+                "key2": "value"
+              }
+            ],
+            "settle_to_trust": 0
+          }
+        },
+        "examples": [
+          {
+            "firm_id": "string",
+            "branch_id": "string",
+            "matter": {
+              "id": "string",
+              "number": "string"
+            },
+            "reference_number": "string",
+            "payment_artifact_id": "string",
+            "payment_artifact_number": "string",
+            "payment_artifact_type": "string",
+            "amount": 0,
+            "due_date": "string",
+            "debtor": {
+              "id": "string",
+              "short_name": "string",
+              "title": "string",
+              "email": "string"
+            },
+            "custom_fields": [
+              {
+                "key1": "string"
+              }
+            ],
+            "settle_to_trust": false
+          }
+        ],
+        "properties": {
+          "firm_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "branch_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "matter": {
+            "type": "object",
+            "required": [
+              "id",
+              "number"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "number": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "reference_number": {
+            "type": "string",
+            "minLength": 1
+          },
+          "payment_artifact_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "payment_artifact_number": {
+            "type": "string",
+            "minLength": 1
+          },
+          "payment_artifact_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "amount": {
+            "type": "number"
+          },
+          "due_date": {
+            "type": "string",
+            "minLength": 1,
+            "format": "date-time"
+          },
+          "debtor": {
+            "type": "object",
+            "required": [
+              "id",
+              "short_name",
+              "title",
+              "email"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "short_name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "email": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "custom_fields": {
+            "type": "array",
+            "uniqueItems": true,
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "properties": {
+                "key1": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "key1"
+              ]
+            }
+          },
+          "settle_to_trust": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "firm_id",
+          "branch_id",
+          "matter",
+          "reference_number",
+          "payment_artifact_id",
+          "payment_artifact_number",
+          "payment_artifact_type",
+          "amount",
+          "due_date",
+          "debtor",
+          "custom_fields",
+          "settle_to_trust"
+        ],
+        "title": "Invoice"
+      }
+    },
+    "securitySchemes": {
+      "X-API-KEY": {
+        "name": "API Key",
+        "type": "apiKey",
+        "in": "header",
+        "description": ""
+      }
+    },
+    "parameters": {
+      "x-correlation-id": {
+        "name": "x-correlation-id",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Unique identifier value that is attached to requests and messages, allows reference to a particular transaction or event chain"
+      },
+      "x-api-key": {
+        "name": "x-api-key",
+        "in": "header",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "description": "security header - see hmac README"
+      }
+    }
+  }
+}
