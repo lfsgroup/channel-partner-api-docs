@@ -12,7 +12,7 @@
     }
   ],
   "paths": {
-    "/artifacts/invoice/{payment_artifact_id}": {
+    "firms/{firm_id}/artifacts/invoices/{payment_artifact_id}": {
       "parameters": [
         {
           "schema": {
@@ -21,14 +21,22 @@
           "name": "payment_artifact_id",
           "in": "path",
           "required": true
+        },
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "firm_id",
+          "in": "path",
+          "required": true
         }
       ],
       "post": {
         "summary": "CreateInvoice",
         "operationId": "post-create-invoice",
         "responses": {
-          "200": {
-            "description": "OK",
+          "201": {
+            "description": "Created",
             "headers": {
               "x-correlation-id": {
                 "schema": {
@@ -39,7 +47,12 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Invoice"
+                  "type": "object",
+                  "properties": {
+                    "invoice": {
+                      "$ref": "#/components/schemas/Invoice"
+                    }
+                  }
                 }
               }
             }
@@ -49,6 +62,14 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/x-correlation-id"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "header",
+            "name": "X-PMS-ID",
+            "description": "Practice Management System ID"
           }
         ],
         "security": [
@@ -105,13 +126,38 @@
         "parameters": [
           {
             "$ref": "#/components/parameters/x-correlation-id"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "header",
+            "name": "X-PMS-ID",
+            "description": "Practice Management System ID"
           }
         ],
         "security": [
           {
             "X-API-KEY": []
           }
-        ]
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          },
+          "description": ""
+        }
       }
     },
     "{party_id}/webhooks/": {
@@ -459,6 +505,7 @@
             "settle_to_trust": false
           }
         ],
+        "title": "Invoice",
         "properties": {
           "firm_id": {
             "type": "string",
@@ -502,7 +549,8 @@
             "minLength": 1
           },
           "amount": {
-            "type": "number"
+            "type": "number",
+            "exclusiveMinimum": 0.01
           },
           "due_date": {
             "type": "string",
@@ -570,8 +618,7 @@
           "debtor",
           "custom_fields",
           "settle_to_trust"
-        ],
-        "title": "Invoice"
+        ]
       },
       "Webhook": {
         "type": "array",
