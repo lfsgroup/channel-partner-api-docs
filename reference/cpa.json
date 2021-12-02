@@ -12,8 +12,17 @@
     }
   ],
   "paths": {
-    "v1/artifacts/invoices": {
-      "parameters": [],
+    "v1/artifacts/invoices/{invoice_id}": {
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "invoice_id",
+          "in": "path",
+          "required": true
+        }
+      ],
       "post": {
         "summary": "CreateInvoice",
         "operationId": "post-create-invoice",
@@ -141,6 +150,37 @@
           },
           "description": ""
         }
+      },
+      "delete": {
+        "summary": "",
+        "operationId": "deletev1-artifacts-invoices",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Delete invoice"
+      },
+      "patch": {
+        "summary": "",
+        "operationId": "patchv1-artifacts-invoices-invoice_id",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {}
+              }
+            }
+          },
+          "description": "{\n \"status\":\"\",\n \"amount\": 150\n}"
+        },
+        "description": ""
       }
     },
     "{party_id}/webhooks/": {
