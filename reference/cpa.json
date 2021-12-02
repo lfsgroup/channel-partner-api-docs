@@ -12,13 +12,13 @@
     }
   ],
   "paths": {
-    "v1/artifacts/invoices/{invoice_id}": {
+    "v1/{party_id}/artifacts/invoices/": {
       "parameters": [
         {
           "schema": {
             "type": "string"
           },
-          "name": "invoice_id",
+          "name": "party_id",
           "in": "path",
           "required": true
         }
@@ -73,84 +73,32 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Invoice"
+                "$ref": "#/components/schemas/InvoiceRequest"
               }
             }
           }
         }
-      },
-      "get": {
-        "summary": "GetInvoiceByID",
-        "operationId": "get-artifacts-invoice",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Invoice"
-                },
-                "examples": {}
-              },
-              "application/xml": {
-                "schema": {
-                  "type": "object",
-                  "properties": {}
-                }
-              },
-              "multipart/form-data": {
-                "schema": {
-                  "type": "object",
-                  "properties": {}
-                }
-              },
-              "text/html": {
-                "schema": {
-                  "type": "object",
-                  "properties": {}
-                }
-              }
-            },
-            "headers": {}
-          }
+      }
+    },
+    "v1/{party_id}/artifacts/invoices/{invoice_id}": {
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "party_id",
+          "in": "path",
+          "required": true
         },
-        "description": "",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/x-correlation-id"
+        {
+          "schema": {
+            "type": "string"
           },
-          {
-            "schema": {
-              "type": "string"
-            },
-            "in": "header",
-            "name": "X-PMS-ID",
-            "description": "Practice Management System ID"
-          }
-        ],
-        "security": [
-          {
-            "X-API-KEY": []
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {}
-              }
-            },
-            "application/xml": {
-              "schema": {
-                "type": "object",
-                "properties": {}
-              }
-            }
-          },
-          "description": ""
+          "name": "invoice_id",
+          "in": "path",
+          "required": true
         }
-      },
+      ],
       "delete": {
         "summary": "",
         "operationId": "deletev1-artifacts-invoices",
@@ -159,7 +107,16 @@
             "description": "OK"
           }
         },
-        "description": "Delete invoice"
+        "description": "Delete invoice",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "header",
+            "name": "X-PMS-ID"
+          }
+        ]
       },
       "patch": {
         "summary": "",
@@ -174,12 +131,47 @@
             "application/json": {
               "schema": {
                 "type": "object",
-                "properties": {}
+                "properties": {
+                  "status": {
+                    "type": "string"
+                  },
+                  "amount": {
+                    "type": "string"
+                  }
+                }
               }
             }
           },
-          "description": "{\n \"status\":\"\",\n \"amount\": 150\n}"
+          "description": ""
         },
+        "description": "",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "header",
+            "name": "X-PMS-ID"
+          }
+        ]
+      },
+      "get": {
+        "summary": "",
+        "operationId": "getv1-party_id-artifacts-invoices-invoice_id",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "header",
+            "name": "X-PMS-ID"
+          }
+        ],
         "description": ""
       }
     },
