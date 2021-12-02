@@ -461,11 +461,11 @@
               }
             }
           },
-          "payment_artifact_id": {
+          "invoice_id": {
             "type": "string",
             "minLength": 1
           },
-          "payment_artifact_reference": {
+          "invoice_title": {
             "type": "string",
             "minLength": 1
           },
@@ -480,12 +480,6 @@
           },
           "debtor": {
             "type": "object",
-            "required": [
-              "id",
-              "name",
-              "contact_number",
-              "email"
-            ],
             "properties": {
               "id": {
                 "type": "string",
@@ -503,7 +497,13 @@
                 "type": "string",
                 "minLength": 1
               }
-            }
+            },
+            "required": [
+              "id",
+              "name",
+              "contact_number",
+              "email"
+            ]
           },
           "settlement_account": {
             "type": "string"
@@ -513,17 +513,20 @@
             "items": {
               "type": "object"
             }
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         },
         "required": [
           "firm_id",
           "matter",
-          "payment_artifact_id",
-          "payment_artifact_reference",
-          "amount",
-          "due_date",
-          "debtor",
-          "settlement_account"
+          "invoice_id",
+          "invoice_title",
+          "amount"
         ]
       },
       "InvoiceResponse": {
