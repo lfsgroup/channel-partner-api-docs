@@ -519,7 +519,8 @@
           "firm_id",
           "invoice_id",
           "invoice_title",
-          "amount"
+          "amount",
+          "settlement_account"
         ]
       },
       "InvoiceResponse": {
