@@ -497,13 +497,7 @@
                 "type": "string",
                 "minLength": 1
               }
-            },
-            "required": [
-              "id",
-              "name",
-              "contact_number",
-              "email"
-            ]
+            }
           },
           "settlement_account": {
             "type": "string"
@@ -523,7 +517,6 @@
         },
         "required": [
           "firm_id",
-          "matter",
           "invoice_id",
           "invoice_title",
           "amount"
