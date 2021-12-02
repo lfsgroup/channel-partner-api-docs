@@ -12,25 +12,8 @@
     }
   ],
   "paths": {
-    "firms/{firm_id}/artifacts/invoices/{payment_artifact_id}": {
-      "parameters": [
-        {
-          "schema": {
-            "type": "string"
-          },
-          "name": "payment_artifact_id",
-          "in": "path",
-          "required": true
-        },
-        {
-          "schema": {
-            "type": "string"
-          },
-          "name": "firm_id",
-          "in": "path",
-          "required": true
-        }
-      ],
+    "v1/artifacts/invoices": {
+      "parameters": [],
       "post": {
         "summary": "CreateInvoice",
         "operationId": "post-create-invoice",
@@ -464,34 +447,25 @@
           },
           "matter": {
             "type": "object",
-            "required": [
-              "id",
-              "number"
-            ],
             "properties": {
               "id": {
                 "type": "string",
                 "minLength": 1
               },
-              "number": {
+              "reference": {
                 "type": "string",
                 "minLength": 1
+              },
+              "type": {
+                "type": "string"
               }
             }
-          },
-          "reference_number": {
-            "type": "string",
-            "minLength": 1
           },
           "payment_artifact_id": {
             "type": "string",
             "minLength": 1
           },
-          "payment_artifact_number": {
-            "type": "string",
-            "minLength": 1
-          },
-          "payment_artifact_type": {
+          "payment_artifact_reference": {
             "type": "string",
             "minLength": 1
           },
@@ -508,8 +482,8 @@
             "type": "object",
             "required": [
               "id",
-              "short_name",
-              "title",
+              "name",
+              "contact_number",
               "email"
             ],
             "properties": {
@@ -517,11 +491,11 @@
                 "type": "string",
                 "minLength": 1
               },
-              "short_name": {
+              "name": {
                 "type": "string",
                 "minLength": 1
               },
-              "title": {
+              "contact_number": {
                 "type": "string",
                 "minLength": 1
               },
@@ -531,40 +505,25 @@
               }
             }
           },
-          "custom_fields": {
-            "type": "array",
-            "uniqueItems": true,
-            "minItems": 1,
-            "items": {
-              "type": "object",
-              "properties": {
-                "key1": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "required": [
-                "key1"
-              ]
-            }
+          "settlement_account": {
+            "type": "string"
           },
-          "settle_to_trust": {
-            "type": "boolean"
+          "line_items": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
           }
         },
         "required": [
           "firm_id",
-          "branch_id",
           "matter",
-          "reference_number",
           "payment_artifact_id",
-          "payment_artifact_number",
-          "payment_artifact_type",
+          "payment_artifact_reference",
           "amount",
           "due_date",
           "debtor",
-          "custom_fields",
-          "settle_to_trust"
+          "settlement_account"
         ]
       },
       "InvoiceResponse": {
