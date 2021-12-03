@@ -42,7 +42,7 @@
                   "type": "object",
                   "properties": {
                     "invoice": {
-                      "$ref": "#/components/schemas/Invoice"
+                      "$ref": "#/components/schemas/InvoiceResponse"
                     }
                   }
                 }
