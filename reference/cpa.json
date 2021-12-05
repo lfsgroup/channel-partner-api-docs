@@ -123,7 +123,14 @@
         "operationId": "patchv1-artifacts-invoices-invoice_id",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceResponse"
+                }
+              }
+            }
           }
         },
         "requestBody": {
