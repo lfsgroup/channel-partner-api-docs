@@ -45,7 +45,8 @@
                       "$ref": "#/components/schemas/InvoiceResponse"
                     }
                   }
-                }
+                },
+                "examples": {}
               }
             }
           }
