@@ -42,7 +42,7 @@
                   "type": "object",
                   "properties": {
                     "invoice": {
-                      "$ref": "#/components/schemas/Invoice"
+                      "$ref": "#/components/schemas/InvoiceResponse"
                     }
                   }
                 }
@@ -123,7 +123,14 @@
         "operationId": "patchv1-artifacts-invoices-invoice_id",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceResponse"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -160,7 +167,14 @@
         "operationId": "getv1-party_id-artifacts-invoices-invoice_id",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InvoiceResponse"
+                }
+              }
+            }
           }
         },
         "parameters": [
