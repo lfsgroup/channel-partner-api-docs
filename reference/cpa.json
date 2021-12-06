@@ -459,26 +459,26 @@
             "branch_id": "string",
             "matter": {
               "id": "string",
-              "number": "string"
+              "reference": "string",
+              "type": "string"
             },
-            "reference_number": "string",
-            "payment_artifact_id": "string",
-            "payment_artifact_number": "string",
-            "payment_artifact_type": "string",
-            "amount": 0,
-            "due_date": "string",
+            "invoice_id": "string",
+            "invoice_title": "string",
+            "amount": 1.01,
+            "due_date": "2019-08-24T14:15:22Z",
             "debtor": {
               "id": "string",
-              "short_name": "string",
-              "title": "string",
+              "name": "string",
+              "contact_number": "string",
               "email": "string"
             },
-            "custom_fields": [
-              {
-                "key1": "string"
-              }
+            "settlement_account": "string",
+            "line_items": [
+              {}
             ],
-            "settle_to_trust": false
+            "notes": [
+              "string"
+            ]
           }
         ],
         "title": "InvoiceRequest",
