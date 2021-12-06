@@ -24,7 +24,7 @@
         }
       ],
       "post": {
-        "summary": "CreateInvoice",
+        "summary": "Create Invoice",
         "operationId": "post-create-invoice",
         "responses": {
           "201": {
@@ -100,7 +100,7 @@
         }
       ],
       "delete": {
-        "summary": "",
+        "summary": "Delete Invoice",
         "operationId": "deletev1-artifacts-invoices",
         "responses": {
           "200": {
@@ -119,7 +119,7 @@
         ]
       },
       "patch": {
-        "summary": "",
+        "summary": "Update Invoice",
         "operationId": "patchv1-artifacts-invoices-invoice_id",
         "responses": {
           "200": {
@@ -163,7 +163,7 @@
         ]
       },
       "get": {
-        "summary": "Invoice",
+        "summary": "Get Invoice",
         "operationId": "getv1-party_id-artifacts-invoices-invoice_id",
         "responses": {
           "200": {
@@ -191,7 +191,7 @@
     },
     "{party_id}/webhooks/": {
       "get": {
-        "summary": "GetWebhook",
+        "summary": "Get Webhook",
         "tags": [],
         "responses": {},
         "operationId": "get-webhooks",
@@ -208,7 +208,7 @@
         "description": ""
       },
       "post": {
-        "summary": "CreateWebhook",
+        "summary": "Create Webhook",
         "operationId": "post-webhooks",
         "responses": {
           "200": {
@@ -322,7 +322,7 @@
         }
       ],
       "patch": {
-        "summary": "PatchWebhook",
+        "summary": "Patch Webhook",
         "operationId": "patch-party_id-webhooks",
         "responses": {
           "200": {
@@ -353,7 +353,7 @@
         ]
       },
       "delete": {
-        "summary": "DeleteWebhook",
+        "summary": "Delete Webhook",
         "operationId": "delete-party_id-webhooks",
         "responses": {
           "200": {
@@ -375,7 +375,7 @@
     },
     "{party_id}/webhooks/list": {
       "get": {
-        "summary": "ListWebhooks",
+        "summary": "List Webhooks",
         "tags": [],
         "responses": {
           "200": {
