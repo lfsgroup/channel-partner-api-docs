@@ -511,7 +511,7 @@
             "type": "string",
             "minLength": 1
           },
-          "invoice_title": {
+          "invoice_reference": {
             "type": "string",
             "minLength": 1
           },
@@ -559,12 +559,21 @@
             "items": {
               "type": "string"
             }
+          },
+          "payment_methods_override": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "surcharge_choice_override": {
+            "type": "string"
           }
         },
         "required": [
           "firm_id",
           "invoice_id",
-          "invoice_title",
+          "invoice_reference",
           "amount",
           "settlement_account"
         ]
