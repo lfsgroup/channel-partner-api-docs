@@ -464,7 +464,7 @@
               "type": "string"
             },
             "invoice_id": "string",
-            "invoice_title": "string",
+            "invoice_reference": "string",
             "amount": 1.01,
             "due_date": "2019-08-24T14:15:22Z",
             "debtor": {
@@ -479,7 +479,11 @@
             ],
             "notes": [
               "string"
-            ]
+            ],
+            "payment_methods_override": [
+              "string"
+            ],
+            "surcharge_choice_override": "string"
           }
         ],
         "title": "InvoiceRequest",
