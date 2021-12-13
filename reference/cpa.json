@@ -607,90 +607,11 @@
           }
         }
       },
-      "Webhook_old": {
-        "type": "array",
-        "description": "",
-        "minItems": 1,
-        "uniqueItems": true,
-        "items": {
-          "type": "object",
-          "required": [
-            "webhook_id",
-            "party_id",
-            "name",
-            "description",
-            "url",
-            "status",
-            "events",
-            "is_deleted",
-            "created_at",
-            "last_updated_at"
-          ],
-          "properties": {
-            "webhook_id": {
-              "type": "string",
-              "minLength": 1
-            },
-            "party_id": {
-              "type": "string",
-              "minLength": 1
-            },
-            "name": {
-              "type": "string",
-              "minLength": 1
-            },
-            "description": {
-              "type": "string",
-              "minLength": 1
-            },
-            "url": {
-              "type": "string",
-              "minLength": 1
-            },
-            "status": {
-              "type": "string",
-              "minLength": 1
-            },
-            "events": {
-              "type": "string",
-              "minLength": 1
-            },
-            "is_deleted": {
-              "type": "boolean"
-            },
-            "created_at": {
-              "type": "string",
-              "minLength": 1
-            },
-            "last_updated_at": {
-              "type": "string",
-              "minLength": 1
-            }
-          }
-        },
-        "x-examples": {
-          "example-1": [
-            {
-              "webhook_id": "3be6ab7a-e33b-462b-bcc5-70e4d45368ac",
-              "party_id": "2ec3505f-87e4-467c-b925-2e050996ee32",
-              "name": "InvoiceCreated",
-              "description": "Invoked when an invoice is created",
-              "url": "https://webhook.site/52089a7f-23fc-4184-bf0b-98272968e622",
-              "status": "Enabled",
-              "events": "{}",
-              "is_deleted": false,
-              "created_at": "2021-11-24 13:45:20.338802 +00:00",
-              "last_updated_at": "2021-11-24 13:45:20.338802 +00:00"
-            }
-          ]
-        },
-        "title": ""
-      },
-      "WebhookRequest": {
+      "Webhook": {
         "description": "Webhook request / response model",
         "type": "object",
         "x-examples": {
-          "example-1": {
+          "basic-auth-example": {
             "party_id": "5ca1ab1e-cafe-4000-a000-deadbeefdead",
             "name": "some webhook name",
             "description": "My other cool webhook",
@@ -726,8 +647,8 @@
               "type": "basic_auth",
               "add_position": "header",
               "data": {
-                "username": "string",
-                "password": "string"
+                "username": "someuser",
+                "password": "somepassword"
               }
             }
           },
@@ -741,7 +662,7 @@
               "string"
             ],
             "authentication": {
-              "type": "basic_auth",
+              "type": "bearer_token",
               "add_position": "header",
               "data": {
                 "token": "mybearertoken"
