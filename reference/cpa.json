@@ -190,7 +190,7 @@
         "description": ""
       }
     },
-    "{party_id}/webhooks/": {
+    "/v1/{party_id}/webhooks/": {
       "get": {
         "summary": "Get Webhook",
         "tags": [],
@@ -212,89 +212,70 @@
         "summary": "Create Webhook",
         "operationId": "post-webhooks",
         "responses": {
-          "200": {
-            "description": "OK"
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookRequest"
+                }
+              }
+            }
           }
         },
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "description": "",
-                "type": "object",
-                "x-examples": {
-                  "example-1": {
-                    "endpoint": "https://yourdomain.com/webhook",
-                    "events": [
-                      "artifact.invoice.created",
-                      "artifact.anticipated-trust-deposit.created",
-                      "artifact.matter-statement.created",
-                      "artifact.client-statement.created",
-                      "payment.card.successful",
-                      "payment.instalment.created",
-                      "party.created",
-                      "party.user.credit-application-rejected",
-                      "party.kyc-failed",
-                      "webhook.sent",
-                      "webhook.failed"
-                    ],
-                    "id": "TODO",
-                    "access_key": "TODO - secret",
-                    "description": "TODO"
-                  }
-                },
-                "properties": {
-                  "endpoint": {
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  "events": {
-                    "type": "array",
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "": {
-                          "type": "string"
-                        }
-                      }
-                    }
-                  },
-                  "id": {
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  "access_key": {
-                    "type": "string",
-                    "minLength": 1
-                  },
-                  "description": {
-                    "type": "string",
-                    "minLength": 1
-                  }
-                },
-                "required": [
-                  "endpoint",
-                  "events",
-                  "id",
-                  "access_key",
-                  "description"
-                ]
+                "$ref": "#/components/schemas/WebhookRequest"
               },
               "examples": {
-                "example-1": {
+                "basic_auth example": {
                   "value": {
-                    "endpoint": "string",
+                    "party_id": "ba7116bd-f329-4d4b-adb9-b94174cc44e1",
+                    "name": "string",
+                    "description": "http://example.com",
+                    "url": "http://example.com",
+                    "status": "Enabled",
                     "events": [
-                      {
-                        "": "string"
-                      }
+                      "artifact.invoice.created"
                     ],
-                    "id": "string",
-                    "access_key": "string",
-                    "description": "string",
-                    "": "string"
+                    "authentication": {
+                      "type": "basic_auth",
+                      "add_position": "header",
+                      "data": {
+                        "username": "string",
+                        "password": "string"
+                      }
+                    }
+                  }
+                },
+                "bearer_token example": {
+                  "value": {
+                    "party_id": "ba7116bd-f329-4d4b-adb9-b94174cc44e1",
+                    "name": "string",
+                    "description": "webhook to invoke when an invoice is created",
+                    "url": "http://example.com",
+                    "status": "Enabled",
+                    "events": [
+                      "artifact.invoice.created"
+                    ],
+                    "authentication": {
+                      "type": "bearer_token",
+                      "add_position": "header",
+                      "data": {
+                        "username": "string",
+                        "password": "string"
+                      }
+                    }
                   }
                 }
+              }
+            },
+            "application/xml": {
+              "schema": {
+                "type": "object",
+                "properties": {}
               }
             }
           },
@@ -323,7 +304,7 @@
         }
       ],
       "patch": {
-        "summary": "Patch Webhook",
+        "summary": "Update Webhook",
         "operationId": "patch-party_id-webhooks",
         "responses": {
           "200": {
@@ -626,7 +607,7 @@
           }
         }
       },
-      "Webhook": {
+      "Webhook_old": {
         "type": "array",
         "description": "",
         "minItems": 1,
@@ -702,7 +683,167 @@
               "last_updated_at": "2021-11-24 13:45:20.338802 +00:00"
             }
           ]
-        }
+        },
+        "title": ""
+      },
+      "WebhookRequest": {
+        "description": "Webhook request / response model",
+        "type": "object",
+        "x-examples": {
+          "example-1": {
+            "party_id": "5ca1ab1e-cafe-4000-a000-deadbeefdead",
+            "name": "some webhook name",
+            "description": "My other cool webhook",
+            "url": "https://localhost:2015",
+            "status": "Enabled",
+            "events": [
+              "artifact.invoice.created",
+              "payment.card.successful",
+              "payout.disbursed"
+            ],
+            "authentication": {
+              "type": "basic_auth",
+              "add_position": "header",
+              "data": {
+                "username": "myuser",
+                "password": "myotherpassword"
+              }
+            }
+          }
+        },
+        "title": "Webhook",
+        "examples": [
+          {
+            "party_id": "ba7116bd-f329-4d4b-adb9-b94174cc44e1",
+            "name": "string",
+            "description": "http://example.com",
+            "url": "http://example.com",
+            "status": "Enabled",
+            "events": [
+              "string"
+            ],
+            "authentication": {
+              "type": "basic_auth",
+              "add_position": "header",
+              "data": {
+                "username": "string",
+                "password": "string"
+              }
+            }
+          },
+          {
+            "party_id": "ba7116bd-f329-4d4b-adb9-b94174cc44e1",
+            "name": "string",
+            "description": "http://example.com",
+            "url": "http://example.com",
+            "status": "Enabled",
+            "events": [
+              "string"
+            ],
+            "authentication": {
+              "type": "basic_auth",
+              "add_position": "header",
+              "data": {
+                "token": "mybearertoken"
+              }
+            }
+          }
+        ],
+        "properties": {
+          "party_id": {
+            "type": "string",
+            "minLength": 1,
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "format": "uri"
+          },
+          "url": {
+            "type": "string",
+            "minLength": 1,
+            "format": "uri"
+          },
+          "status": {
+            "type": "string",
+            "minLength": 1,
+            "enum": [
+              "Enabled",
+              "Disabled"
+            ]
+          },
+          "events": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string"
+            }
+          },
+          "authentication": {
+            "type": "object",
+            "required": [
+              "type",
+              "add_position",
+              "data"
+            ],
+            "properties": {
+              "type": {
+                "type": "string",
+                "minLength": 1,
+                "enum": [
+                  "bearer_token",
+                  "basic_auth"
+                ],
+                "example": "basic_auth"
+              },
+              "add_position": {
+                "type": "string",
+                "minLength": 1,
+                "enum": [
+                  "header"
+                ]
+              },
+              "data": {
+                "oneOf": [
+                  {
+                    "description": "Basic Auth example",
+                    "properties": {
+                      "username": {
+                        "type": "string"
+                      },
+                      "password": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  {
+                    "description": "Bearer token example",
+                    "properties": {
+                      "token": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                ],
+                "type": "object"
+              }
+            }
+          }
+        },
+        "required": [
+          "party_id",
+          "name",
+          "description",
+          "url",
+          "status",
+          "events",
+          "authentication"
+        ]
       }
     },
     "securitySchemes": {
