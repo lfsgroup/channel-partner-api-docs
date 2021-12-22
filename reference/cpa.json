@@ -61,8 +61,8 @@
               "type": "string"
             },
             "in": "header",
-            "name": "X-PMS-ID",
-            "description": "Practice Management System ID"
+            "name": "X-CHANNEL-PARTNER-ID",
+            "description": "channel partner id eg a Practice Management System ID"
           }
         ],
         "security": [
@@ -402,7 +402,7 @@
   "components": {
     "schemas": {
       "InvoiceRequest": {
-        "description": "",
+        "description": "Request mode, used to create an invoice",
         "type": "object",
         "x-examples": {
           "example-1": {
@@ -462,9 +462,9 @@
               "string"
             ],
             "payment_methods_override": [
-              "string"
+              "BNPL10Week"
             ],
-            "surcharge_choice_override": "string"
+            "surcharge_choice_override": "Customer"
           }
         ],
         "title": "InvoiceRequest",
@@ -542,6 +542,7 @@
           },
           "notes": {
             "type": "array",
+            "uniqueItems": false,
             "items": {
               "type": "string"
             }
@@ -549,11 +550,24 @@
           "payment_methods_override": {
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "Card",
+                "BNPL10Week",
+                "BNPL6Month",
+                "BNPL12Month",
+                "BankTransfer",
+                "Debit"
+              ],
+              "example": "BNPL10Week"
             }
           },
           "surcharge_choice_override": {
-            "type": "string"
+            "type": "string",
+            "enum": [
+              "Customer",
+              "Merchant"
+            ]
           }
         },
         "required": [
@@ -777,7 +791,7 @@
     },
     "parameters": {
       "x-correlation-id": {
-        "name": "x-correlation-id",
+        "name": "X-CORRELATION-ID",
         "in": "header",
         "required": false,
         "schema": {
@@ -786,7 +800,7 @@
         "description": "Unique identifier value that is attached to requests and messages, allows reference to a particular transaction or event chain"
       },
       "x-api-key": {
-        "name": "x-api-key",
+        "name": "X-API-KEY",
         "in": "header",
         "required": false,
         "schema": {
