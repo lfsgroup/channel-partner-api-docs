@@ -956,6 +956,115 @@
           "created_at",
           "event_type"
         ]
+      },
+      "WebhookPaymentCardSettlementCancelled": {
+        "description": "",
+        "type": "object",
+        "x-examples": {
+          "example-1": {
+            "event_id": "F823FA79-E76E-4B40-A1F1-904B6A85702C",
+            "created_at": "2006-01-02T15:04:05Z07:00",
+            "event_type": "payment.card.settlement_cancelled",
+            "event": {
+              "payment_method": "card",
+              "artifact_id": "123456-1245-1234-122312",
+              "card_payment_status": "Settled",
+              "txn_status": "payment providers status",
+              "reconciliation_id": "cp1234",
+              "notes": [
+                "settled by ops user xyz"
+              ]
+            }
+          }
+        },
+        "examples": [
+          {
+            "event_id": "F823FA79-E76E-4B40-A1F1-904B6A85702C",
+            "created_at": "2006-01-02T15:04:05Z07:00",
+            "event_type": "payment.card.settlement_cancelled",
+            "event": {
+              "payment_method": "card",
+              "artifact_id": "123456-1245-1234-122312",
+              "card_payment_status": "Settled",
+              "txn_status": "payment providers status",
+              "reconciliation_id": "cp1234",
+              "notes": [
+                "settlement cancelled by ops user xyz"
+              ]
+            }
+          }
+        ],
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "created_at": {
+            "type": "string",
+            "minLength": 1
+          },
+          "event_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "event": {
+            "type": "object",
+            "required": [
+              "payment_method",
+              "artifact_id",
+              "card_payment_status",
+              "txn_status",
+              "reconciliation_id",
+              "notes"
+            ],
+            "properties": {
+              "payment_method": {
+                "type": "string",
+                "minLength": 1,
+                "enum": [
+                  "card",
+                  "instalments"
+                ]
+              },
+              "artifact_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "card_payment_status": {
+                "type": "string",
+                "minLength": 1,
+                "enum": [
+                  "Unsubmitted",
+                  "Declined",
+                  "Clearing",
+                  "Settled",
+                  "Disbursed",
+                  "Voided"
+                ]
+              },
+              "txn_status": {
+                "type": "string",
+                "minLength": 1
+              },
+              "reconciliation_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "notes": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "event_id",
+          "created_at",
+          "event_type",
+          "event"
+        ]
       }
     },
     "securitySchemes": {
