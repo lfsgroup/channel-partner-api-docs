@@ -779,6 +779,150 @@
           "events",
           "authentication"
         ]
+      },
+      "WebhookPaymentCardSettled": {
+        "description": "",
+        "type": "object",
+        "properties": {
+          "event": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "payment_method": {
+                "type": "string",
+                "minLength": 1
+              },
+              "debtor_name": {
+                "type": "string",
+                "minLength": 1
+              },
+              "reconciliation_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "artifact_id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "artifact_type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "customer_reference": {
+                "type": "string",
+                "minLength": 1
+              },
+              "amount": {
+                "type": "string",
+                "minLength": 1
+              },
+              "currency": {
+                "type": "string",
+                "minLength": 1
+              },
+              "customer_surcharge": {
+                "type": "string",
+                "minLength": 1
+              },
+              "merchant_surcharge": {
+                "type": "string",
+                "minLength": 1
+              },
+              "created_at": {
+                "type": "string",
+                "minLength": 1
+              },
+              "meta": {
+                "type": "object",
+                "properties": {
+                  "card_type": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "card_type"
+                ]
+              },
+              "txn_status": {
+                "type": "string"
+              },
+              "notes": {
+                "type": "array",
+                "items": {
+                  "required": [],
+                  "properties": {}
+                }
+              }
+            },
+            "required": [
+              "name",
+              "payment_method",
+              "debtor_name",
+              "reconciliation_id",
+              "artifact_id",
+              "artifact_type",
+              "customer_reference",
+              "amount",
+              "currency",
+              "customer_surcharge",
+              "merchant_surcharge",
+              "created_at",
+              "meta",
+              "txn_status",
+              "notes"
+            ]
+          },
+          "event_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "created_at": {
+            "type": "string",
+            "minLength": 1
+          },
+          "event_type": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "event",
+          "event_id",
+          "created_at",
+          "event_type"
+        ],
+        "x-examples": {
+          "example-1": {
+            "event": {
+              "name": "payment.card.settled",
+              "payment_method": "card",
+              "debtor_name": "string",
+              "reconciliation_id": "cp1234",
+              "artifact_id": "123456-1245-1234-122312",
+              "artifact_type": "invoice",
+              "customer_reference": "RPN1243455",
+              "amount": "100.00",
+              "currency": "aud",
+              "customer_surcharge": "1.00",
+              "merchant_surcharge": "1.00",
+              "created_at": "2006-01-02T15:04:05Z07:00",
+              "meta": {
+                "card_type": "visa"
+              },
+              "txn_status": "",
+              "notes": [
+                "settled by ops user xyz"
+              ]
+            },
+            "event_id": "string",
+            "created_at": "string",
+            "event_type": "string"
+          }
+        }
       }
     },
     "securitySchemes": {
