@@ -922,7 +922,34 @@
             "created_at": "string",
             "event_type": "string"
           }
-        }
+        },
+        "examples": [
+          {
+            "event_id": "F823FA79-E76E-4B40-A1F1-904B6A85702C",
+            "created_at": "2006-01-02T15:04:05Z07:00",
+            "event_type": "payment.card.successful",
+            "event": {
+              "payment_method": "card",
+              "debtor_name": "string",
+              "reconciliation_id": "cp1234",
+              "artifact_id": "123456-1245-1234-122312",
+              "artifact_type": "invoice",
+              "customer_reference": "RPN1243455",
+              "amount": "100.00",
+              "currency": "aud",
+              "customer_surcharge": "1.00",
+              "merchant_surcharge": "1.00",
+              "created_at": "2006-01-02T15:04:05Z07:00",
+              "meta": {
+                "card_type": "visa"
+              },
+              "txn_status": "payment providers status",
+              "notes": [
+                "settled by ops user xyz"
+              ]
+            }
+          }
+        ]
       }
     },
     "securitySchemes": {
