@@ -815,7 +815,7 @@
           {
             "event_id": "F823FA79-E76E-4B40-A1F1-904B6A85702C",
             "created_at": "2006-01-02T15:04:05Z07:00",
-            "event_type": "payment.card.successful",
+            "event_type": "payment.card.settled",
             "event": {
               "payment_method": "card",
               "card_payment_status": "Settled",
@@ -1063,6 +1063,219 @@
           "event_id",
           "created_at",
           "event_type",
+          "event"
+        ]
+      },
+      "WebhookEventDisbursementCreated": {
+        "description": "Webhook event generated when a Disbursement (payment to a merchant) has been made",
+        "type": "object",
+        "x-examples": {
+          "example-1": {
+            "event_id": "fb41261d-58f6-48e3-bd8b-580b9527c882",
+            "event_type": "disbursement.created",
+            "created_at": "2022-01-19T16:50:02.9035774+11:00",
+            "event": {
+              "disbursement_date": "2022-01-19T07:20:50.52Z",
+              "disbursed_amount": "50.00",
+              "account_type": "trust",
+              "account_number": "xxxxxx12",
+              "branch_code": "062000",
+              "disbursement_reference": "RPxxxxx",
+              "payments": [
+                {
+                  "payment_type": "card",
+                  "artifact_id": "f7fe1427-6032-4849-b506-ab0bb61a5c55",
+                  "artifact_type": "Invoice",
+                  "payment_reference": "GP_1111",
+                  "total_amount": "56.02",
+                  "customer_surcharge_amount": "1.02",
+                  "merchant_surcharge_amount": "5.00",
+                  "card_scheme": "MasterCard",
+                  "card_number_partial": "4242",
+                  "currency": "AUD",
+                  "submit_time": "2006-01-02T15:04:05Z07:00"
+                },
+                {
+                  "payment_type": "bnpl",
+                  "artifact_id": "f7fe1427-6032-4849-b506-ab0bb61a5c55",
+                  "artifact_type": "Invoice",
+                  "payment_reference": "GP_1111",
+                  "total_amount": "105.00",
+                  "merchant_surcharge_amount": "5.00",
+                  "product_type": "10Week",
+                  "submit_time": "2006-01-02T15:04:05Z07:00",
+                  "currency": "AUD"
+                }
+              ]
+            }
+          }
+        },
+        "examples": [
+          {
+            "event_id": "fb41261d-58f6-48e3-bd8b-580b9527c882",
+            "event_type": "disbursement.created",
+            "created_at": "2022-01-19T16:50:02.9035774+11:00",
+            "event": {
+              "disbursement_date": "2022-01-19T07:20:50.52Z",
+              "disbursed_amount": "50.00",
+              "account_type": "trust",
+              "account_number": "xxxxxx12",
+              "branch_code": "062000",
+              "disbursement_reference": "RPxxxxx",
+              "payments": [
+                {
+                  "payment_type": "card",
+                  "artifact_id": "f7fe1427-6032-4849-b506-ab0bb61a5c55",
+                  "artifact_type": "Invoice",
+                  "payment_reference": "GP_1111",
+                  "total_amount": "56.02",
+                  "customer_surcharge_amount": "1.02",
+                  "merchant_surcharge_amount": "5.00",
+                  "card_scheme": "MasterCard",
+                  "card_number_partial": "4242",
+                  "currency": "AUD",
+                  "submit_time": "2006-01-02T15:04:05Z07:00"
+                },
+                {
+                  "payment_type": "bnpl",
+                  "artifact_id": "f7fe1427-6032-4849-b506-ab0bb61a5c55",
+                  "artifact_type": "Invoice",
+                  "payment_reference": "GP_1111",
+                  "total_amount": "105.00",
+                  "merchant_surcharge_amount": "5.00",
+                  "product_type": "10Week",
+                  "submit_time": "2006-01-02T15:04:05Z07:00",
+                  "currency": "AUD"
+                }
+              ]
+            }
+          }
+        ],
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "event_type": {
+            "type": "string",
+            "minLength": 1
+          },
+          "created_at": {
+            "type": "string",
+            "minLength": 1,
+            "format": "date-time"
+          },
+          "event": {
+            "type": "object",
+            "required": [
+              "disbursement_date",
+              "disbursed_amount",
+              "account_type",
+              "account_number",
+              "branch_code",
+              "disbursement_reference",
+              "payments"
+            ],
+            "properties": {
+              "disbursement_date": {
+                "type": "string",
+                "minLength": 1,
+                "format": "date-time"
+              },
+              "disbursed_amount": {
+                "type": "string",
+                "minLength": 1
+              },
+              "account_type": {
+                "type": "string",
+                "minLength": 1
+              },
+              "account_number": {
+                "type": "string",
+                "minLength": 1
+              },
+              "branch_code": {
+                "type": "string",
+                "minLength": 1
+              },
+              "disbursement_reference": {
+                "type": "string",
+                "minLength": 1
+              },
+              "payments": {
+                "type": "array",
+                "uniqueItems": true,
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "payment_type": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "artifact_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "artifact_type": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "payment_reference": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "total_amount": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "customer_surcharge_amount": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "merchant_surcharge_amount": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "card_scheme": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "card_number_partial": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "currency": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "submit_time": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "payment_type",
+                    "artifact_id",
+                    "artifact_type",
+                    "payment_reference",
+                    "total_amount",
+                    "customer_surcharge_amount",
+                    "merchant_surcharge_amount",
+                    "card_scheme",
+                    "card_number_partial",
+                    "currency",
+                    "submit_time"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "event_id",
+          "event_type",
+          "created_at",
           "event"
         ]
       }
