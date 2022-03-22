@@ -529,7 +529,11 @@
                 "type": "string",
                 "minLength": 1
               }
-            }
+            },
+            "required": [
+              "id",
+              "name"
+            ]
           },
           "settlement_account": {
             "type": "string"
