@@ -493,10 +493,6 @@
               }
             }
           },
-          "invoice_id": {
-            "type": "string",
-            "minLength": 1
-          },
           "invoice_reference": {
             "type": "string",
             "minLength": 1
@@ -576,7 +572,6 @@
         },
         "required": [
           "firm_id",
-          "invoice_id",
           "invoice_reference",
           "amount",
           "settlement_account"
