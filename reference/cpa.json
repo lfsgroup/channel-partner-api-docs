@@ -409,7 +409,7 @@
             "firm_id": "da21ed65-15f2-4be0-bebe-6086aa75239c",
             "branch_id": "cafeed65-15f2-4be0-bebe-6086aa75239c",
             "matter": {
-              "id": "bbe90352-7819-d54e-90cc-17352f70754f",
+              "external_id": "bbe90352-7819-d54e-90cc-17352f70754f",
               "number": "2021019"
             },
             "reference_number": "130187787317",
@@ -419,7 +419,7 @@
             "amount": 105,
             "due_date": "2021-02-02 - vs artifact due date... etc...",
             "debtor": {
-              "id": "bd7d4fb1-1b1b-4fc1-8bb1-c91ff694049b",
+              "external_id": "bd7d4fb1-1b1b-4fc1-8bb1-c91ff694049b",
               "short_name": "Johnson",
               "title": "Mr S Johnson Test",
               "email": "sj@test.com.au"
@@ -440,12 +440,12 @@
             "firm_id": "string",
             "branch_id": "string",
             "matter": {
-              "id": "string",
-              "reference": "string",
+              "external_id": "string",
+              "external_reference": "string",
               "type": "string"
             },
-            "invoice_id": "string",
-            "invoice_reference": "string",
+            "external_id": "string",
+            "external_reference": "string",
             "amount": 1.01,
             "due_date": "2019-08-24T14:15:22Z",
             "debtor": {
@@ -480,11 +480,11 @@
           "matter": {
             "type": "object",
             "properties": {
-              "id": {
+              "external_id": {
                 "type": "string",
                 "minLength": 1
               },
-              "reference": {
+              "external_reference": {
                 "type": "string",
                 "minLength": 1
               },
@@ -493,7 +493,7 @@
               }
             }
           },
-          "invoice_reference": {
+          "external_reference": {
             "type": "string",
             "minLength": 1
           },
@@ -509,7 +509,7 @@
           "debtor": {
             "type": "object",
             "properties": {
-              "id": {
+              "external_id": {
                 "type": "string",
                 "minLength": 1
               },
@@ -527,7 +527,6 @@
               }
             },
             "required": [
-              "id",
               "name"
             ]
           },
@@ -572,7 +571,7 @@
         },
         "required": [
           "firm_id",
-          "invoice_reference",
+          "external_reference",
           "amount",
           "settlement_account"
         ]
