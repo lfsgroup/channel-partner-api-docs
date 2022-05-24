@@ -1,5 +1,4 @@
 # Responses
-TODO stuff
 
 Error response codes returned by the API include:
 
