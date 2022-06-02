@@ -81,6 +81,75 @@
         }
       }
     },
+    "v1/{party_id}/artifacts/deposits/": {
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "party_id",
+          "in": "path",
+          "required": true
+        }
+      ],
+      "post": {
+        "summary": "Create Invoice",
+        "operationId": "post-create-invoice",
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {
+              "x-correlation-id": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "invoice": {
+                      "$ref": "#/components/schemas/InvoiceResponse"
+                    }
+                  }
+                },
+                "examples": {}
+              }
+            }
+          }
+        },
+        "description": "Create Trust Deposits",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/x-correlation-id"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "header",
+            "name": "X-CHANNEL-PARTNER-ID",
+            "description": "channel partner id eg a Practice Management System ID"
+          }
+        ],
+        "security": [
+          {
+            "X-API-KEY": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InvoiceRequest"
+              }
+            }
+          }
+        }
+      }
+    },
     "v1/{party_id}/artifacts/invoices/{invoice_id}": {
       "parameters": [
         {
