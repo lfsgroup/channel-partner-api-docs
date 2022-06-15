@@ -12,7 +12,7 @@
     }
   ],
   "paths": {
-    "v1/{party_id}/artifacts/invoices/": {
+    "v1/{party_id}/artifacts/invoices": {
       "parameters": [
         {
           "schema": {
@@ -81,7 +81,7 @@
         }
       }
     },
-    "v1/{party_id}/artifacts/deposits/": {
+    "v1/{party_id}/artifacts/deposits": {
       "parameters": [
         {
           "schema": {
@@ -93,8 +93,8 @@
         }
       ],
       "post": {
-        "summary": "Create Invoice",
-        "operationId": "post-create-invoice",
+        "summary": "Create Anticipated Trust Deposit",
+        "operationId": "post-create-anticipated-trust-deposit",
         "responses": {
           "201": {
             "description": "Created",
@@ -111,7 +111,7 @@
                   "type": "object",
                   "properties": {
                     "invoice": {
-                      "$ref": "#/components/schemas/InvoiceResponse"
+                      "$ref": "#/components/schemas/AnticipatedTrustDepositResponse"
                     }
                   }
                 },
@@ -259,7 +259,7 @@
         "description": ""
       }
     },
-    "/v1/{party_id}/webhooks/": {
+    "/v1/{party_id}/webhooks": {
       "get": {
         "summary": "Get Webhook",
         "tags": [],
@@ -652,39 +652,54 @@
           "invoice": {
             "type": "object",
             "properties": {
-              "payment_artifact_id": {
+              "artifact_id": {
                 "type": "string"
               },
-              "payment_artifact_type": {
+              "artifact_type": {
                 "type": "string"
               },
-              "payment_artifact_number": {
-                "type": "string"
-              },
-              "reference_number": {
+              "invoice_reference": {
                 "type": "string"
               },
               "amount": {
                 "type": "number"
               },
-              "due_date": {
+              "created_at": {
                 "type": "string"
               }
             }
           },
           "payment": {
+            "type": "string"
+          }
+        }
+      },
+      "AnticipatedTrustDepositResponse": {
+        "title": "AnticipatedTrustDepositResponse",
+        "type": "object",
+        "properties": {
+          "anticipated_trust_deposit": {
             "type": "object",
             "properties": {
-              "url": {
-                "type": "string",
-                "format": "uri",
-                "minLength": 1,
-                "example": "https://rapidpay.com/invoice/abc"
+              "artifact_id": {
+                "type": "string"
               },
-              "name": {
+              "artifact_type": {
+                "type": "string"
+              },
+              "deposit_reference": {
+                "type": "string"
+              },
+              "amount": {
+                "type": "number"
+              },
+              "created_at": {
                 "type": "string"
               }
             }
+          },
+          "payment_uri": {
+            "type": "string"
           }
         }
       },
