@@ -454,7 +454,7 @@
             "X-API-KEY": []
           }
         ],
-        "description": ""
+        "description": "Retrieve the webhooks for the given id"
       },
       "parameters": [
         {
