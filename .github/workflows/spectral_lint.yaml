@@ -22,7 +22,7 @@ jobs:
         run: npm install -g @stoplight/spectral-cli
 
       - name: Lint the oas file
-        run: spectral lint reference/cpa.json
+        run: spectral lint reference/partner-openapispec.yaml
 
 #      # Run Spectral
 #      - uses: stoplightio/spectral-action@v0.8.0
