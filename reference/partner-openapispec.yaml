@@ -1,0 +1,664 @@
+openapi: "3.0.0"
+info:
+  version: 0.0.3
+  title: PAPI Partner API
+  description: API for partners
+
+security:
+  - PartnerAuth: [ ]
+    APIAuth: [ ]
+
+paths:
+  /api/v3/partner/{party_id}/artifacts/{artifact_id}:
+    parameters:
+      - in: path
+        name: party_id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: artifact_id
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get an artifact by id
+      description: Get an artifact by id. The artifact id is independent of the type, the returned artifact may be an invoice, trust deposit, ...
+      operationId: getArtifactById
+
+      responses:
+        '200':
+          description: Found artifact
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtifactResponse'
+        '400':
+          description: Bad request
+        '404':
+          description: Requested artifact not found
+        '500':
+          description: Error processing
+
+  /api/v3/partner/{party_id}/artifacts/invoices:
+    parameters:
+      - in: path
+        name: party_id
+        required: true
+        schema:
+          type: string
+    post:
+      summary: Create an invoice
+      description: Create an invoice for a channel partner
+      operationId: createInvoice
+      requestBody:
+        description: Invoice details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+            example:
+              firm_id: 7f623e2d-270d-8ad8-2e13-b7bfd022703e
+              external_id: e69f9433-885b-4321-bb48-9f5084850893
+              amount: 59825067.564974666
+              settlement_account: Office
+              external_reference: inv-123
+              currency: AUD
+              due_date: '1953-07-23T13:56:24.084Z'
+              surcharge_choice_override: Customer
+              description: Charge for case setup
+              matter: {
+                         external_id: my-unique-external-id,
+                         external_reference: my-external-reference,
+                         description: 'The matter of Frank vs Herman ',
+                         type: court
+                      }
+              debtor: {
+                  external_id: case-client-1234,
+                  name: Frank,
+                  email: frank@email.com,
+                  contact_number: '1300234567'
+              }
+
+              line_items: [
+                {
+                    amount: '100',
+                    name: Phone call,
+                    description: Listened to voice message,
+                    quantity: 1,
+                    tax_rate: 10,
+                }, {
+                    amount: '1000',
+                    name: Phone call,
+                    description: Replied to voice mail,
+                    quantity: 1,
+                    tax_rate: 15
+                }
+              ]
+              notes: [
+                'Got to know client',
+                'Created initial case file'
+              ]
+              payment_methods_override: [
+                'Card'
+              ]
+      responses:
+        '200':
+          description: Created Invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceResponse'
+              example:
+                payment_uri: http://localhost:8080/pay/d3010d67-06d3-46bf-be6a-b894ec743c96
+                invoice: {
+                  amount: '59825067.564974666',
+                  artifact_id: d3010d67-06d3-46bf-be6a-b894ec743c96,
+                  artifact_type: Invoice,
+                  created_at: '2022-07-13T04:09:45.716804Z',
+                  invoice_reference: inv-123
+                }
+  /api/v3/partner/{party_id}/artifacts/deposits:
+    parameters:
+      - in: path
+        name: party_id
+        required: true
+        schema:
+          type: string
+    post:
+      summary: Create an deposit
+      description: Create an trust deposit for a channel partner
+      operationId: createTrustDeposit
+      requestBody:
+        description: Anticipated trust deposit details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+            example:
+              firm_id: 7f623e2d-270d-8ad8-2e13-b7bfd022703e
+              external_id: e69f9433-885b-4321-bb48-9f5084850893
+              amount: 59825067.564974666
+              settlement_account: Office
+              external_reference: inv-123
+              currency: AUD
+              due_date: '1953-07-23T13:56:24.084Z'
+              surcharge_choice_override: Customer
+              description: Charge for case setup
+              matter: {
+                external_id: my-unique-external-id,
+                external_reference: my-external-reference,
+                description: 'The matter of Frank vs Herman',
+                type: court
+              }
+              debtor: {
+                external_id: case-client-1234,
+                name: Frank,
+                email: frank@email.com,
+                contact_number: '1300234567'
+              }
+
+              line_items: [
+                {
+                  amount: '100',
+                  name: Phone call,
+                  description: Listened to voice message,
+                  quantity: 1,
+                  tax_rate: 10,
+                }, {
+                  amount: '1000',
+                  name: Phone call,
+                  description: Replied to voice mail,
+                  quantity: 1,
+                  tax_rate: 15
+                }
+              ]
+              notes: [
+                'Got to know client',
+                'Created initial case file'
+              ]
+              payment_methods_override: [
+                'Card'
+              ]
+      responses:
+        '200':
+          description: Created Trust Deposit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositResponse'
+              example:
+                payment_uri: http://localhost:8080/pay/d3010d67-06d3-46bf-be6a-b894ec743c96
+                anticipated_trust_deposit: {
+                  amount: '59825067.564974666',
+                  artifact_id: d3010d67-06d3-46bf-be6a-b894ec743c96,
+                  artifact_type: AnticipatedTrustDeposit,
+                  created_at: '2022-07-13T04:09:45.716804Z',
+                  deposit_reference: inv-123
+                }
+
+
+  /api/v3/partner/{party_id}/webhooks:
+    parameters:
+      - in: path
+        name: party_id
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get list of webhooks for the partner
+      operationId: getWebhooks
+      responses:
+        '200':
+          description: List of webhooks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookList'
+        '500':
+          description: Error processing
+    post:
+      summary: Create a webhook
+      operationId: createWebhook
+      requestBody:
+        description: Webhook details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookDetails'
+      responses:
+        '201':
+          description: Created Webhook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookResponse' # NB - the details with the webhook_id
+        '500':
+          description: Error processing
+
+
+  /api/v3/partner/{party_id}/webhooks/{webhook_id}:
+    parameters:
+      - in: path
+        name: party_id
+        required: true
+        schema:
+          type: string
+      - in: path
+        name: webhook_id
+        required: true
+        schema:
+          type: string
+    delete:
+      summary: Delete a webhook by id
+      operationId: deleteWebhook
+      responses:
+        '200':
+          description: Deleted Webhook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookResponse' # NB - the details with the webhook_id
+
+  /api/v3/partner/{party_id}/webhooks/update:
+    parameters:
+      - in: path
+        name: party_id
+        required: true
+        schema:
+          type: string
+    post:
+      summary: Update a webhook
+      operationId: updateWebhook
+      requestBody:
+        description: Webhook details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookDetails'
+      responses:
+        '201':
+          description: Created Webhook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookResponse' # NB - the details with the webhook_id
+        '500':
+          description: Error processing
+
+components:
+  securitySchemes:
+    PartnerAuth:
+      type: apiKey
+      in: header
+      name: X-CHANNEL-PARTNER-ID
+    APIAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+
+  schemas:
+    Artifact:
+      type: object
+      properties:
+        artifact_id:
+          $ref: "#/components/schemas/Uuid"
+        artifact_type:
+          type: string
+          enum:
+            - Unknown
+            - Invoice
+            - AnticipatedTrustDeposit
+            - MatterStatement
+            - ClientStatement
+            - PaymentLink
+            - PaymentRequest
+            - Subscription
+            - Fee
+            - Refund
+          description: The type of the artifact
+        channel_partner_id:
+          $ref: "#/components/schemas/Uuid"
+        producer_party_id:
+          $ref: "#/components/schemas/Uuid"
+        internal_matter_id:
+          $ref: "#/components/schemas/Uuid"
+        external_id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        amount:
+          type: number
+          format: double
+        status:
+          type: string
+          enum:
+            - Draft
+            - Submitted
+            - Authorised
+            - Voided
+
+      required:
+        - artifact_id
+        - artifact_type
+        - name
+        - amount
+        - status
+
+
+
+    ArtifactResponse:
+      type: object
+      properties:
+        artifact:
+          $ref: "#/components/schemas/Artifact"
+      required:
+        - artifact
+      example: {
+        "artifact": {
+          "artifact_id": "6585fbc0-7d62-47ad-a528-17119bf8a57f",
+          "name": "INV-46",
+          "artifact_type": "Invoice",
+          "amount": 1500,
+          "external_id": "INV-46",
+          "channel_partner_id": "6585fbc0-7d62-47ad-a528-17119bf8a57f",
+          "internal_matter_id": "c1b157ef-56c7-459b-a36c-a814c09c1c72",
+          "producer_party_id": "facade00-0000-4000-a000-000000000000",
+          "status": "Submitted"
+        }
+      }
+
+    PaymentRequest:
+      type: object
+      properties:
+        firm_id:
+          $ref: "#/components/schemas/Uuid"
+        matter:
+          $ref: "#/components/schemas/Matter"
+        debtor:
+          $ref: "#/components/schemas/Debtor"
+        external_id:
+          type: string
+          description: This is the id supplied by the user of the API and can be used for filtering invoices. This should be unique for a partyId but this is not enforced.
+          example: e69f9433-885b-4321-bb48-9f5084850893
+        external_reference:
+          type: string
+          description: This is a reference supplied by the user of the API and can be used for filtering invoices.
+          example: inv-123
+        amount: # This is translated into a fixed decimal.Decimal which is an int with an exponent. Not sure if that is needed or useful so left as a string for now.
+          type: number
+          format: double
+        currency:
+          $ref: "#/components/schemas/Currency"
+        due_date:
+          type: string
+          format: date-time
+        settlement_account:
+          $ref: "#/components/schemas/AccountType"
+        line_items:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceLineItem'
+        notes:
+          type: array
+          items:
+            type: string
+        payment_methods_override:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentMethod'
+        surcharge_choice_override:
+          $ref: '#/components/schemas/SurchargeChoice'
+        description:
+          type: string
+          description: Freeform text for API user.
+      required:
+        - firm_id  # Struct implies optional, code seems to require it. TODO - check if it should be required or not
+        - external_id
+        - amount
+        - settlement_account
+
+
+    DepositResponse:
+      type: object
+      properties:
+        anticipated_trust_deposit:
+          $ref: '#/components/schemas/Deposit'
+        payment_uri:
+          type: string
+      required:
+        - anticipated_trust_deposit
+        - payment_uri
+
+    Deposit:
+      type: object
+      properties:
+        artifact_id:
+          $ref: "#/components/schemas/Uuid"
+        artifact_type:
+          $ref: "#/components/schemas/ArtifactType"
+        deposit_reference: # // TODO if this was just reference (not deposit_reference) Invoice and Deposit would be the same
+          type: string
+        amount:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - artifact_id
+        - artifact_type
+        - deposit_reference
+        - amount
+        - created_at
+
+    InvoiceResponse:
+      type: object
+      properties:
+        invoice:
+          $ref: '#/components/schemas/Invoice'
+        payment_uri:
+          type: string
+      required:
+        - invoice
+        - payment_uri
+
+    Invoice:
+      type: object
+      properties:
+        artifact_id:
+          $ref: "#/components/schemas/Uuid"
+        artifact_type:
+          $ref: "#/components/schemas/ArtifactType"
+        invoice_reference:
+          type: string
+        amount:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+        - artifact_id
+        - artifact_type
+        - invoice_reference
+        - amount
+        - created_at
+
+    InvoiceLineItem:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        amount:
+          type: string # NB actually converted internally to a decimal.Decimal
+        quantity:
+          type: integer
+        tax_rate:
+          type: number
+          format: double
+      required:
+        - amount
+
+
+    Matter:
+      type: object
+      properties:
+        external_id:
+          type: string
+        external_reference:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+
+
+    Debtor:
+      type: object
+      properties:
+        external_id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        contact_number:
+          type: string
+
+    Uuid:
+      type: string
+      minLength: 36
+      maxLength: 36
+      pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+
+    Currency:
+      type: string
+      enum:
+        - AUD
+        - USD
+
+    AccountType:
+      type: string
+      enum:
+        - Office
+        - Trust
+
+    ArtifactType:
+      type: string
+      enum:
+        - Unknown
+        - Invoice
+        - AnticipatedTrustDeposit
+        - MatterStatement
+        - ClientStatement
+        - PaymentLink
+        - PaymentRequest
+        - Subscription
+        - Fee
+        - Refund
+
+    PaymentMethod:
+      type: string
+      enum:
+        - Card
+        - Debit
+        - BankTransfer
+        - BNPL10Week
+        - BNPL6Month
+        - BNPL12Month
+
+
+    SurchargeChoice:
+      type: string
+      enum:
+        - Customer
+        - Merchant
+
+    WebhookList:
+      type: object
+      properties:
+        webhooks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Webhook'
+      required:
+        - webhooks
+
+    WebhookDetails:
+      type: object
+      properties:
+        party_id:
+          $ref: "#/components/schemas/Uuid"
+        name:
+          type: string
+        description:
+          type: string
+        url:
+          type: string
+        status:
+          $ref: "#/components/schemas/WebhookStatus"
+        events:
+          type: array
+          example: ["artifact.invoice.created", "payment.card.successful", "payout.disbursed"]
+          items:
+            type: string
+        authentication:
+          $ref: "#/components/schemas/WebhookApiAuthentication"
+      required:
+        - party_id
+        - name
+        - description
+        - url
+        - status
+        - events
+        - authentication
+
+    Webhook:
+      allOf:
+        - $ref: "#/components/schemas/WebhookDetails"
+        - type: object
+          properties:
+            webhook_id:
+              $ref: "#/components/schemas/Uuid"
+          required:
+            - webhook_id
+
+    WebhookResponse:
+      type: object
+      properties:
+        webhook:
+          $ref: "#/components/schemas/Webhook"
+      required:
+        - webhook
+
+    WebhookApiAuthentication:
+      type: object
+      properties:
+        type:
+          type: string
+          example: bearer_token, basic_auth
+        add_position:
+          type: string
+          example: header, body
+        data:
+          description: Either "username" and "password" or "token" keys
+          example: ' "username": "me@blah.com",  "password": "password:123" '
+          additionalProperties:
+            type: string
+      required:
+        - type
+        - data
+
+    WebhookStatus:
+      type: string
+      enum:
+        - Unknown
+        - Enabled
+        - Disabled
