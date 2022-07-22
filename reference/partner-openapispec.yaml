@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.3
+  version: 0.0.4
   title: PAPI Partner API
   description: API for partners
 
@@ -207,6 +207,7 @@ paths:
         required: true
         schema:
           type: string
+          format: uuid
     get:
       summary: Get list of webhooks for the partner
       operationId: getWebhooks
@@ -217,27 +218,129 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WebhookList'
+              example:
+                webhooks:  [
+                  party_id: 732c73fc-1778-4acd-b334-20a2f49c2766,
+                  name: mywebhook,
+                  description: Testing my webhook,
+                  url: 'https://to.me',
+                  status: Enabled,
+                  events: [
+                    'artifact.invoice.created',
+                    'payment.card.successful',
+                    'payout.disbursed'
+                  ],
+                  authentication: {
+                    type: 'bearer_token, basic_auth',
+                    data: {
+                      username: me,
+                      password: password
+                    },
+                    add_position: 'header, body'
+                  }
+                ]
+
         '500':
           description: Error processing
+          content:
+            application/jsopn:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     post:
       summary: Create a webhook
       operationId: createWebhook
       requestBody:
-        description: Webhook details
+        description: Webhook details. webhook_id must not be supplied. If it is, the POST will be considered a BadRequest
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WebhookDetails'
+              $ref: '#/components/schemas/Webhook'
+            examples:
+              bearer_token:
+                value:
+                  {
+                    party_id: 732c73fc-1778-4acd-b334-20a2f49c2766,
+                    name: mywebhook,
+                    description: Testing my webhook,
+                    url: https://to.me,
+                    status: Enabled,
+                    authentication: {
+                      type: bearer_token,
+                      data: {
+                        token: abcdef12345,
+                      },
+                      add_position: header
+                    },
+                    events: [
+                      'artifact.invoice.created',
+                      'payment.card.successful',
+                      'payout.disbursed'
+                    ]
+                  }
+
+              basic_auth:
+                value:
+                  {
+                    party_id: 732c73fc-1778-4acd-b334-20a2f49c2766,
+                    name: mywebhook,
+                    description: Testing my webhook,
+                    url: https://to.me,
+                    status: Enabled,
+                    authentication: {
+                      type: basic_auth,
+                      data: {
+                        username: myusername,
+                        password: password123
+                      },
+                      add_position: header
+                    },
+                    events: [
+                      'artifact.invoice.created',
+                      'payment.card.successful',
+                      'payout.disbursed'
+                    ]
+                  }
+
+
       responses:
-        '201':
+        '200':
           description: Created Webhook
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/WebhookResponse' # NB - the details with the webhook_id
+              example:
+                webhook: {
+                  name: mywebhook,
+                  party_id: 732c73fc-1778-4acd-b334-20a2f49c2766,
+                  description: Testing my webhook,
+                  events: [
+                    'artifact.invoice.created',
+                    'payment.card.successful',
+                    'payout.disbursed'
+                  ],
+                  status: Enabled,
+                  url: https://to.me,
+                  webhook_id: 65b3faf7-1156-4849-bc05-89e10d0bbacd,
+                  authentication: {
+                    add_position: 'header, body',
+                    data: {
+                      password: password,
+                      username: me
+                    },
+                    type: 'bearer_token, basic_auth'
+                  },
+                }
         '500':
           description: Error processing
+          content:
+            application/jsopn:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+
 
 
   /api/v3/partner/{party_id}/webhooks/{webhook_id}:
@@ -247,11 +350,13 @@ paths:
         required: true
         schema:
           type: string
+          format: uuid
       - in: path
         name: webhook_id
         required: true
         schema:
           type: string
+          format: uuid
     delete:
       summary: Delete a webhook by id
       operationId: deleteWebhook
@@ -270,16 +375,17 @@ paths:
         required: true
         schema:
           type: string
+          format: uuid
     post:
       summary: Update a webhook
       operationId: updateWebhook
       requestBody:
-        description: Webhook details
+        description: Webhook details. NB, the weebhook_id field is required and must match the webhook being updated.
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/WebhookDetails'
+              $ref: '#/components/schemas/Webhook'
       responses:
         '201':
           description: Created Webhook
@@ -591,11 +697,15 @@ components:
       required:
         - webhooks
 
-    WebhookDetails:
+    Webhook:
       type: object
       properties:
+        webhook_id:
+          type: string
+          format: uuid
         party_id:
-          $ref: "#/components/schemas/Uuid"
+          type: string
+          format: uuid
         name:
           type: string
         description:
@@ -620,15 +730,6 @@ components:
         - events
         - authentication
 
-    Webhook:
-      allOf:
-        - $ref: "#/components/schemas/WebhookDetails"
-        - type: object
-          properties:
-            webhook_id:
-              $ref: "#/components/schemas/Uuid"
-          required:
-            - webhook_id
 
     WebhookResponse:
       type: object
@@ -662,3 +763,13 @@ components:
         - Unknown
         - Enabled
         - Disabled
+
+    ErrorResponse:
+      type: object
+      properties:
+        title:
+          type: string
+        detail:
+          type: string
+        type:
+          type: string
