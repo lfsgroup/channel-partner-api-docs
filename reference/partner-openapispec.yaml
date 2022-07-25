@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.4
+  version: 0.0.5
   title: PAPI Partner API
   description: API for partners
 
@@ -332,15 +332,54 @@ paths:
                     type: 'bearer_token, basic_auth'
                   },
                 }
+        '409':
+          description: A webhook already exists for the partyId with the same url and events.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
         '500':
           description: Error processing
           content:
             application/jsopn:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-
-
-
+    put:
+      summary: Update a webhook
+      operationId: updateWebhook
+      requestBody:
+        description: Webhook details.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Webhook'
+      responses:
+        '200':
+          description: Webhook updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookResponse' # NB - the details with the webhook_id
+        '404':
+          description: The specified webhook (by webhook_id) not found
+          content:
+            application/jspn:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: The update causes a conflict with an existing webhook (same partyId, url and events).
+          content:
+            application/jspn:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/jspn:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 
   /api/v3/partner/{party_id}/webhooks/{webhook_id}:
@@ -357,44 +396,19 @@ paths:
         schema:
           type: string
           format: uuid
+
     delete:
       summary: Delete a webhook by id
       operationId: deleteWebhook
       responses:
-        '200':
+        '204':
           description: Deleted Webhook
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WebhookResponse' # NB - the details with the webhook_id
-
-  /api/v3/partner/{party_id}/webhooks/update:
-    parameters:
-      - in: path
-        name: party_id
-        required: true
-        schema:
-          type: string
-          format: uuid
-    post:
-      summary: Update a webhook
-      operationId: updateWebhook
-      requestBody:
-        description: Webhook details. NB, the weebhook_id field is required and must match the webhook being updated.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Webhook'
-      responses:
-        '201':
-          description: Created Webhook
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WebhookResponse' # NB - the details with the webhook_id
         '500':
           description: Error processing
+          content:
+            application/jspn:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   securitySchemes:
