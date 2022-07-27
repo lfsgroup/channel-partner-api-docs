@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.5
+  version: 0.0.7
   title: PAPI Partner API
   description: API for partners
 
@@ -16,11 +16,21 @@ paths:
         required: true
         schema:
           type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
       - in: path
         name: artifact_id
         required: true
         schema:
           type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
     get:
       summary: Get an artifact by id
       description: Get an artifact by id. The artifact id is independent of the type, the returned artifact may be an invoice, trust deposit, ...
@@ -47,6 +57,11 @@ paths:
         required: true
         schema:
           type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
     post:
       summary: Create an invoice
       description: Create an invoice for a channel partner
@@ -126,6 +141,11 @@ paths:
         required: true
         schema:
           type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
     post:
       summary: Create an deposit
       description: Create an trust deposit for a channel partner
@@ -208,6 +228,12 @@ paths:
         schema:
           type: string
           format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+
+
     get:
       summary: Get list of webhooks for the partner
       operationId: getWebhooks
@@ -390,13 +416,20 @@ paths:
         schema:
           type: string
           format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
       - in: path
         name: webhook_id
         required: true
         schema:
           type: string
           format: uuid
-
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
     delete:
       summary: Delete a webhook by id
       operationId: deleteWebhook
@@ -426,7 +459,12 @@ components:
       type: object
       properties:
         artifact_id:
-          $ref: "#/components/schemas/Uuid"
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
         artifact_type:
           type: string
           enum:
@@ -442,11 +480,26 @@ components:
             - Refund
           description: The type of the artifact
         channel_partner_id:
-          $ref: "#/components/schemas/Uuid"
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
         producer_party_id:
-          $ref: "#/components/schemas/Uuid"
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
         internal_matter_id:
-          $ref: "#/components/schemas/Uuid"
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
         external_id:
           type: string
         name:
@@ -498,7 +551,12 @@ components:
       type: object
       properties:
         firm_id:
-          $ref: "#/components/schemas/Uuid"
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
         matter:
           $ref: "#/components/schemas/Matter"
         debtor:
@@ -560,7 +618,12 @@ components:
       type: object
       properties:
         artifact_id:
-          $ref: "#/components/schemas/Uuid"
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
         artifact_type:
           $ref: "#/components/schemas/ArtifactType"
         deposit_reference: # // TODO if this was just reference (not deposit_reference) Invoice and Deposit would be the same
@@ -592,7 +655,12 @@ components:
       type: object
       properties:
         artifact_id:
-          $ref: "#/components/schemas/Uuid"
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
         artifact_type:
           $ref: "#/components/schemas/ArtifactType"
         invoice_reference:
@@ -651,12 +719,6 @@ components:
           type: string
         contact_number:
           type: string
-
-    Uuid:
-      type: string
-      minLength: 36
-      maxLength: 36
-      pattern: "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
 
     Currency:
       type: string
@@ -717,9 +779,19 @@ components:
         webhook_id:
           type: string
           format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+
         party_id:
           type: string
           format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+
         name:
           type: string
         description:
