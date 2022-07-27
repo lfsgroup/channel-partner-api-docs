@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.7
+  version: 0.0.9
   title: PAPI Partner API
   description: API for partners
 
@@ -391,19 +391,19 @@ paths:
         '404':
           description: The specified webhook (by webhook_id) not found
           content:
-            application/jspn:
+            application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '409':
           description: The update causes a conflict with an existing webhook (same partyId, url and events).
           content:
-            application/jspn:
+            application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Error processing
           content:
-            application/jspn:
+            application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
@@ -439,7 +439,32 @@ paths:
         '500':
           description: Error processing
           content:
-            application/jspn:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v3/partner/events/types:
+    get:
+      summary: Get a list of artifact types for the channel partner
+      description: All currently available event types for the channel partner are returned. The channel partner is derived from the PartnerAuth security context
+      operationId: getChannelPartnerEventTypes
+      responses:
+        '200':
+          description: List of currently available event types
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventTypes'
+              example:
+                events: [
+                  'artifact.invoice.created',
+                  'artifact.trust-deposit.created'
+                ]
+
+        '500':
+          description: Error processing
+          content:
+            application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
@@ -849,6 +874,16 @@ components:
         - Unknown
         - Enabled
         - Disabled
+
+    EventTypes:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            type: string
+      required:
+        - events
 
     ErrorResponse:
       type: object
