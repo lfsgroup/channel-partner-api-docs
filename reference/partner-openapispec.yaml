@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.9
+  version: 0.0.10
   title: PAPI Partner API
   description: API for partners
 
@@ -445,8 +445,10 @@ paths:
 
   /api/v3/partner/events/types:
     get:
-      summary: Get a list of artifact types for the channel partner
-      description: All currently available event types for the channel partner are returned. The channel partner is derived from the PartnerAuth security context
+      summary: Get a list of event types for the channel partner
+      description: |
+        All currently available event types for the channel partner are returned.         
+        The channel partner is derived from the PartnerAuth security context
       operationId: getChannelPartnerEventTypes
       responses:
         '200':
@@ -459,6 +461,58 @@ paths:
                 events: [
                   'artifact.invoice.created',
                   'artifact.trust-deposit.created'
+                ]
+
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v3/partner/webhookevents:
+    get:
+      summary: Get a list of webhook events for the channel partner
+      description: |
+        Returns events for the channel partner matching the filter criteria.        
+        The filters supplied in the query params must *all* be met.        
+        The channel partner is derived from the PartnerAuth security context.
+      operationId: getChannelPartnerWebhookEvents
+      parameters:
+        - in: query
+          name: topic
+          schema:
+            type: string
+          example: payout.disbursed
+          required: false
+        - in: query
+          name: since
+          description: Return events sent since this timestamp. If not supplied, events for the last 24 hours are returned.
+          schema:
+            type: string
+            format: date-time
+          required: false
+          example: 2022-07-29T:15:33:00
+        - in: query
+          name: status
+          description: Webhook send status
+          schema:
+            type: string
+            enum:
+              - sent
+              - failed
+          required: false
+
+      responses:
+        '200':
+          description: List of matching events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Events'
+              example:
+                events: [
+                  {"topic": "payment.disbursed"},
                 ]
 
         '500':
@@ -878,12 +932,12 @@ components:
     EventTypes:
       type: object
       properties:
-        events:
+        eventTypes:
           type: array
           items:
             type: string
       required:
-        - events
+        - eventTypes
 
     ErrorResponse:
       type: object
@@ -894,3 +948,65 @@ components:
           type: string
         type:
           type: string
+
+
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        status:
+          type: string
+          description: The webhook status
+          example: webhook.sent
+        object:
+          type: string
+          description: The webhooks payload as a JSON string.
+        externalId:
+          type: string
+          description: The id of the firm the webhook was related to.
+
+        sent:
+          type: string
+          format: date-time
+          description: The timestamp the webhook send was attempted.
+      required:
+        - id
+        - status
+        - object
+        - externalId
+        - sent
+
+    Events:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"
+        filters:
+          $ref: "#/components/schemas/EventFilters"
+      required:
+        - events
+
+    EventFilters:
+      type: object
+      properties:
+        status:
+          type: string
+          example: sent, failed, all
+        topic:
+          type: string
+          example: none, {userSupplied}
+        since:
+          type: string
+          format: date-time
+      required:
+        - status
+        - topic
+        - since
