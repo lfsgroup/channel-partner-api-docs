@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.10
+  version: 0.0.11
   title: PAPI Partner API
   description: API for partners
 
@@ -443,20 +443,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /api/v3/partner/events/types:
+  /api/v3/partner/events/topics:
     get:
-      summary: Get a list of event types for the channel partner
+      summary: Get a list of event topics for the channel partner
       description: |
-        All currently available event types for the channel partner are returned.         
+        All currently available event topics for the channel partner are returned.         
         The channel partner is derived from the PartnerAuth security context
-      operationId: getChannelPartnerEventTypes
+      operationId: getChannelPartnerEventTopics
       responses:
         '200':
-          description: List of currently available event types
+          description: List of currently available event topics
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EventTypes'
+                $ref: '#/components/schemas/EventTopics'
               example:
                 events: [
                   'artifact.invoice.created',
@@ -470,9 +470,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /api/v3/partner/webhookevents:
+  /api/v3/partner/events:
     get:
-      summary: Get a list of webhook events for the channel partner
+      summary: Get a list of events for the channel partner
       description: |
         Returns events for the channel partner matching the filter criteria.        
         The filters supplied in the query params must *all* be met.        
@@ -486,8 +486,24 @@ paths:
           example: payout.disbursed
           required: false
         - in: query
+          name: since_webhook_event_id
+          schema:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+          description: |
+            If supplied, all events since this webhook event was sent, are retrieved. The retrieved events are subject to the 
+            other filter params (topic, status).  
+            NB - 'since_webhook_event_id' and 'since' are mutually exclusive. Supplying both results in a BadRequest error.
+          required: false
+        - in: query
           name: since
-          description: Return events sent since this timestamp. If not supplied, events for the last 24 hours are returned.
+          description: |
+            Return events sent since this timestamp. If not supplied, events for the last 24 hours are returned.  
+            NB - 'since_webhook_event_id' and 'since' are mutually exclusive. Supplying both results in a BadRequest error.
           schema:
             type: string
             format: date-time
@@ -497,10 +513,7 @@ paths:
           name: status
           description: Webhook send status
           schema:
-            type: string
-            enum:
-              - sent
-              - failed
+            $ref: '#/components/schemas/WebhookSendStatus'
           required: false
 
       responses:
@@ -512,7 +525,32 @@ paths:
                 $ref: '#/components/schemas/Events'
               example:
                 events: [
-                  {"topic": "payment.disbursed"},
+                  {
+                    "webhook_event_id": "96d5e476-35d1-4209-a672-d179e0b5111c",
+                    "externalId": "bd7fc497-8ad3-4a1f-9a07-7d364e7ab011",
+                    "topic": "payout.disbursed",
+                    "status": "sent",
+                    "sent_at": "2022-07-28T05:39:32.029314Z",
+                    "payload": {
+                        "topic": "payout.disbursed",
+                        "object": {
+                          "payments": [
+                            { "currency": "AUD", "artifact_id": "e9c42bc6-b7b3-4e24-a416-eda2a8c5cae2", "card_scheme": "MASTERCARD", "submit_time": "2022-07-26T04:54:20Z", "payment_type": "card", "total_amount": "3363.51", "artifact_type": "ArtifactInvoice", "payment_reference": "qp.14f4c4207", "card_number_partial": "1555", "customer_surcharge_amount": "61.09", "merchant_surcharge_amount": "0" }
+                          ],
+                          "branch_code": "063-074",
+                          "account_type": "Office",
+                          "account_number": "10069576",
+                          "disbursed_amount": "3302.42",
+                          "disbursement_date": "2022-07-26T22:28:45.918809Z",
+                          "disbursement_reference": "qp.14f4c4207",
+                          "batch_disbursement_reference": "rp.af27f7727"
+                        },
+                        "event_id": "612d6c74-78e8-4c69-915b-cc05d92e5372",
+                        "party_id": "ca838b5d-8064-4910-aa54-bce2e6e81fbc",
+                        "created_at": "2022-07-27T04:02:26.662446Z",
+                        "channel_partner_id": "5ca1ab1e-cafe-4000-a000-deadbeefdead"
+                    },
+                  },
                 ]
 
         '500':
@@ -929,15 +967,22 @@ components:
         - Enabled
         - Disabled
 
-    EventTypes:
+    WebhookSendStatus:
+      type: string
+      description: Webhook send status
+      enum:
+        - sent
+        - failed
+
+    EventTopics:
       type: object
       properties:
-        eventTypes:
+        eventTopics:
           type: array
           items:
             type: string
       required:
-        - eventTypes
+        - eventTopics
 
     ErrorResponse:
       type: object
@@ -953,34 +998,36 @@ components:
     Event:
       type: object
       properties:
-        id:
+        webhook_event_id:
           type: string
           format: uuid
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
             name: uuid
-        status:
-          type: string
-          description: The webhook status
-          example: webhook.sent
-        object:
-          type: string
-          description: The webhooks payload as a JSON string.
         externalId:
           type: string
           description: The id of the firm the webhook was related to.
-
-        sent:
+        topic:
+          type: string
+          description: The topic of the event.
+        status:
+          $ref: "#/components/schemas/WebhookSendStatus"
+        payload:
+          type: object
+          additionalProperties: true
+          description: The webhooks payload and metadata about how and when the data was sent.
+        sent_at:
           type: string
           format: date-time
           description: The timestamp the webhook send was attempted.
       required:
-        - id
+        - webhook_event_id
+        - topic
+        - sent_at
         - status
         - object
         - externalId
-        - sent
 
     Events:
       type: object
