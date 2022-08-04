@@ -1,12 +1,19 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.11
+  version: 0.0.12
   title: PAPI Partner API
   description: API for partners
 
 security:
   - PartnerAuth: [ ]
     APIAuth: [ ]
+
+tags:
+  - name: artifact
+    description: Artifact creation and retrieval. This covers Invoices and Trust Deposits.
+  - name: webhook
+    description: Webhook management
+
 
 paths:
   /api/v3/partner/{party_id}/artifacts/{artifact_id}:
@@ -34,6 +41,8 @@ paths:
     get:
       summary: Get an artifact by id
       description: Get an artifact by id. The artifact id is independent of the type, the returned artifact may be an invoice, trust deposit, ...
+      tags:
+        - artifact
       operationId: getArtifactById
 
       responses:
@@ -66,6 +75,8 @@ paths:
       summary: Create an invoice
       description: Create an invoice for a channel partner
       operationId: createInvoice
+      tags:
+        - artifact
       requestBody:
         description: Invoice details
         required: true
@@ -76,7 +87,7 @@ paths:
             example:
               firm_id: 7f623e2d-270d-8ad8-2e13-b7bfd022703e
               external_id: e69f9433-885b-4321-bb48-9f5084850893
-              amount: 59825067.564974666
+              amount: "123.45"
               settlement_account: Office
               external_reference: inv-123
               currency: AUD
@@ -102,13 +113,13 @@ paths:
                     name: Phone call,
                     description: Listened to voice message,
                     quantity: 1,
-                    tax_rate: 10,
+                    tax_rate: "10",
                 }, {
                     amount: '1000',
                     name: Phone call,
                     description: Replied to voice mail,
                     quantity: 1,
-                    tax_rate: 15
+                    tax_rate: "15"
                 }
               ]
               notes: [
@@ -147,9 +158,10 @@ paths:
             path: github.com/gofrs/uuid
             name: uuid
     post:
-      summary: Create an deposit
       description: Create an trust deposit for a channel partner
       operationId: createTrustDeposit
+      tags:
+        - artifact
       requestBody:
         description: Anticipated trust deposit details
         required: true
@@ -160,7 +172,7 @@ paths:
             example:
               firm_id: 7f623e2d-270d-8ad8-2e13-b7bfd022703e
               external_id: e69f9433-885b-4321-bb48-9f5084850893
-              amount: 59825067.564974666
+              amount: "123.45"
               settlement_account: Office
               external_reference: inv-123
               currency: AUD
@@ -186,13 +198,13 @@ paths:
                   name: Phone call,
                   description: Listened to voice message,
                   quantity: 1,
-                  tax_rate: 10,
+                  tax_rate: "10",
                 }, {
                   amount: '1000',
                   name: Phone call,
                   description: Replied to voice mail,
                   quantity: 1,
-                  tax_rate: 15
+                  tax_rate: "15"
                 }
               ]
               notes: [
@@ -235,8 +247,10 @@ paths:
 
 
     get:
-      summary: Get list of webhooks for the partner
+      description: Get list of webhooks for the partner
       operationId: getWebhooks
+      tags:
+        - webhook
       responses:
         '200':
           description: List of webhooks
@@ -246,23 +260,25 @@ paths:
                 $ref: '#/components/schemas/WebhookList'
               example:
                 webhooks:  [
-                  party_id: 732c73fc-1778-4acd-b334-20a2f49c2766,
-                  name: mywebhook,
-                  description: Testing my webhook,
-                  url: 'https://to.me',
-                  status: Enabled,
-                  events: [
-                    'artifact.invoice.created',
-                    'payment.card.successful',
-                    'payout.disbursed'
-                  ],
-                  authentication: {
-                    type: 'bearer_token, basic_auth',
-                    data: {
-                      username: me,
-                      password: password
-                    },
-                    add_position: 'header, body'
+                  {
+                    name: mywebhook,
+                    party_id: 732c73fc-1778-4acd-b334-20a2f49c2766,
+                    description: Testing my webhook,
+                    url: 'https://to.me',
+                    status: Enabled,
+                    events: [
+                      'artifact.invoice.created',
+                      'payment.card.successful',
+                      'payout.disbursed'
+                    ],
+                    authentication: {
+                      type: 'bearer_token, basic_auth',
+                      data: {
+                        username: me,
+                        password: password
+                      },
+                      add_position: 'header, body'
+                    }
                   }
                 ]
 
@@ -273,8 +289,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     post:
-      summary: Create a webhook
+      description: Create a webhook
       operationId: createWebhook
+      tags:
+        - webhook
       requestBody:
         description: Webhook details. webhook_id must not be supplied. If it is, the POST will be considered a BadRequest
         required: true
@@ -372,8 +390,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     put:
-      summary: Update a webhook
+      description: Update a webhook
       operationId: updateWebhook
+      tags:
+        - webhook
       requestBody:
         description: Webhook details.
         required: true
@@ -431,8 +451,10 @@ paths:
             path: github.com/gofrs/uuid
             name: uuid
     delete:
-      summary: Delete a webhook by id
+      description: Delete a webhook by id
       operationId: deleteWebhook
+      tags:
+        - webhook
       responses:
         '204':
           description: Deleted Webhook
@@ -450,6 +472,8 @@ paths:
         All currently available event topics for the channel partner are returned.         
         The channel partner is derived from the PartnerAuth security context
       operationId: getChannelPartnerEventTopics
+      tags:
+        - webhook
       responses:
         '200':
           description: List of currently available event topics
@@ -458,7 +482,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/EventTopics'
               example:
-                events: [
+                eventTopics: [
                   'artifact.invoice.created',
                   'artifact.trust-deposit.created'
                 ]
@@ -478,6 +502,8 @@ paths:
         The filters supplied in the query params must *all* be met.        
         The channel partner is derived from the PartnerAuth security context.
       operationId: getChannelPartnerWebhookEvents
+      tags:
+        - webhook
       parameters:
         - in: query
           name: topic
@@ -508,7 +534,7 @@ paths:
             type: string
             format: date-time
           required: false
-          example: 2022-07-29T:15:33:00
+          example: "2022-07-29T15:33:00"
         - in: query
           name: status
           description: Webhook send status
@@ -624,8 +650,11 @@ components:
         description:
           type: string
         amount:
-          type: number
-          format: double
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
         status:
           type: string
           enum:
@@ -655,7 +684,7 @@ components:
           "artifact_id": "6585fbc0-7d62-47ad-a528-17119bf8a57f",
           "name": "INV-46",
           "artifact_type": "Invoice",
-          "amount": 1500,
+          "amount": "1500",
           "external_id": "INV-46",
           "channel_partner_id": "6585fbc0-7d62-47ad-a528-17119bf8a57f",
           "internal_matter_id": "c1b157ef-56c7-459b-a36c-a814c09c1c72",
@@ -686,9 +715,12 @@ components:
           type: string
           description: This is a reference supplied by the user of the API and can be used for filtering invoices.
           example: inv-123
-        amount: # This is translated into a fixed decimal.Decimal which is an int with an exponent. Not sure if that is needed or useful so left as a string for now.
-          type: number
-          format: double
+        amount:
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
         currency:
           $ref: "#/components/schemas/Currency"
         due_date:
@@ -747,6 +779,10 @@ components:
           type: string
         amount:
           type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
         created_at:
           type: string
           format: date-time
@@ -784,6 +820,10 @@ components:
           type: string
         amount:
           type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
         created_at:
           type: string
           format: date-time
@@ -802,12 +842,19 @@ components:
         description:
           type: string
         amount:
-          type: string # NB actually converted internally to a decimal.Decimal
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
         quantity:
           type: integer
         tax_rate:
-          type: number
-          format: double
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
       required:
         - amount
 
@@ -900,7 +947,6 @@ components:
           x-go-type-import:
             path: github.com/gofrs/uuid
             name: uuid
-
         party_id:
           type: string
           format: uuid
@@ -908,7 +954,6 @@ components:
           x-go-type-import:
             path: github.com/gofrs/uuid
             name: uuid
-
         name:
           type: string
         description:
@@ -1026,7 +1071,7 @@ components:
         - topic
         - sent_at
         - status
-        - object
+        - payload
         - externalId
 
     Events:
