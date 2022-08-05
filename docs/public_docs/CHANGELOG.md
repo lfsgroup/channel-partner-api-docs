@@ -1,7 +1,5 @@
-<img src="../images/back.svg" alt="back" style="zoom:40%;" />[ Overview](./README.md)
+[ Overview](./README.md)
 ![plot](./images/linkedin.png)
-
-### TODO BACK BUTTON
 
 # Changelog
 The FeeWise api is continuously being improved with new features, bug fixes and documentation updates. Details of the changes will be added to the changelog as they are released 

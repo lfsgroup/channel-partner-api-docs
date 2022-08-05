@@ -1,4 +1,5 @@
-<img src="../images/back.svg" alt="back" style="zoom:40%;" />[ Overview](./README.md)
+[ Overview](./README.md)
+
 ![plot](./images/linkedin.png)
 
 # FeeWise api request / response signature(s)
