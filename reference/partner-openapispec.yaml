@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.15
+  version: 0.0.16
   title: FeeWise Partner API
   description: API for partners
 
@@ -590,6 +590,50 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v3/partner/firms/{firm_id}:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+  
+    get:
+      summary: Get a firm
+      description: Get a firm by the firm's ID.  The firm will have the current sync status.
+      operationId: getFirm
+      tags:
+        - firm
+      responses:
+        '200':
+          description: Return the Firm.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Firm'
+              example:
+                firm_id: 128ff5da-b1fe-45f1-a2bd-29176cf0828c
+                trading_name: My Lawyers
+                status: Synced
+        '404':
+          description: Firm not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 
   /api/v3/partner/firms/sync/{connect_id}:
     parameters:
