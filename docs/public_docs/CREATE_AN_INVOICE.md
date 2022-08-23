@@ -8,10 +8,24 @@ FeeWise comes with a range of pre-configured artifact types (e.g. Invoice, Trust
 
 To create an invoice, use the endpoints
 
-1 [Create Invoice](../reference/partner-openapispec.yaml/paths/create-an-invoice/post)
+
+## Relative
+
+[Whole API](../reference/partner-openapispec.yaml)
+
+[paths](../reference/partner-openapispec.yaml/paths/)
+
+[create by summary](../reference/partner-openapispec.yaml/paths/create-an-invoice)
+
+[create by summary with tilde](../reference/partner-openapispec.yaml/paths/~create-an-invoice/post)
+
+[create by operationId](../reference/partner-openapispec.yaml/paths/createinvoice)
+
+## Fixed
+
+[Create Invoice](https://feewise.stoplight.io/docs/channel-partner-api-docs/88ea5bcba0060-create-an-invoice)
 
 
-2 [Create Invoice](../reference/partner-openapispec.yaml/paths/~1create-an-invoice/post)
 
 #### TODO - Pre-requisites
 Firm onboarded
