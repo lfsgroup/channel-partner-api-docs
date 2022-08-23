@@ -8,10 +8,10 @@ FeeWise comes with a range of pre-configured artifact types (e.g. Invoice, Trust
 
 To create an invoice, use the endpoints
 
-1 [Create Invoice](../reference/partner-opeanapispec.yaml/paths/create-an-invoice/post)
+1 [Create Invoice](../reference/partner-openapispec.yaml/paths/create-an-invoice/post)
 
 
-2 [Create Invoice](../reference/partner-opeanapispec.yaml/paths/~1create-an-invoice/post)
+2 [Create Invoice](../reference/partner-openapispec.yaml/paths/~1create-an-invoice/post)
 
 #### TODO - Pre-requisites
 Firm onboarded
