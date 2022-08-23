@@ -15,6 +15,11 @@ To create an invoice, use the endpoints
 
 [paths](../reference/partner-openapispec.yaml/paths/)
 
+[copy from studio](../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1{party_id}~1artifacts~1invoices)
+
+[copy from studio with method ](../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1{party_id}~1artifacts~1invoices/post)
+
+
 [create by summary](../reference/partner-openapispec.yaml/paths/create-an-invoice)
 
 [create by summary with tilde](../reference/partner-openapispec.yaml/paths/~create-an-invoice/post)
