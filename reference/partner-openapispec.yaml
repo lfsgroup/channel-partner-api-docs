@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.14
+  version: 0.0.15
   title: FeeWise Partner API
   description: API for partners
 
@@ -591,6 +591,44 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v3/partner/firms/sync/{connect_id}:
+    parameters:
+      - in: path
+        name: connect_id
+        required: true
+        schema:
+          type: string
+  
+    post:
+      summary: Sync a firm by the FeeWise Connect ID
+      description: Given a FeeWise Connect ID return a the firm's ID and status.  The firm ID can be used for future requests.
+      operationId: syncFirm
+      tags:
+        - firm
+      responses:
+        '200':
+          description: Return the Firm ID and status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Firm'
+              example:
+                firm_id: 128ff5da-b1fe-45f1-a2bd-29176cf0828c
+                trading_name: My Lawyers
+                status: Synced
+        '404':
+          description: Firm not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   securitySchemes:
     PartnerAuth:
@@ -1107,3 +1145,26 @@ components:
         - status
         - topic
         - since
+
+    Firm:
+      type: object
+      properties:
+        firm_id:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+        trading_name:
+          type: string
+        status:
+          type: string
+          enum:
+            - Synced
+            - InProgress
+            - Denied
+      required:
+        - firm_id
+        - trading_name
+        - status
