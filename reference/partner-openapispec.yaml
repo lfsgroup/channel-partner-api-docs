@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.16
+  version: 0.0.17
   title: FeeWise Partner API
   description: API for partners
 
@@ -616,11 +616,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Firm'
+                $ref: '#/components/schemas/FirmResponse'
               example:
-                firm_id: 128ff5da-b1fe-45f1-a2bd-29176cf0828c
-                trading_name: My Lawyers
-                status: Synced
+                firm:
+                  firm_id: 128ff5da-b1fe-45f1-a2bd-29176cf0828c
+                  trading_name: My Lawyers
+                  status: Synced
         '404':
           description: Firm not found
           content:
@@ -655,11 +656,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Firm'
+                $ref: '#/components/schemas/FirmResponse'
               example:
-                firm_id: 128ff5da-b1fe-45f1-a2bd-29176cf0828c
-                trading_name: My Lawyers
-                status: Synced
+                firm:
+                  firm_id: 128ff5da-b1fe-45f1-a2bd-29176cf0828c
+                  trading_name: My Lawyers
+                  status: Synced
         '404':
           description: Firm not found
           content:
@@ -1189,6 +1191,14 @@ components:
         - status
         - topic
         - since
+
+    FirmResponse:
+      type: object
+      properties:
+        firm:
+          $ref: '#/components/schemas/Firm'
+      required:
+        - firm
 
     Firm:
       type: object
