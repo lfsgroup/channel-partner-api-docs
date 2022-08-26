@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.17
+  version: 0.0.18
   title: FeeWise Partner API
   description: API for partners
 
@@ -13,6 +13,8 @@ tags:
     description: Artifact creation and retrieval. This covers Invoices and Trust Deposits.
   - name: webhook
     description: Webhook management
+  - name: firm
+    description: View details about a firm and it's accounts.
 
 
 paths:
@@ -603,7 +605,7 @@ paths:
           x-go-type-import:
             path: github.com/gofrs/uuid
             name: uuid
-  
+
     get:
       summary: Get a firm
       description: Get a firm by the firm's ID.  The firm will have the current sync status.
@@ -643,7 +645,7 @@ paths:
         required: true
         schema:
           type: string
-  
+
     post:
       summary: Sync a firm by the FeeWise Connect ID
       description: Given a FeeWise Connect ID return a the firm's ID and status.  The firm ID can be used for future requests.
@@ -662,6 +664,72 @@ paths:
                   firm_id: 128ff5da-b1fe-45f1-a2bd-29176cf0828c
                   trading_name: My Lawyers
                   status: Synced
+        '404':
+          description: Firm not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v3/partner/firms/{firm_id}/accounts:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+
+    get:
+      summary: Get all bank accounts linked to a firm.
+      description: Return all bank accounts linked to a firm.  If no accounts are linked an empty array is returned.
+      operationId: getFirmBankAccounts
+      tags:
+        - firm
+      responses:
+        '200':
+          description: Return the list of bank accounts.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankAccountsResponse'
+              example:
+                office_accounts:
+                  - {
+                    account_id: 9ba5022f-9a5c-4dcb-bfe4-655764837543,
+                    account_name: Main Business,
+                    account_type: Office,
+                    account_number: '1234567',
+                    branch_code: '999999',
+                    is_default: true
+                  }
+                  - {
+                    account_id: ac71b83e-d629-4d8e-a624-0bab270a0f42,
+                    account_name: Operations,
+                    account_type: Office,
+                    account_number: '5556677',
+                    branch_code: '999999',
+                    is_default: false
+                  }
+                trust_accounts:
+                  - {
+                    account_id: d98dfe65-def3-481c-bb5c-b460f6f924e3,
+                    account_name: Trust Account,
+                    account_type: Trust,
+                    account_number: '222233344',
+                    branch_code: '999999',
+                    is_default: true
+                  }
         '404':
           description: Firm not found
           content:
@@ -1222,3 +1290,47 @@ components:
         - firm_id
         - trading_name
         - status
+
+    BankAccount:
+      type: object
+      properties:
+        account_id:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+        account_type:
+          $ref: "#/components/schemas/AccountType"
+        account_name:
+          type: string
+        account_number:
+          type: string
+        branch_code:
+          type: string
+        bank:
+          type: string
+        is_default:
+          type: boolean
+      required:
+        - account_id
+        - account_type
+        - account_number
+        - branch_code
+        - is_default
+
+    BankAccountsResponse:
+      type: object
+      properties:
+        office_accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BankAccount'
+        trust_accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BankAccount'
+      required:
+        - office_accounts
+        - trust_accounts
