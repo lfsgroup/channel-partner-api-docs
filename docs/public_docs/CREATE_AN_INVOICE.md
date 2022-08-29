@@ -2,33 +2,35 @@
 
 ![plot](./images/linkedin.png)
 
+
+
+
 # Create an Invoice
 
-FeeWise comes with a range of pre-configured artifact types (e.g. Invoice, Trust Deposits, etc...) for different Law payments. 
+An invoice is created to charge for services provided. It will result in an invoice with a payment link being sent to the customer.
 
-To create an invoice, use the endpoints
+Once an invoice has been created, the invoice may be requested to get the details including its status.
 
-
-## Relative
-
-[Whole API](../reference/partner-openapispec.yaml)
-
-[paths](../reference/partner-openapispec.yaml/paths/)
-
-[copy from studio](../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1{party_id}~1artifacts~1invoices)
-
-[copy from studio with method ](../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1{party_id}~1artifacts~1invoices/post)
+Additionally (and optionally), webhook(s) may be registered to receive events on the progress of the invoice.
 
 
-[create by summary](../reference/partner-openapispec.yaml/paths/create-an-invoice)
+## Webhook registration.
 
-[create by summary with tilde](../reference/partner-openapispec.yaml/paths/~create-an-invoice/post)
+If real time updates are required one or more webhooks may be registered for the topics for invoice processing:
 
-[create by operationId](../reference/partner-openapispec.yaml/paths/createinvoice)
+**TODO get list of actual events **
 
-## Fixed
+* invoice.created  (currently artifact.invoice.created)
+* invoice.sent (not yet defined)
+* invoice.paid (not yet defined)
+* payment.distributed (not yet defined)
+* 
+## Call endpoint to create the invoice
 
-[Create Invoice](https://feewise.stoplight.io/docs/channel-partner-api-docs/88ea5bcba0060-create-an-invoice)
+1. POST to [Create Invoice](https://feewise.stoplight.io/docs/channel-partner-api-docs/88ea5bcba0060-create-an-invoice)
+2. Receive events on registered webhooks
+3. (optional) make get status requests on the invoice 
+
 
 
 
@@ -36,5 +38,9 @@ To create an invoice, use the endpoints
 Firm onboarded
 
 ### TODO - Example Request
+
+
 ### TODO - Example Response
+
+
 
