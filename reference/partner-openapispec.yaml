@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.18
+  version: 0.0.19
   title: FeeWise Partner API
   description: API for partners
 
@@ -15,6 +15,8 @@ tags:
     description: Webhook management
   - name: firm
     description: View details about a firm and it's accounts.
+  - name: bank-account
+    description: View details about a firm linked bank accounts.
 
 
 paths:
@@ -691,11 +693,12 @@ paths:
             name: uuid
 
     get:
-      summary: Get all bank accounts linked to a firm.
+      summary: List all firms bank account's.
       description: Return all bank accounts linked to a firm.  If no accounts are linked an empty array is returned.
       operationId: getFirmBankAccounts
       tags:
         - firm
+        - bank-account
       responses:
         '200':
           description: Return the list of bank accounts.
@@ -705,33 +708,86 @@ paths:
                 $ref: '#/components/schemas/BankAccountsResponse'
               example:
                 office_accounts:
-                  - {
-                    account_id: 9ba5022f-9a5c-4dcb-bfe4-655764837543,
-                    account_name: Main Business,
-                    account_type: Office,
-                    account_number: '1234567',
-                    branch_code: '999999',
+                  - account_id: 9ba5022f-9a5c-4dcb-bfe4-655764837543
+                    account_name: Main Business
+                    account_type: Office
+                    account_number: '1234567'
+                    branch_code: '999999'
                     is_default: true
-                  }
-                  - {
-                    account_id: ac71b83e-d629-4d8e-a624-0bab270a0f42,
-                    account_name: Operations,
-                    account_type: Office,
-                    account_number: '5556677',
-                    branch_code: '999999',
+                  - account_id: ac71b83e-d629-4d8e-a624-0bab270a0f42
+                    account_name: Operations
+                    account_type: Office
+                    account_number: '5556677'
+                    branch_code: '999999'
                     is_default: false
-                  }
                 trust_accounts:
-                  - {
-                    account_id: d98dfe65-def3-481c-bb5c-b460f6f924e3,
-                    account_name: Trust Account,
-                    account_type: Trust,
-                    account_number: '222233344',
-                    branch_code: '999999',
+                  - account_id: d98dfe65-def3-481c-bb5c-b460f6f924e3
+                    account_name: Trust Account
+                    account_type: Trust
+                    account_number: '222233344'
+                    branch_code: '999999'
                     is_default: true
-                  }
         '404':
           description: Firm not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v3/partner/firms/{firm_id}/accounts/{account_id}/default:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+      - in: path
+        name: account_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+
+    post:
+      summary: Set firms default bank account.
+      description: Set the given account as the default bank account (Trust or Office). The account type will determine if the bank account
+                   becomes the default office or trust account.
+      operationId: setFirmsDefaultBankAccount
+      tags:
+        - firm
+        - bank-account
+      responses:
+        '200':
+          description: The default bank account was successfully set.  The bank account object is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankAccountResponse'
+              example:
+                bank_account:
+                  account_id: 9ba5022f-9a5c-4dcb-bfe4-655764837543
+                  account_name: Main Business
+                  account_type: Office
+                  account_number: '1234567'
+                  branch_code: '999999'
+                  is_default: true
+        '404':
+          description: Bank Account not found
           content:
             application/json:
               schema:
@@ -1319,6 +1375,14 @@ components:
         - account_number
         - branch_code
         - is_default
+
+    BankAccountResponse:
+      type: object
+      properties:
+        bank_account:
+          $ref: '#/components/schemas/BankAccount'
+      required:
+        - bank_account
 
     BankAccountsResponse:
       type: object
