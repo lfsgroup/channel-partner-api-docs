@@ -1,93 +1,41 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.19
+  version: 0.0.20
   title: FeeWise Partner API
   description: API for partners
-
 security:
   - PartnerAuth: [ ]
     APIAuth: [ ]
 
 tags:
-  - name: artifact
-    description: Artifact creation and retrieval. This covers Invoices and Trust Deposits.
-  - name: webhook
+  - name: Payment Requests
+    description:  Creation and retrieval of payment requests ( Invoices and Trust Deposits )
+  - name: Webhook
     description: Webhook management
-  - name: firm
+  - name: Firm
     description: View details about a firm and it's accounts.
-  - name: bank-account
+  - name: Bank Account
     description: View details about a firm linked bank accounts.
 
 
 paths:
-  /api/v3/partner/{party_id}/artifacts/{artifact_id}:
-    parameters:
-      - in: path
-        name: party_id
-        required: true
-        schema:
-          type: string
-          format: uuid
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/gofrs/uuid
-            name: uuid
-      - in: path
-        name: artifact_id
-        required: true
-        schema:
-          type: string
-          format: uuid
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/gofrs/uuid
-            name: uuid
-    get:
-      summary: Get an artifact by id
-      description: Get an artifact by id. The artifact id is independent of the type, the returned artifact may be an invoice, trust deposit, ...
-      tags:
-        - artifact
-      operationId: getArtifactById
-
-      responses:
-        '200':
-          description: Found artifact
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ArtifactResponse'
-        '400':
-          description: Bad request
-        '404':
-          description: Requested artifact not found
-        '500':
-          description: Error processing
-
-  /api/v3/partner/{party_id}/artifacts/invoices:
-    parameters:
-      - in: path
-        name: party_id
-        required: true
-        schema:
-          type: string
-          format: uuid
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/gofrs/uuid
-            name: uuid
+  /api/v3/partner/invoices:
     post:
       summary: Create an Invoice
-      description: Create an invoice for a channel partner
+      description: |
+        Create an invoice for a channel partner.  
+        NB the fields `invoice_id`, `payment_uri` and `status` must NOT be supplied. If supplied, BadResponse will be returned.  
+        These are populated once the invoice has been created and will be available in the response
       operationId: createInvoice
       tags:
-        - artifact
+        - Payment Requests
       requestBody:
         description: Invoice details
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PaymentRequest'
+              $ref: '#/components/schemas/Invoice'
             example:
               firm_id: 7f623e2d-270d-8ad8-2e13-b7bfd022703e
               external_id: e69f9433-885b-4321-bb48-9f5084850893
@@ -141,18 +89,58 @@ paths:
               schema:
                 $ref: '#/components/schemas/InvoiceResponse'
               example:
-                payment_uri: http://localhost:8080/pay/d3010d67-06d3-46bf-be6a-b894ec743c96
-                invoice: {
-                  amount: '59825067.564974666',
-                  artifact_id: d3010d67-06d3-46bf-be6a-b894ec743c96,
-                  artifact_type: Invoice,
-                  created_at: '2022-07-13T04:09:45.716804Z',
-                  invoice_reference: inv-123
-                }
-  /api/v3/partner/{party_id}/artifacts/deposits:
+                invoice:
+                  invoice_id: bf311c82-a0d1-4e31-998b-f00de9250d4a
+                  firm_id: 7f623e2d-270d-8ad8-2e13-b7bfd022703e
+                  external_id: e69f9433-885b-4321-bb48-9f5084850893
+                  amount: "123.45"
+                  settlement_account: Office
+                  external_reference: inv-123
+                  currency: AUD
+                  due_date: '1953-07-23T13:56:24.084Z'
+                  surcharge_choice_override: Customer
+                  description: Charge for case setup
+                  matter: {
+                    external_id: my-unique-external-id,
+                    external_reference: my-external-reference,
+                    description: 'The matter of Frank vs Herman ',
+                    type: court
+                  }
+                  debtor: {
+                    external_id: case-client-1234,
+                    name: Frank,
+                    email: frank@email.com,
+                    contact_number: '1300234567'
+                  }
+                  line_items: [
+                    {
+                      amount: '100',
+                      name: Phone call,
+                      description: Listened to voice message,
+                      quantity: 1,
+                      tax_rate: "10",
+                    }, {
+                      amount: '1000',
+                      name: Phone call,
+                      description: Replied to voice mail,
+                      quantity: 1,
+                      tax_rate: "15"
+                    }
+                  ]
+                  notes: [
+                    'Got to know client',
+                    'Created initial case file'
+                  ]
+                  payment_methods_override: [
+                    'Card'
+                  ]
+                  payment_uri: http://localhost:8080/pay/d3010d67-06d3-46bf-be6a-b894ec743c96
+                  status: Submitted
+
+  /api/v3/partner/invoices/{invoice_id}:
     parameters:
       - in: path
-        name: party_id
+        name: invoice_id
         required: true
         schema:
           type: string
@@ -161,24 +149,47 @@ paths:
           x-go-type-import:
             path: github.com/gofrs/uuid
             name: uuid
+    get:
+      description: Get an invoice by id.
+      tags:
+        - Payment Requests
+      operationId: getInvoiceById
+      responses:
+        '200':
+          description: Found the requested invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceResponse'
+        '400':
+          description: Bad request
+        '404':
+          description: Requested invoice not found
+        '500':
+          description: Error processing
+
+
+  /api/v3/partner/trust-deposits:
     post:
       summary: Create a Trust Deposit
-      description: Create a trust deposit for a channel partner
+      description: |
+        Create a trust deposit for a channel partner.  
+        NB the fields trust_deposit_id, payment_uri and status must NOT be supplied. If supplied, BadResponse will be returned.  
+        These are populated once the trust deposit has been created and will be available in the response
       operationId: createTrustDeposit
       tags:
-        - artifact
+        - Payment Requests
       requestBody:
-        description: Anticipated trust deposit details
+        description: Trust deposit details
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PaymentRequest'
+              $ref: '#/components/schemas/TrustDeposit'
             example:
               firm_id: 7f623e2d-270d-8ad8-2e13-b7bfd022703e
               external_id: e69f9433-885b-4321-bb48-9f5084850893
               amount: "123.45"
-              settlement_account: Office
               external_reference: inv-123
               currency: AUD
               due_date: '1953-07-23T13:56:24.084Z'
@@ -225,17 +236,85 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DepositResponse'
+                $ref: '#/components/schemas/TrustDepositResponse'
               example:
-                payment_uri: http://localhost:8080/pay/d3010d67-06d3-46bf-be6a-b894ec743c96
-                anticipated_trust_deposit: {
-                  amount: '59825067.564974666',
-                  artifact_id: d3010d67-06d3-46bf-be6a-b894ec743c96,
-                  artifact_type: AnticipatedTrustDeposit,
-                  created_at: '2022-07-13T04:09:45.716804Z',
-                  deposit_reference: inv-123
-                }
+                trust_deposit:
+                  trust_deposit_id: 96ccd810-d21a-4d56-8ad9-956328e2b802
+                  firm_id: 7f623e2d-270d-8ad8-2e13-b7bfd022703e
+                  external_id: e69f9433-885b-4321-bb48-9f5084850893
+                  amount: "123.45"
+                  external_reference: inv-123
+                  currency: AUD
+                  due_date: '1953-07-23T13:56:24.084Z'
+                  surcharge_choice_override: Customer
+                  description: Charge for case setup
+                  matter: {
+                    external_id: my-unique-external-id,
+                    external_reference: my-external-reference,
+                    description: 'The matter of Frank vs Herman',
+                    type: court
+                  }
+                  debtor: {
+                    external_id: case-client-1234,
+                    name: Frank,
+                    email: frank@email.com,
+                    contact_number: '1300234567'
+                  }
+                  line_items: [
+                    {
+                      amount: '100',
+                      name: Phone call,
+                      description: Listened to voice message,
+                      quantity: 1,
+                      tax_rate: "10",
+                    }, {
+                      amount: '1000',
+                      name: Phone call,
+                      description: Replied to voice mail,
+                      quantity: 1,
+                      tax_rate: "15"
+                    }
+                  ]
+                  notes: [
+                    'Got to know client',
+                    'Created initial case file'
+                  ]
+                  payment_methods_override: [
+                    'Card'
+                  ]
+                  payment_uri: http://localhost:8080/pay/96ccd810-d21a-4d56-8ad9-956328e2b802
+                  status: Submitted
 
+  /api/v3/partner/trust-deposits/{trust_deposit_id}:
+    parameters:
+      - in: path
+        name: trust_deposit_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+    get:
+      description: Get a Trust Deposit by id.
+      tags:
+        - Payment Requests
+      operationId: getTrustDepositById
+      responses:
+        '200':
+          description: Found the requested Trust Deposit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrustDepositResponse'
+        '400':
+          description: Bad request
+        '404':
+          description: Requested Trust Deposit not found
+        '500':
+          description: Error processing
 
   /api/v3/partner/{party_id}/webhooks:
     parameters:
@@ -249,14 +328,12 @@ paths:
           x-go-type-import:
             path: github.com/gofrs/uuid
             name: uuid
-
-
     get:
       summary: Get list of webhooks for the partner
       description: Get list of webhooks for the partner
       operationId: getWebhooks
       tags:
-        - webhook
+        - Webhook
       responses:
         '200':
           description: List of webhooks
@@ -299,7 +376,7 @@ paths:
       description: Create a webhook
       operationId: createWebhook
       tags:
-        - webhook
+        - Webhook
       requestBody:
         description: Webhook details. webhook_id must not be supplied. If it is, the POST will be considered a BadRequest
         required: true
@@ -352,8 +429,6 @@ paths:
                       'payout.disbursed'
                     ]
                   }
-
-
       responses:
         '200':
           description: Created Webhook
@@ -401,7 +476,7 @@ paths:
       description: Update a webhook
       operationId: updateWebhook
       tags:
-        - webhook
+        - Webhook
       requestBody:
         description: Webhook details.
         required: true
@@ -463,7 +538,7 @@ paths:
       description: Delete a webhook by id
       operationId: deleteWebhook
       tags:
-        - webhook
+        - Webhook
       responses:
         '204':
           description: Deleted Webhook
@@ -482,7 +557,7 @@ paths:
         The channel partner is derived from the PartnerAuth security context
       operationId: getChannelPartnerEventTopics
       tags:
-        - webhook
+        - Webhook
       responses:
         '200':
           description: List of currently available event topics
@@ -495,7 +570,6 @@ paths:
                   'artifact.invoice.created',
                   'artifact.trust-deposit.created'
                 ]
-
         '500':
           description: Error processing
           content:
@@ -512,7 +586,7 @@ paths:
         The channel partner is derived from the PartnerAuth security context.
       operationId: getChannelPartnerWebhookEvents
       tags:
-        - webhook
+        - Webhook
       parameters:
         - in: query
           name: topic
@@ -550,7 +624,6 @@ paths:
           schema:
             $ref: '#/components/schemas/WebhookSendStatus'
           required: false
-
       responses:
         '200':
           description: List of matching events
@@ -607,13 +680,12 @@ paths:
           x-go-type-import:
             path: github.com/gofrs/uuid
             name: uuid
-
     get:
       summary: Get a firm
       description: Get a firm by the firm's ID.  The firm will have the current sync status.
       operationId: getFirm
       tags:
-        - firm
+        - Firm
       responses:
         '200':
           description: Return the Firm.
@@ -647,13 +719,12 @@ paths:
         required: true
         schema:
           type: string
-
     post:
       summary: Sync a firm by the FeeWise Connect ID
       description: Given a FeeWise Connect ID return a the firm's ID and status.  The firm ID can be used for future requests.
       operationId: syncFirm
       tags:
-        - firm
+        - Firm
       responses:
         '200':
           description: Return the Firm ID and status.
@@ -697,8 +768,8 @@ paths:
       description: Return all bank accounts linked to a firm.  If no accounts are linked an empty array is returned.
       operationId: getFirmBankAccounts
       tags:
-        - firm
-        - bank-account
+        - Firm
+        - Bank Account
       responses:
         '200':
           description: Return the list of bank accounts.
@@ -769,8 +840,8 @@ paths:
                    becomes the default office or trust account.
       operationId: setFirmsDefaultBankAccount
       tags:
-        - firm
-        - bank-account
+        - Firm
+        - Bank Account
       responses:
         '200':
           description: The default bank account was successfully set.  The bank account object is returned.
@@ -811,104 +882,22 @@ components:
       name: X-API-KEY
 
   schemas:
-    Artifact:
+
+    Invoice:
       type: object
+      description: |
+        An Invoice is created to request payment
       properties:
-        artifact_id:
+        invoice_id:
           type: string
+          description: |
+            This is the uuid of the invoice. This will be used for and 'GET' of the invoice and in webhooks about this invoice
+            NB this is generated and must not be supplied when creating an invoice.
           format: uuid
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
             name: uuid
-        artifact_type:
-          type: string
-          enum:
-            - Unknown
-            - Invoice
-            - AnticipatedTrustDeposit
-            - MatterStatement
-            - ClientStatement
-            - PaymentLink
-            - PaymentRequest
-            - Subscription
-            - Fee
-            - Refund
-          description: The type of the artifact
-        channel_partner_id:
-          type: string
-          format: uuid
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/gofrs/uuid
-            name: uuid
-        producer_party_id:
-          type: string
-          format: uuid
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/gofrs/uuid
-            name: uuid
-        internal_matter_id:
-          type: string
-          format: uuid
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/gofrs/uuid
-            name: uuid
-        external_id:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        amount:
-          type: string
-          format: decimal
-          x-go-type: decimal.Decimal
-          x-go-type-import:
-            path: github.com/shopspring/decimal
-        status:
-          type: string
-          enum:
-            - Draft
-            - Submitted
-            - Authorised
-            - Voided
-
-      required:
-        - artifact_id
-        - artifact_type
-        - name
-        - amount
-        - status
-
-
-
-    ArtifactResponse:
-      type: object
-      properties:
-        artifact:
-          $ref: "#/components/schemas/Artifact"
-      required:
-        - artifact
-      example: {
-        "artifact": {
-          "artifact_id": "6585fbc0-7d62-47ad-a528-17119bf8a57f",
-          "name": "INV-46",
-          "artifact_type": "Invoice",
-          "amount": "1500",
-          "external_id": "INV-46",
-          "channel_partner_id": "6585fbc0-7d62-47ad-a528-17119bf8a57f",
-          "internal_matter_id": "c1b157ef-56c7-459b-a36c-a814c09c1c72",
-          "producer_party_id": "facade00-0000-4000-a000-000000000000",
-          "status": "Submitted"
-        }
-      }
-
-    PaymentRequest:
-      type: object
-      properties:
         firm_id:
           type: string
           format: uuid
@@ -922,11 +911,11 @@ components:
           $ref: "#/components/schemas/Debtor"
         external_id:
           type: string
-          description: This is the id supplied by the user of the API and can be used for filtering invoices. This should be unique for a partyId but this is not enforced.
+          description: This is the id supplied by the channel partner / PMS and can be used for filtering invoices. This should be unique for the PMS but this is not enforced.
           example: e69f9433-885b-4321-bb48-9f5084850893
         external_reference:
           type: string
-          description: This is a reference supplied by the user of the API and can be used for filtering invoices.
+          description: This a reference supplied by the channel partner / PMS and can be used for filtering invoices.
           example: inv-123
         amount:
           type: string
@@ -944,7 +933,7 @@ components:
         line_items:
           type: array
           items:
-            $ref: '#/components/schemas/InvoiceLineItem'
+            $ref: '#/components/schemas/LineItem'
         notes:
           type: array
           items:
@@ -958,96 +947,122 @@ components:
         description:
           type: string
           description: Freeform text for API user.
+        payment_uri:
+          type: string
+          description: The URI to get the client payment instructions for this invoice
+        status:
+          type: string
+          description: The status of the invoice
+          enum:
+            - Draft
+            - Submitted
+            - Authorised
+            - Voided
       required:
         - firm_id  # Struct implies optional, code seems to require it. TODO - check if it should be required or not
         - external_id
         - amount
         - settlement_account
 
-
-    DepositResponse:
-      type: object
-      properties:
-        anticipated_trust_deposit:
-          $ref: '#/components/schemas/Deposit'
-        payment_uri:
-          type: string
-      required:
-        - anticipated_trust_deposit
-        - payment_uri
-
-    Deposit:
-      type: object
-      properties:
-        artifact_id:
-          type: string
-          format: uuid
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/gofrs/uuid
-            name: uuid
-        artifact_type:
-          $ref: "#/components/schemas/ArtifactType"
-        deposit_reference: # // TODO if this was just reference (not deposit_reference) Invoice and Deposit would be the same
-          type: string
-        amount:
-          type: string
-          format: decimal
-          x-go-type: decimal.Decimal
-          x-go-type-import:
-            path: github.com/shopspring/decimal
-        created_at:
-          type: string
-          format: date-time
-      required:
-        - artifact_id
-        - artifact_type
-        - deposit_reference
-        - amount
-        - created_at
-
     InvoiceResponse:
       type: object
       properties:
         invoice:
           $ref: '#/components/schemas/Invoice'
-        payment_uri:
-          type: string
       required:
         - invoice
-        - payment_uri
 
-    Invoice:
+    TrustDeposit:
       type: object
+      description: |
+        A TrustDeposit is created to request payment into a Trust account
       properties:
-        artifact_id:
+        trust_deposit_id:
+          type: string
+          description: |
+            This is the uuid of the Trust Deposit. This will be used for any 'GET' of the Trust Deposit and in webhooks about this Trust Deposit
+            NB this is generated and must not be supplied when creating a Trust Deposit.
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        firm_id:
           type: string
           format: uuid
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
             name: uuid
-        artifact_type:
-          $ref: "#/components/schemas/ArtifactType"
-        invoice_reference:
+        matter:
+          $ref: "#/components/schemas/Matter"
+        debtor:
+          $ref: "#/components/schemas/Debtor"
+        external_id:
           type: string
+          description: This is the id supplied by the channel partner / PMS and can be used for filtering invoices. This should be unique for the PMS but this is not enforced.
+          example: e69f9433-885b-4321-bb48-9f5084850893
+        external_reference:
+          type: string
+          description: This a reference supplied by the channel partner / PMS and can be used for filtering invoices.
+          example: inv-123
         amount:
           type: string
           format: decimal
           x-go-type: decimal.Decimal
           x-go-type-import:
             path: github.com/shopspring/decimal
-        created_at:
+        currency:
+          $ref: "#/components/schemas/Currency"
+        due_date:
           type: string
           format: date-time
+        line_items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LineItem'
+        notes:
+          type: array
+          items:
+            type: string
+        payment_methods_override:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentMethod'
+        surcharge_choice_override:
+          $ref: '#/components/schemas/SurchargeChoice'
+        description:
+          type: string
+          description: Freeform text for channel partner / PMS.
+        payment_uri:
+          type: string
+          description: |
+            The URI to send to customer.   
+            They will follow this link to make a payment.   
+            NB This must not be set when creating an invoice.
+        status:
+          type: string
+          description: The status of the invoice. This must not be set when creating an invoice.
+          enum:
+            - Draft
+            - Submitted
+            - Authorised
+            - Voided
       required:
-        - artifact_id
-        - artifact_type
-        - invoice_reference
+        - firm_id
+        - external_id
         - amount
-        - created_at
 
-    InvoiceLineItem:
+    TrustDepositResponse:
+      type: object
+      properties:
+        trust_deposit:
+          $ref: '#/components/schemas/TrustDeposit'
+      required:
+        - trust_deposit
+
+
+    LineItem:
       type: object
       properties:
         name:
@@ -1112,16 +1127,8 @@ components:
     ArtifactType:
       type: string
       enum:
-        - Unknown
         - Invoice
-        - AnticipatedTrustDeposit
-        - MatterStatement
-        - ClientStatement
-        - PaymentLink
-        - PaymentRequest
-        - Subscription
-        - Fee
-        - Refund
+        - TrustDeposit
 
     PaymentMethod:
       type: string
