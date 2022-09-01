@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.20
+  version: 0.0.21
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -870,6 +870,26 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+
+  /api/v3/partner/webhook/receiver:
+    post:
+      summary: Dummy receiver for webhooks.
+      description: This is a webhook receiver. Normally implemented by channel partners to receive webhooks
+      operationId: receiveWebhook
+      tags:
+        - Webhook
+      requestBody:
+        description: Webhook event.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookEvent'
+      responses:
+        '200':
+          description: The webhook was received
+
+
 components:
   securitySchemes:
     PartnerAuth:
@@ -1405,3 +1425,26 @@ components:
       required:
         - office_accounts
         - trust_accounts
+
+    WebhookEvent:
+      type: object
+      properties:
+        event_type:
+          type: string
+        event_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        created_at:
+          type: string
+          format: date-time
+        event:
+          oneOf:
+            - $ref: '#/components/schemas/Invoice'
+            - $ref: '#/components/schemas/TrustDeposit'
+
+
+
