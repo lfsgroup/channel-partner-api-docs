@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.21
+  version: 0.0.22
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -316,18 +316,7 @@ paths:
         '500':
           description: Error processing
 
-  /api/v3/partner/{party_id}/webhooks:
-    parameters:
-      - in: path
-        name: party_id
-        required: true
-        schema:
-          type: string
-          format: uuid
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/gofrs/uuid
-            name: uuid
+  /api/v3/partner/webhooks:
     get:
       summary: Get list of webhooks for the partner
       description: Get list of webhooks for the partner
@@ -511,18 +500,8 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
 
-  /api/v3/partner/{party_id}/webhooks/{webhook_id}:
+  /api/v3/partner/webhooks/{webhook_id}:
     parameters:
-      - in: path
-        name: party_id
-        required: true
-        schema:
-          type: string
-          format: uuid
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/gofrs/uuid
-            name: uuid
       - in: path
         name: webhook_id
         required: true
@@ -534,7 +513,6 @@ paths:
             path: github.com/gofrs/uuid
             name: uuid
     delete:
-      summary: Delete a webhook
       description: Delete a webhook by id
       operationId: deleteWebhook
       tags:
@@ -1426,6 +1404,47 @@ components:
         - office_accounts
         - trust_accounts
 
+
+    Payment:
+      description: Describes a payment coming into the system (client of a firm paying an invoice, trust deposit, ...)
+      type: object
+      properties:
+        payment_id:
+          type: string
+          description: The unique id of the payment.
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        payment_type:
+          type: string
+          description: How the payment was made.
+          enum:
+            - Card
+            - ACH
+            - BNPL
+        artifact_id:
+          description: The artifact (Invoice, TrustDeposit, ...) the payment is in relation to.
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        artifact_type:
+          $ref: '#/components/schemas/ArtifactType'
+        amount:
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+        date:
+          description: When the payment was made.
+          type: string
+          format: date-time
+
     WebhookEvent:
       type: object
       properties:
@@ -1445,6 +1464,7 @@ components:
           oneOf:
             - $ref: '#/components/schemas/Invoice'
             - $ref: '#/components/schemas/TrustDeposit'
+            - $ref: '#/components/schemas/Payment'
 
 
 

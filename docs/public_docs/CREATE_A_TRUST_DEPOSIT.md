@@ -16,8 +16,7 @@ Additionally (and optionally), webhook(s) may be registered to receive events on
 ## Call endpoint to create the trust deposit
 
 
-1. POST to [Create Trust Deposit](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1trust-deposits/post).  
-Note the [TrustDeposit](../../reference/partner-openapispec.yaml/components/schemas/TrustDeposit) returned from the post contains the payment URL needed to pay into the trust account.
+1. POST to [Create Trust Deposit](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1trust-deposits/post).<br/>Note the [TrustDeposit](../../reference/partner-openapispec.yaml/components/schemas/TrustDeposit) returned from the post contains the payment URL needed to pay into the trust account.
 2. Send the payment URL to the client.
 3. Receive events on registered webhooks. (optional)
 4. Make GET requests on the invoice to get the payment URL again. (optional)
