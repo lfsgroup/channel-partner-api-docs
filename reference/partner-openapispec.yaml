@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.22
+  version: 0.0.23
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1444,6 +1444,45 @@ components:
           description: When the payment was made.
           type: string
           format: date-time
+      required:
+        - payment_id
+        - artifact_id
+        - artifact_type
+        - amount
+        - date
+
+
+    Payout:
+      description: Describes a payout made by the system to a channel partner
+      type: object
+      properties:
+        payout_id:
+          type: string
+          description: The unique id of the ayout.
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        date:
+          description: When the payout was made.
+          type: string
+          format: date-time
+        payout_total:
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+        transactions:
+          description: A list of the payments that are included in this payout
+          type: array
+          items:
+            $ref: '#/components/schemas/Payment'
+      required:
+        - payout_id
+        - payout_total
+        - date
 
     WebhookEvent:
       type: object
@@ -1465,6 +1504,7 @@ components:
             - $ref: '#/components/schemas/Invoice'
             - $ref: '#/components/schemas/TrustDeposit'
             - $ref: '#/components/schemas/Payment'
+            - $ref: '#/components/schemas/Payout'
 
 
 

@@ -4,12 +4,12 @@
 # Webhooks
 
 ## Overview
-Use webhook subscriptions to receive events that occur in the system (eg [payments](PAYMENT_EVENTS.md) and payouts). 
+Use webhook subscriptions to receive events that occur in the system (eg [payments](PAYMENT_EVENTS.md) and [payouts](PAYOUT_EVENTS.md)). 
 
-Partners that subscribe to events will receive event notifications, as HTTP POSTs, to the callback URL specified in the subscription.
+Partners that subscribe to events will receive event notifications, as HTTP POSTs, to the URL specified in the subscription.
 
 ## Event Subscriptions
-Subscriptions can be managed using the  [webhooks endpoint](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1webhooks)
+Subscriptions can be managed using the webhook endpoints (below)
 
 A GET request to [webhooks endpoint](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1events~1topics/get) will return a list of available events:
 
