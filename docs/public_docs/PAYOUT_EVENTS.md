@@ -19,3 +19,4 @@ Events posted to that URL for that event type will contain an
 [event envelop](../../reference/partner-openapispec.yaml/components/schemas/WebhookEvent) containing a 
 [Payout](../../reference/partner-openapispec.yaml/components/schemas/Payout) 
 
+
