@@ -73,11 +73,6 @@
     },
     {
       "type": "item",
-      "title": "Error handling",
-      "uri": "/docs/public_docs/ERRORS.md"
-    }, 
-    {
-      "type": "item",
       "title": "Changelog",
       "uri": "/docs/public_docs/CHANGELOG.md"
     }, 
