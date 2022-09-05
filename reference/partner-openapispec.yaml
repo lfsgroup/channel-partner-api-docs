@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.23
+  version: 0.0.24
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -903,6 +903,7 @@ components:
           x-go-type-import:
             path: github.com/gofrs/uuid
             name: uuid
+          description: The firm the invoice is raised for.
         matter:
           $ref: "#/components/schemas/Matter"
         debtor:
@@ -921,6 +922,7 @@ components:
           x-go-type: decimal.Decimal
           x-go-type-import:
             path: github.com/shopspring/decimal
+          description: The total amount the invoice is for.
         currency:
           $ref: "#/components/schemas/Currency"
         due_date:
@@ -933,6 +935,7 @@ components:
           items:
             $ref: '#/components/schemas/LineItem'
         notes:
+          description: Freeform notes on the invoice
           type: array
           items:
             type: string
@@ -957,7 +960,7 @@ components:
             - Authorised
             - Voided
       required:
-        - firm_id  # Struct implies optional, code seems to require it. TODO - check if it should be required or not
+        - firm_id
         - external_id
         - amount
         - settlement_account
@@ -992,17 +995,18 @@ components:
           x-go-type-import:
             path: github.com/gofrs/uuid
             name: uuid
+          description: The firm the trust deposit is raised for.
         matter:
           $ref: "#/components/schemas/Matter"
         debtor:
           $ref: "#/components/schemas/Debtor"
         external_id:
           type: string
-          description: This is the id supplied by the channel partner / PMS and can be used for filtering invoices. This should be unique for the PMS but this is not enforced.
+          description: This is the id supplied by the channel partner / PMS and can be used for filtering trust deposits. This should be unique for the PMS but this is not enforced.
           example: e69f9433-885b-4321-bb48-9f5084850893
         external_reference:
           type: string
-          description: This a reference supplied by the channel partner / PMS and can be used for filtering invoices.
+          description: This a reference supplied by the channel partner / PMS and can be used for filtering trust deposits.
           example: inv-123
         amount:
           type: string
@@ -1010,6 +1014,7 @@ components:
           x-go-type: decimal.Decimal
           x-go-type-import:
             path: github.com/shopspring/decimal
+          description: The total amount the trust deposit is for.
         currency:
           $ref: "#/components/schemas/Currency"
         due_date:
@@ -1023,6 +1028,7 @@ components:
           type: array
           items:
             type: string
+          description: Freeform notes on the trust deposit
         payment_methods_override:
           type: array
           items:
@@ -1040,7 +1046,7 @@ components:
             NB This must not be set when creating an invoice.
         status:
           type: string
-          description: The status of the invoice. This must not be set when creating an invoice.
+          description: The status of the trust deposit. This must not be set when creating an trust deposit.
           enum:
             - Draft
             - Submitted
@@ -1062,6 +1068,7 @@ components:
 
     LineItem:
       type: object
+      description: One item of potentially many that are included in a payment.
       properties:
         name:
           type: string
@@ -1087,22 +1094,29 @@ components:
 
     Matter:
       type: object
+      description: The matter that payments are regarding.
       properties:
         external_id:
           type: string
+          description: The id of the matter in the PMS.
         external_reference:
           type: string
+          description: Freeform reference (normally for the PMS)
         description:
           type: string
+          description: A description of the matter
         type:
           type: string
+          description: Free form type of the matter.
 
 
     Debtor:
       type: object
+      description: The entity that should be making the payment. This will normally be a client of the firm.
       properties:
         external_id:
           type: string
+          description: ID in the PMS
         name:
           type: string
         email:
@@ -1112,6 +1126,7 @@ components:
 
     Currency:
       type: string
+      description: Currency of a payment. If not specified, the local default is used.
       enum:
         - AUD
         - USD
