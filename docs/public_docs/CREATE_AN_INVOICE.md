@@ -19,7 +19,7 @@ Additionally (and optionally), webhook(s) may be registered to receive events on
 1. POST to [Create Invoice](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1invoices/post).<br>Note the [Invoice](../../reference/partner-openapispec.yaml/components/schemas/Invoice) returned from the post contains the payment URL needed to pay the invoice.
 2. Send the payment URL to the client.
 3. Receive events on registered webhooks. (optional)
-4. Make [GET requests on the invoice](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1invoices/get) to get the payment URL again. (optional)
+4. Make [GET requests on the invoice](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1invoices~1{invoice_id}/get) to get the payment URL again. (optional)
 
 
 ## Status state changes
