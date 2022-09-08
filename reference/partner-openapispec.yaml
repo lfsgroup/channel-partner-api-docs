@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.24
+  version: 0.0.25
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1449,12 +1449,18 @@ components:
             name: uuid
         artifact_type:
           $ref: '#/components/schemas/ArtifactType'
+        external_id:
+          type: string
+          description: This is the id of the artifact supplied by the channel partner / PMS.
         amount:
           type: string
           format: decimal
           x-go-type: decimal.Decimal
           x-go-type-import:
             path: github.com/shopspring/decimal
+        currency:
+          type: string
+          description: The currency the payment was made in.
         date:
           description: When the payment was made.
           type: string
@@ -1464,6 +1470,7 @@ components:
         - artifact_id
         - artifact_type
         - amount
+        - currency
         - date
 
 
@@ -1471,14 +1478,9 @@ components:
       description: Describes a payout made by the system to a channel partner
       type: object
       properties:
-        payout_id:
+        payout_reference:
           type: string
-          description: The unique id of the ayout.
-          format: uuid
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/gofrs/uuid
-            name: uuid
+          description: The unique reference of the payout. This will appear in the bank account statement the payout was made to.
         date:
           description: When the payout was made.
           type: string
@@ -1489,15 +1491,42 @@ components:
           x-go-type: decimal.Decimal
           x-go-type-import:
             path: github.com/shopspring/decimal
+        account:
+          type: object
+          properties:
+            account_type:
+              $ref: '#/components/schemas/AccountType'
+            branch_code:
+              type: string
+            branch_number:
+              type: string
+            alias:
+              type: string
+              description: The name of the account for the PMS
+            country_code:
+              type: string
+              description: The country the account is in
+          description: Details of the account the payout is for.
+        firm_id:
+          type: string
+          description: The id of the firm the payout was made to.
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
         transactions:
           description: A list of the payments that are included in this payout
           type: array
           items:
             $ref: '#/components/schemas/Payment'
       required:
-        - payout_id
+        - payout_reference
         - payout_total
+        - firm_id
+        - account
         - date
+        - transactions
 
     WebhookEvent:
       type: object
