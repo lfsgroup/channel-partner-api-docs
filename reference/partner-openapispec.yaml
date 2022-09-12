@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.25
+  version: 0.0.26
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -645,6 +645,47 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v3/partner/firms/{firm_id}/magic-link:
+    post:
+      parameters:
+        - in: path
+          name: firm_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+        - in: query
+          name: destination_url
+          required: false
+          schema:
+            type: string
+      summary: Get a magic link for a firm to a specific dashboard page
+      description: Get a magic link for a firm that signs them in and redirects them to the destination url
+      operationId: getMagicLink
+      responses:
+        '200':
+          description: Magic sign in link for a firm
+          content:
+            application/json:
+              schema:
+                type: object 
+                properties:
+                  url: 
+                    type: string
+                  expires:
+                    type: string
+                    format: date-time
+        '500':
+          description: Server Error
+        '401':
+          description: Access to Firm Unauthorized
+        '404':
+          description: Firm not found
 
   /api/v3/partner/firms/{firm_id}:
     parameters:
