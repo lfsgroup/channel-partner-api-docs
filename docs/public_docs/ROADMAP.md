@@ -25,10 +25,10 @@ There will be no support for older API versions until version 1.0.x is reached (
 
 | Endpoint / Event | Status         |          |
 |------------------|----------------|----------|
-| List Webhooks    | Implemented    | &#10004; |
-| Create Webhook   | Implemented    | &#10004; |
-| Update Webook    | Implemented    | &#10004; |
-| Delete Webook    | Implemented    | &#10004; |
+| List Webhooks    | Implemented    | ✅ |
+| Create Webhook   | Implemented    | ✅ |
+| Update Webook    | Implemented    | ✅ |
+| Delete Webook    | Implemented    | ✅ |
 
 
 ## Invoices
