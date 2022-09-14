@@ -46,7 +46,7 @@ Once the trust deposit has been created in the system, an event is POSTed to the
 The body is the [event envelop](../../reference/partner-openapispec.yaml/components/schemas/WebhookEvent) containing the created [TrustDeposit](../../reference/partner-openapispec.yaml/components/schemas/TrustDeposit) as the event payload.
 
 
-### trust_deposit.created
+### trust_deposit.updated
 Any change to the trust deposit after creation will result in an event being POSTed to the URL registered for `trust_deposit.updated`.
 The body is the [event envelop](../../reference/partner-openapispec.yaml/components/schemas/WebhookEvent) containing the created [TrustDeposit](../../reference/partner-openapispec.yaml/components/schemas/TrustDeposit) as the event payload.
 

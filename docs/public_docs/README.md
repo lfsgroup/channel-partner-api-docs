@@ -7,11 +7,12 @@ The API is made up of HTTP requests with optional webhook events.
 ## Authentication
 * [Authentication](./AUTHENTICATION.md)
 * [HMAC](./HMAC.md)
+* [API Key Rotation](./API_KEY_ROTATION.md)
 
 ## Request Payments
 The API is used to initiate a workflow.
 
-* [Making Requests](./MAKE_A_REQUEST.md)
+* [Making Requests](./MAKING_REQUESTS.md)
 * [Create an Invoice](./CREATE_AN_INVOICE.md)
 * [Create a Trust Deposit](./CREATE_A_TRUST_DEPOSIT.md)
 

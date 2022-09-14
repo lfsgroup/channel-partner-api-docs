@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.27
+  version: 0.0.28
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -16,7 +16,8 @@ tags:
     description: View details about a firm and it's accounts.
   - name: Bank Account
     description: View details about a firm linked bank accounts.
-
+  - name: API Key
+    description: API Key management
 
 paths:
   /api/v3/partner/invoices:
@@ -891,6 +892,33 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
 
+  /api/v3/partner/rotatekey:
+    post:
+      description: |
+        Produces a new API-KEY. This new key and the previous key will both be valid until they expire.
+        The key expiry is set by system defaults but may be customised for this specific key in the request.
+      operationId: rotateApiKey
+      tags:
+        - API Key
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiKeyRotation'
+      responses:
+        '200':
+          description: New api key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiKeyResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /api/v3/partner/webhook/receiver:
     post:
       summary: Dummy receiver for webhooks.
@@ -1592,6 +1620,20 @@ components:
             - $ref: '#/components/schemas/Payment'
             - $ref: '#/components/schemas/Payout'
 
+    ApiKeyRotation:
+      type: object
+      properties:
+        previous_key_expires:
+          description: timestamp of when the previous key will expire. If not supplied, a system wide default duration will be applied.
+          type: string
+          format: date-time
+          example: '2022-09-13T19:00:00Z'
+
+    ApiKeyResponse:
+      type: object
+      properties:
+        api_key:
+          type: string
 
 
 

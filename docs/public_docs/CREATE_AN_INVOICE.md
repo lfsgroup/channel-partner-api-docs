@@ -46,7 +46,7 @@ Once the invoice has been created in the system, an event is POSTed to the URL r
 The body is the [event envelop](../../reference/partner-openapispec.yaml/components/schemas/WebhookEvent) containing the created Invoice as the event payload.
 
 
-### invoice.created
+### invoice.updated
 Any change to the invoice after creation will result in an event being POSTed to the URL registered for `invoice.updated`.
 The body is the [event envelop](../../reference/partner-openapispec.yaml/components/schemas/WebhookEvent) containing the created Invoice as the event payload.
 
