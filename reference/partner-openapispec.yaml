@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.26
+  version: 0.0.27
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -664,8 +664,9 @@ paths:
           required: false
           schema:
             type: string
-      summary: Get a magic link for a firm to a specific dashboard page
-      description: Get a magic link for a firm that signs them in and redirects them to the destination url
+      summary: Create a magic link
+      description: | 
+        Create a magic link that, on click, redirects to a defined URL within the dashboard. Defaults to homepage
       operationId: getMagicLink
       responses:
         '200':
