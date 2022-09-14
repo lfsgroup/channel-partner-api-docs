@@ -24,3 +24,9 @@ The events are used to receive updates without polling an API.
 * [Payout Events](./PAYOUT_EVENTS.md)
 
 
+## Miscellaneous
+
+* [Changelog](./CHANGELOG.md)
+* [Road map](./ROADMAP.md)
+
+
