@@ -37,7 +37,6 @@ curl --location --request POST 'https://papi.au.sandbox.getfeewise.com/api/v3/pa
   "external_reference": "inv-123",
   "currency": "AUD",
   "due_date": "1953-07-23T13:56:24.084Z",
-  "surcharge_choice_override": "Customer",
   "description": "Charge for case setup",
   "matter": {
     "external_id": "my-unique-external-id",
@@ -127,7 +126,7 @@ The response contains the id of the created invoice `"invoice_id": "2481ee61-283
         "payment_uri": "https://au.sandbox.getfeewise.com/pay/2481ee61-283a-4d97-96ad-b2e50f929c96",
         "settlement_account": "Office",
         "status": "Submitted",
-        "surcharge_choice_override": "Customer"
+        "surcharge_choice_override": "Default"
     }
 }
 ```

@@ -38,7 +38,6 @@ curl --location --request POST 'https://papi.au.sandbox.getfeewise.com/api/v3/pa
   "external_reference": "inv-aaa",
   "currency": "AUD",
   "due_date": "1953-07-23T13:56:24.084Z",
-  "surcharge_choice_override": "Customer",
   "description": "Charge for case setup",
   "matter": {
     "external_id": "my-unique-external-id",
@@ -126,7 +125,7 @@ The response contains the id of the created trust deposit `"trust_deposit_id": "
         ],
         "payment_uri": "https://au.sandbox.getfeewise.com/pay/395bac64-14ab-43bc-abdd-7bbb79ca9a2f",
         "status": "Submitted",
-        "surcharge_choice_override": "Customer",
+        "surcharge_choice_override": "Default",
         "trust_deposit_id": "395bac64-14ab-43bc-abdd-7bbb79ca9a2f"
     }
 }
