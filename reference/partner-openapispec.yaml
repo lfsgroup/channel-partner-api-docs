@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.28
+  version: 0.0.29
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1623,11 +1623,13 @@ components:
     ApiKeyRotation:
       type: object
       properties:
-        previous_key_expires:
-          description: timestamp of when the previous key will expire. If not supplied, a system wide default duration will be applied.
-          type: string
-          format: date-time
-          example: '2022-09-13T19:00:00Z'
+        previous_key_expires_hours:
+          default: 48
+          description: hours until expiry (0 to expire immediately, defaults to 48 hours)
+          example: 24
+          type: integer
+      required:
+        - previous_key_expires_hours
 
     ApiKeyResponse:
       type: object
