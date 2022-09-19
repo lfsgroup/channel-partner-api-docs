@@ -65,22 +65,19 @@ There will be no support for older API versions until version 1.0.x is reached (
 | payment.received       | Not implemented                                                          | ❌   | 
 
 ## Token Management
-| Endpoint / Event | Status           |     |
-|------------------|------------------|-----|
-| RotateApiKey     | Not Implemented  | ❌   |
+| Endpoint / Event | Status       |    |
+|------------------|--------------|----|
+| RotateApiKey     | Implemented  |  ✅ |
 
 
 
 ## Roadmap
 
-### Implement Token management
-
-POST /rotatekey - generate a new token. The old token will remain valid until it expires.
-
-### External payments
+### External / partial payments
 
 #### API change 
-Add and update schemas and add path(s) to allow payments made outside of FeeWise to be recorded in FeeWise
+Add amount_due and payments to an Invoice and TrustDeposit 
+Add and update schemas and add path(s) to allow payments made outside FeeWise to be recorded in FeeWise
 
 #### Implementation
 Fully implement including HTTP handlers, database updates, and events

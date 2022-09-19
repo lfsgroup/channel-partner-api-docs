@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.29
+  version: 0.0.30
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -170,6 +170,46 @@ paths:
           description: Error processing
 
 
+  /api/v3/partner/invoices/firm/{firm_id}/{external_id}:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+      - in: path
+        name: external_id
+        required: true
+        schema:
+          type: string
+    get:
+      description: |
+        Get an invoice for a firm by the external_id. 
+        NB During artifact (e.g. Invoice or Trust Deposit) creation, FeeWise channel partners can create an artifact 
+        with a unique id (external_id) that is meaningful for their system).
+      tags:
+        - Payment Requests
+      operationId: getInvoiceByExternalId
+      responses:
+        '200':
+          description: Found the requested invoice
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceResponse'
+        '400':
+          description: Bad request
+        '404':
+          description: Requested invoice not found
+        '500':
+          description: Error processing
+
+
   /api/v3/partner/trust-deposits:
     post:
       summary: Create a Trust Deposit
@@ -316,6 +356,46 @@ paths:
           description: Requested Trust Deposit not found
         '500':
           description: Error processing
+
+  /api/v3/partner/trust-deposits/firm/{firm_id}/{external_id}:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+      - in: path
+        name: external_id
+        required: true
+        schema:
+          type: string
+    get:
+      description: |
+        Get a trust deposit for a firm by the external_id.
+        NB During artifact (e.g. Invoice or Trust Deposit) creation, FeeWise channel partners can create an artifact
+        with a unique id (external_id) that is meaningful for their system).
+      tags:
+        - Payment Requests
+      operationId: getTrustDepositByExternalId
+      responses:
+        '200':
+          description: Found the requested trust deposit
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceResponse'
+        '400':
+          description: Bad request
+        '404':
+          description: Requested trust deposit not found
+        '500':
+          description: Error processing
+
 
   /api/v3/partner/webhooks:
     get:

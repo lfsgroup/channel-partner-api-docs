@@ -12,6 +12,10 @@ Once an trust deposit has been created, the trust deposit may be requested to ge
 
 Additionally (and optionally), webhook(s) may be registered to receive events on the progress of the trust deposit.
 
+A trust deposit contains an `external_id`. This is an ID supplied by the PMS/Channel-partner. It must be unique for the
+channel-partner and firm_id. This means that a channel partner needs to keep the external_id unique for the firm the
+trust deposit is created for. Invoices may be [retrieved using this ID](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1trust-deposits~1firm~1{firm_id}~1{external_id}/get)
+instead of the FeeWise generated ID
 
 ## Call endpoint to create the trust deposit
 
@@ -144,8 +148,16 @@ curl --location --request GET 'https://papi.au.sandbox.getfeewise.com/api/v3/par
 --header 'X-API-KEY: 15ae4452-a6f8-411c-b49b-0cc8231b4a3d'
 ```
 
-The response is the same as the response from the create
+Or using the external_id
 
+```shell
+curl --location --request GET 'http://papi.au.sandbox.getfeewise.com/api/v3/partner/trust-deposits/firm/7f623e2d-270d-8ad8-2e13-b7bfd022703e/e69f9433-885b-4321-bb48-9f5084850893' \
+--header 'Accept: application/json' \
+--header 'X-CHANNEL-PARTNER-ID: 01786490-a44f-4c22-9ed6-cec4f9fde87b' \
+--header 'X-API-KEY: 15ae4452-a6f8-411c-b49b-0cc8231b4a3d'
+```
+
+The response is the same as the response from the create
 
 
 
