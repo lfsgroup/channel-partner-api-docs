@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.30
+  version: 0.0.31
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -8,8 +8,8 @@ security:
     APIAuth: [ ]
 
 tags:
-  - name: Payment Requests
-    description:  Creation and retrieval of payment requests ( Invoices and Trust Deposits )
+  - name: Payments
+    description:  Creation and retrieval of payment requests ( Invoices and Trust Deposits ) and client payments.
   - name: Webhook
     description: Webhook management
   - name: Firm
@@ -18,6 +18,9 @@ tags:
     description: View details about a firm linked bank accounts.
   - name: API Key
     description: API Key management
+  - name: Payouts
+    description: Payouts from the platform to the firms
+
 
 paths:
   /api/v3/partner/invoices:
@@ -29,7 +32,7 @@ paths:
         These are populated once the invoice has been created and will be available in the response
       operationId: createInvoice
       tags:
-        - Payment Requests
+        - Payments
       requestBody:
         description: Invoice details
         required: true
@@ -151,9 +154,10 @@ paths:
             path: github.com/gofrs/uuid
             name: uuid
     get:
-      description: Get an invoice by id.
+      summary: Get a specified invoice by id.
+      description: Get a specified invoice by id.
       tags:
-        - Payment Requests
+        - Payments
       operationId: getInvoiceById
       responses:
         '200':
@@ -188,12 +192,13 @@ paths:
         schema:
           type: string
     get:
+      summary: Get invoice by external_id
       description: |
         Get an invoice for a firm by the external_id. 
         NB During artifact (e.g. Invoice or Trust Deposit) creation, FeeWise channel partners can create an artifact 
         with a unique id (external_id) that is meaningful for their system).
       tags:
-        - Payment Requests
+        - Payments
       operationId: getInvoiceByExternalId
       responses:
         '200':
@@ -219,7 +224,7 @@ paths:
         These are populated once the trust deposit has been created and will be available in the response
       operationId: createTrustDeposit
       tags:
-        - Payment Requests
+        - Payments
       requestBody:
         description: Trust deposit details
         required: true
@@ -339,9 +344,10 @@ paths:
             path: github.com/gofrs/uuid
             name: uuid
     get:
-      description: Get a Trust Deposit by id.
+      summary: Get a Trust Deposit by id.
+      description: Get a Trust Deposit by the specified trust_deposit_id.
       tags:
-        - Payment Requests
+        - Payments
       operationId: getTrustDepositById
       responses:
         '200':
@@ -375,12 +381,13 @@ paths:
         schema:
           type: string
     get:
+      summary: Get Trust Deposit by external_id
       description: |
         Get a trust deposit for a firm by the external_id.
         NB During artifact (e.g. Invoice or Trust Deposit) creation, FeeWise channel partners can create an artifact
         with a unique id (external_id) that is meaningful for their system).
       tags:
-        - Payment Requests
+        - Payments
       operationId: getTrustDepositByExternalId
       responses:
         '200':
@@ -719,13 +726,190 @@ paths:
                     },
                   },
                 ]
-
+        '400':
+          description: Incompatible search parameters supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Error processing
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v3/partner/payouts:
+    get:
+      summary: Search for payouts for the channel partner
+      description: |
+        Search for payouts for a channel partner..        
+        The filters supplied in the query params must *all* be met.        
+        The channel partner is derived from the PartnerAuth security context.
+      operationId: getChannelPartnerPayouts
+      tags:
+        - Payouts
+      parameters:
+        - name: payout_id
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+          description: |
+            Get a specific payout. If this is specified, other query params should not be specified 
+            and will result in a BadRequest if the are.
+        - name: account
+          in: query
+          required: false
+          schema:
+            type: object
+            properties:
+              account_number:
+                type: string
+              bank_code:
+                type: string
+            required:
+              - account_number
+              - branch_code
+          description: |
+            Get payouts going to a specific account.
+        - name: firm_id
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+          description: |
+            Get payouts going to a specific firm
+        - name: since_payout_id
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+          description: |
+            If supplied, all payouts since this payout was sent, are retrieved. The retrieved payouts are subject to the 
+            other filter params (firm_id, settlement_account_id).  
+            NB - 'since_payout_id' and 'since' are mutually exclusive. Supplying both results in a BadRequest error.
+        - name: since
+          in: query
+          required: false
+          description: |
+            Return payouts sent since this timestamp. If not supplied, payouts for the last 24 hours are returned.  
+            NB - 'since_payout_id' and 'since' are mutually exclusive. Supplying both results in a BadRequest error.
+          schema:
+            type: string
+            format: date-time
+          example: "2022-07-29T15:33:00"
+      responses:
+        '200':
+          description: List of matching Payouts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payouts'
+        '400':
+          description: Incompatible search parameters supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+
+  /api/v3/partner/payments:
+    get:
+      summary: Search for payments for the channel partner
+      description: |
+        Search for payments for a channel partner..        
+        The filters supplied in the query params must *all* be met.        
+        The channel partner is derived from the PartnerAuth security context.
+      operationId: getChannelPartnerPayments
+      tags:
+        - Payments
+      parameters:
+        - name: payment_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+          description: |
+            Get a specific payment. If this is specified, other query params should not be specified 
+            and will result in a BadRequest if the are.
+        - name: artifact_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+          description: |
+            Get payments only for the specified artifact (Invoice/Trust Desposit)
+        - name: firm_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+          description: |
+            Get payments going to a specific firm
+        - name: since
+          in: query
+          description: |
+            Return payments sent since this timestamp. If not supplied, payments for the last 24 hours are returned.
+          schema:
+            type: string
+            format: date-time
+          required: false
+          example: "2022-07-29T15:33:00"
+      responses:
+        '200':
+          description: List of matching payments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payments'
+        '400':
+          description: Incompatible search parameters supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 
   /api/v3/partner/firms/{firm_id}/magic-link:
     post:
@@ -755,9 +939,9 @@ paths:
           content:
             application/json:
               schema:
-                type: object 
+                type: object
                 properties:
-                  url: 
+                  url:
                     type: string
                   expires:
                     type: string
@@ -1608,6 +1792,7 @@ components:
           x-go-type: decimal.Decimal
           x-go-type-import:
             path: github.com/shopspring/decimal
+          example: "1000.00"
         currency:
           type: string
           description: The currency the payment was made in.
@@ -1623,6 +1808,15 @@ components:
         - currency
         - date
 
+    Payments:
+      type: object
+      properties:
+        payments:
+          type: array
+          items:
+            $ref: "#/components/schemas/Payment"
+      required:
+        - payments
 
     Payout:
       description: Describes a payout made by the system to a channel partner
@@ -1641,6 +1835,7 @@ components:
           x-go-type: decimal.Decimal
           x-go-type-import:
             path: github.com/shopspring/decimal
+          example: "1000.00"
         account:
           type: object
           properties:
@@ -1677,6 +1872,17 @@ components:
         - account
         - date
         - transactions
+
+    Payouts:
+      type: object
+      properties:
+        payouts:
+          type: array
+          items:
+            $ref: "#/components/schemas/Payout"
+      required:
+        - payouts
+
 
     WebhookEvent:
       type: object

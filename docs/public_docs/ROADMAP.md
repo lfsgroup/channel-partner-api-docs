@@ -51,18 +51,18 @@ There will be no support for older API versions until version 1.0.x is reached (
 
 ## Payouts
 
-| Endpoint / Event | Status                                                                   |     |
-|------------------|--------------------------------------------------------------------------|-----|
-| Get Payouts      | Not Implemented - request validation implemented but no results returned | ❌   |
-| payout.sent      | Not Implemented                                                          | ❌   | 
+| Endpoint / Event | Status                                                                              |     |
+|------------------|-------------------------------------------------------------------------------------|-----|
+| Get Payouts      | API added, not implemented - request validation implemented but no results returned | ❌   |
+| payout.sent      | Not Implemented                                                                     | ❌   | 
 
 ## Payments
 
-| Endpoint / Event       | Status                                                                   |     |
-|------------------------|--------------------------------------------------------------------------|-----|
-| Get Payments           | Not Implemented - request validation implemented but no results returned | ❌   |
-| Apply External Payment | Not implemented (allows PMS to record a payment made outside of FeeWise) | ❌   | 
-| payment.received       | Not implemented                                                          | ❌   | 
+| Endpoint / Event       | Status                                                                              |     |
+|------------------------|-------------------------------------------------------------------------------------|-----|
+| Get Payments           | API added, not implemented - request validation implemented but no results returned | ❌   |
+| Apply External Payment | Not implemented (allows PMS to record a payment made outside of FeeWise)            | ❌   | 
+| payment.received       | Not implemented                                                                     | ❌   | 
 
 ## Token Management
 | Endpoint / Event | Status       |    |

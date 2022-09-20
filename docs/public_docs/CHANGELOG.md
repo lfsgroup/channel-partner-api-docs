@@ -4,6 +4,14 @@
 # Changelog
 The FeeWise api is continuously being improved with new features, bug fixes and documentation updates. Details of the changes will be added to the changelog as they are released 
 
+## September 2022
+
+* Payments
+  * Added API [getPayments](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1payments~1/get) endpoint to allow for retrieval of payments by various search criteria. NB API only, not yet implemented
+
+* Payouts
+  * AddedAPI  [getPayouts](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1payouts~1/get) endpoint to allow for retrieval of payouts by various search criteria. NB API only, not yet implemented
+  
 ## July 2022
 
 * Artifacts
