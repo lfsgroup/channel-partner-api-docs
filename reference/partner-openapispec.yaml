@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.31
+  version: 0.0.32
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1201,6 +1201,31 @@ paths:
         '200':
           description: The webhook was received
 
+  /api/v3/partner/payments/external:
+    post:
+      summary: Record external payment.
+      description: |
+        If a payment is made towards an artifact (invoice, trust deposit) outside of feewise, it should be recorded using this endpoint.
+        This will be recorded as a payment against the artifact and change the amount_due.
+      operationId: recordExternalPayment
+      tags:
+        - Payments
+      requestBody:
+        description: External payment details.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExternalPayment'
+      responses:
+        '200':
+          description: The payment was recorded
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   securitySchemes:
@@ -1257,6 +1282,13 @@ components:
           x-go-type-import:
             path: github.com/shopspring/decimal
           description: The total amount the invoice is for.
+        amount_due:
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+          description: The total amount outstanding on this invoice.
         currency:
           $ref: "#/components/schemas/Currency"
         due_date:
@@ -1273,6 +1305,11 @@ components:
           type: array
           items:
             type: string
+        payments:
+          description: List of payments made against this invoice
+          type: array
+          items:
+            $ref: "#/components/schemas/Payment"
         payment_methods_override:
           type: array
           items:
@@ -1349,6 +1386,13 @@ components:
           x-go-type-import:
             path: github.com/shopspring/decimal
           description: The total amount the trust deposit is for.
+        amount_due:
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+          description: The total amount outstanding on this trust deposit.
         currency:
           $ref: "#/components/schemas/Currency"
         due_date:
@@ -1363,6 +1407,11 @@ components:
           items:
             type: string
           description: Freeform notes on the trust deposit
+        payments:
+          description: List of payments made against this trust deposit.
+          type: array
+          items:
+            $ref: "#/components/schemas/Payment"
         payment_methods_override:
           type: array
           items:
@@ -1773,6 +1822,7 @@ components:
             - Card
             - ACH
             - BNPL
+            - External
         artifact_id:
           description: The artifact (Invoice, TrustDeposit, ...) the payment is in relation to.
           type: string
@@ -1786,6 +1836,21 @@ components:
         external_id:
           type: string
           description: This is the id of the artifact supplied by the channel partner / PMS.
+        external_payment:
+          description: |
+            If the payment.payment_type is 'External', the external_payment property *may* be available.            
+            The values for these properties are supplied in the call to 'RecordExternalPayment'
+          type: object
+          properties:
+            type:
+              type: string
+              description: The type supplied when the external payment was recorded
+            external_id:
+              type: string
+              description: The id supplied when the external payment was recorded
+            details:
+              type: string
+              description: The details supplied when the external payment was recorded
         amount:
           type: string
           format: decimal
@@ -1923,5 +1988,37 @@ components:
         api_key:
           type: string
 
-
-
+    ExternalPayment:
+      description: A payment that was made outside of the FeeWise platform.
+      type: object
+      properties:
+        artifact_id:
+          description: The artifact (Invoice, TrustDeposit, ...) the payment is in relation to.
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        artifact_type:
+          $ref: '#/components/schemas/ArtifactType'
+        amount:
+          description: The amount of the external payment
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+        payment_type:
+          type: string
+          description: Freeform description of the type (eg visa, amex, cash, bank transfer)
+        external_id:
+          type: string
+          description: An ID, external to FeeWise, to identify the payment
+        details:
+          type: string
+          description: Freeform description of the payment (eg "Paid in person with cash - receipt GB-6832" )
+      required:
+        - artifact_id
+        - artifact_type
+        - amount

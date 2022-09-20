@@ -23,72 +23,70 @@ There will be no support for older API versions until version 1.0.x is reached (
 
 ## Webhook Management
 
-| Endpoint / Event | Status         |          |
-|------------------|----------------|----------|
-| List Webhooks    | Implemented    | ✅ |
-| Create Webhook   | Implemented    | ✅ |
-| Update Webook    | Implemented    | ✅ |
-| Delete Webook    | Implemented    | ✅ |
+| Endpoint / Event | API | Implementation |    |
+|------------------|-----|----------------|----|
+| List Webhooks    | ✅   | Implemented    | ✅  |
+| Create Webhook   | ✅   | Implemented    | ✅  |
+| Update Webook    | ✅   | Implemented    | ✅  |
+| Delete Webook    | ✅   | Implemented    | ✅  |
 
 
 ## Invoices
 
-| Endpoint / Event | Status                                                                              |     |
-|------------------|-------------------------------------------------------------------------------------|-----|
-| Create Invoice   | Partially Implemented (payment URL is valid but the UI is not implemented)          | ✅   |
-| Get Invoice      | Implemented. An invoiced created using the Create Invoice endpoint can be retrieved | ✅   |
-| invoice.created  | Implemented. Sent on successful call to Create Invoice                              | ✅   |
-| invoice.update   | Not Implemented                                                                     | ❌   |       
+| Endpoint / Event | API | Implementation                                                                      |    |
+|------------------|---|-------------------------------------------------------------------------------------|----|
+| Create Invoice   | ✅ | Partially Implemented (payment URL is valid but the UI is not implemented)          | ✅  |
+| Get Invoice      | ✅ | Implemented. An invoiced created using the Create Invoice endpoint can be retrieved | ✅  |
+| invoice.created  | ✅ | Implemented. Sent on successful call to Create Invoice                              | ✅  |
+| invoice.update   | ✅ | Not Implemented                                                                     | ❌  |       
 
 ## Trust Deposits
 
-| Endpoint / Event     | Status                                                                               |          |
-|----------------------|--------------------------------------------------------------------------------------|----------|
-| Create Trust Deposit | Implemented (check that payment URL is valid)                                        | ✅ |
-| Get Trust Deposit    | Implemented. An invoiced created using the Trust Deposit endpoint can be retrieved   | ✅ |
-| invoice.created      | Implemented. Sent on successful call to Create Invoice                               | ✅ |
-| invoice.update       | Not Implemented                                                                      | ❌ |       
+| Endpoint / Event     | API | Implementation                                                                     |   |
+|----------------------|---|------------------------------------------------------------------------------------|---|
+| Create Trust Deposit | ✅ | Partially Implemented (payment URL is valid but the UI is not implemented)         | ✅ |
+| Get Trust Deposit    | ✅ | Implemented. An invoiced created using the Trust Deposit endpoint can be retrieved | ✅ |
+| invoice.created      | ✅ | Implemented. Sent on successful call to Create Invoice                             | ✅ |
+| invoice.update       | ✅ | Not Implemented                                                                    | ❌ |       
 
 ## Payouts
 
-| Endpoint / Event | Status                                                                              |     |
-|------------------|-------------------------------------------------------------------------------------|-----|
-| Get Payouts      | API added, not implemented - request validation implemented but no results returned | ❌   |
-| payout.sent      | Not Implemented                                                                     | ❌   | 
+| Endpoint / Event | API | Implementation                                         |   |
+|------------------|-----|--------------------------------------------------------|---|
+| Get Payouts      |  ✅ | Request validation implemented but no results returned | ❌ |
+| payout.sent      |  ✅ | Not Implemented                                        | ❌ | 
 
 ## Payments
 
-| Endpoint / Event       | Status                                                                              |     |
-|------------------------|-------------------------------------------------------------------------------------|-----|
-| Get Payments           | API added, not implemented - request validation implemented but no results returned | ❌   |
-| Apply External Payment | Not implemented (allows PMS to record a payment made outside of FeeWise)            | ❌   | 
-| payment.received       | Not implemented                                                                     | ❌   | 
+| Endpoint / Event       | API | Status                                                                          |     |
+|------------------------|-----|---------------------------------------------------------------------------------|-----|
+| Get Payments           | ✅ | Partially implemented - request validation implemented but no results returned. | ❌   |
+| Apply External Payment | ✅ | Not implemented -  (allows PMS to record a payment made outside of FeeWise)     | ❌   | 
+| payment.received       | ✅ | Not implemented                                                                 | ❌   | 
 
 ## Token Management
-| Endpoint / Event | Status       |    |
-|------------------|--------------|----|
-| RotateApiKey     | Implemented  |  ✅ |
+| Endpoint / Event | API | Status      |    |
+|------------------|-----|-------------|----|
+| RotateApiKey     | ✅   | Implemented |  ✅ |
 
 
 
 ## Roadmap
 
-### External / partial payments
+### Implement External / partial payments
 
-#### API change 
-Add amount_due and payments to an Invoice and TrustDeposit 
-Add and update schemas and add path(s) to allow payments made outside FeeWise to be recorded in FeeWise
-
-#### Implementation
 Fully implement including HTTP handlers, database updates, and events
 
 ### Implement payments
 
-Record payments as they come in and send out events. 
-This will activate the payment events and endpoint currently described in the docs
+* Record payments as they come in and send out events. This will activate the payment events and endpoint currently described in the docs
+* Implement payment search
+* Implement payment list in Invoice
 
 ### Implement payouts
-Record payouts as they are made and send out events.
-This will activate the payout events and endpoint currently described in the docs
+
+* Record payouts as they are made and send out events. This will activate the payout events and endpoint currently described in the docs
+* Implement payout search
+
 
 

@@ -8,7 +8,8 @@ The FeeWise api is continuously being improved with new features, bug fixes and 
 
 * Payments
   * Added API [getPayments](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1payments~1/get) endpoint to allow for retrieval of payments by various search criteria. NB API only, not yet implemented
-
+  * Added API [recordExternalPayment](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1payments~1external~1/post) to allow payments made externally to feewise to be recorded. NB API only, not yet implemented
+  
 * Payouts
   * AddedAPI  [getPayouts](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1payouts~1/get) endpoint to allow for retrieval of payouts by various search criteria. NB API only, not yet implemented
   
