@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.32
+  version: 0.0.33
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -395,7 +395,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InvoiceResponse'
+                $ref: '#/components/schemas/TrustDepositResponse'
         '400':
           description: Bad request
         '404':
@@ -632,7 +632,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/EventTopics'
               example:
-                eventTopics: [
+                event_topics: [
                   'artifact.invoice.created',
                   'artifact.trust-deposit.created'
                 ]
@@ -1638,12 +1638,12 @@ components:
     EventTopics:
       type: object
       properties:
-        eventTopics:
+        event_topics:
           type: array
           items:
             type: string
       required:
-        - eventTopics
+        - event_topics
 
     ErrorResponse:
       type: object
