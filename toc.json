@@ -82,6 +82,16 @@
       "uri": "/docs/public_docs/ROADMAP.md"
     },
     {
+      "type": "item",
+      "title": "Sandbox",
+      "uri": "/docs/public_docs/SANDBOX.md"
+    },
+    {
+      "type": "item",
+      "title": "Client Code",
+      "uri": "/docs/public_docs/API_CODE_GENERATION.md"
+    },
+    {
       "type": "divider",
       "title": "APIS"
     },
