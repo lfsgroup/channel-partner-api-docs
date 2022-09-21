@@ -28,5 +28,9 @@ The events are used to receive updates without polling an API.
 
 * [Changelog](./CHANGELOG.md)
 * [Road map](./ROADMAP.md)
+* [Client Code Generation](./API_CODE_GENERATION.md)
+* [Sandbox Environment](./SANDBOX.md)
+
+
 
 
