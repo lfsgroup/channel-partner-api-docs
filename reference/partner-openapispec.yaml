@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.33
+  version: 0.0.34
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -41,10 +41,10 @@ paths:
             schema:
               $ref: '#/components/schemas/Invoice'
             example:
-              firm_id: 7f623e2d-270d-8ad8-2e13-b7bfd022703e
+              firm_id: facade00-0000-4000-a000-000000000000
               external_id: e69f9433-885b-4321-bb48-9f5084850893
               amount: "123.45"
-              settlement_account: Office
+              settlement_account_type: Office
               external_reference: inv-123
               currency: AUD
               due_date: '1953-07-23T13:56:24.084Z'
@@ -95,10 +95,10 @@ paths:
               example:
                 invoice:
                   invoice_id: bf311c82-a0d1-4e31-998b-f00de9250d4a
-                  firm_id: 7f623e2d-270d-8ad8-2e13-b7bfd022703e
+                  firm_id: facade00-0000-4000-a000-000000000000
                   external_id: e69f9433-885b-4321-bb48-9f5084850893
                   amount: "123.45"
-                  settlement_account: Office
+                  settlement_account_type: Office
                   external_reference: inv-123
                   currency: AUD
                   due_date: '1953-07-23T13:56:24.084Z'
@@ -233,7 +233,7 @@ paths:
             schema:
               $ref: '#/components/schemas/TrustDeposit'
             example:
-              firm_id: 7f623e2d-270d-8ad8-2e13-b7bfd022703e
+              firm_id: facade00-0000-4000-a000-000000000000
               external_id: e69f9433-885b-4321-bb48-9f5084850893
               amount: "123.45"
               external_reference: inv-123
@@ -286,7 +286,7 @@ paths:
               example:
                 trust_deposit:
                   trust_deposit_id: 96ccd810-d21a-4d56-8ad9-956328e2b802
-                  firm_id: 7f623e2d-270d-8ad8-2e13-b7bfd022703e
+                  firm_id: facade00-0000-4000-a000-000000000000
                   external_id: e69f9433-885b-4321-bb48-9f5084850893
                   amount: "123.45"
                   external_reference: inv-123
@@ -1243,7 +1243,8 @@ components:
     Invoice:
       type: object
       description: |
-        An Invoice is created to request payment
+        An Invoice is created to request payment.
+        One of settlement_account_type or settlement_account_id must be specified but not both.
       properties:
         invoice_id:
           type: string
@@ -1294,8 +1295,18 @@ components:
         due_date:
           type: string
           format: date-time
-        settlement_account:
+        settlement_account_type:
           $ref: "#/components/schemas/AccountType"
+        settlement_account_id:
+          description: |
+            The id of the account the invoice settlement should be paid to. 
+            NB, if both the settlement_account_type and settlement_account_id are specified, it is a bad request
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
         line_items:
           type: array
           items:
@@ -1334,7 +1345,6 @@ components:
         - firm_id
         - external_id
         - amount
-        - settlement_account
 
     InvoiceResponse:
       type: object
@@ -1412,6 +1422,16 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Payment"
+        settlement_account_id:
+          description: |
+            The id of the account the trust deposit should be paid to. 
+            If not supplied, the default trust deposit for the firm will be used
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
         payment_methods_override:
           type: array
           items:
