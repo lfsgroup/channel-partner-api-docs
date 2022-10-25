@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.35
+  version: 0.0.36
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1871,13 +1871,30 @@ components:
             details:
               type: string
               description: The details supplied when the external payment was recorded
-        amount:
+        received:
           type: string
+          description: The amount received from the client.
           format: decimal
           x-go-type: decimal.Decimal
           x-go-type-import:
             path: github.com/shopspring/decimal
           example: "1000.00"
+        refunded:
+          type: string
+          description: The amount refunded (back to the client) against this payment.
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+          example: "200.00"
+        paid_out:
+          type: string
+          description: The total amount paid to the firm for this payment
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+          example: "800.00"
         currency:
           type: string
           description: The currency the payment was made in.
@@ -1889,7 +1906,7 @@ components:
         - payment_id
         - artifact_id
         - artifact_type
-        - amount
+        - paid_out
         - currency
         - date
 
@@ -1916,6 +1933,7 @@ components:
           format: date-time
         payout_total:
           type: string
+          description: The total paid out to the firm. This is the sum of the transactions paid_out amounts.
           format: decimal
           x-go-type: decimal.Decimal
           x-go-type-import:
