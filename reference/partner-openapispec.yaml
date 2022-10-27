@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.36
+  version: 0.0.37
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1989,6 +1989,10 @@ components:
 
     WebhookEvent:
       type: object
+      required:
+        - event_type
+        - event_id
+        - event
       properties:
         event_type:
           type: string
