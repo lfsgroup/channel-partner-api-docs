@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.37
+  version: 0.0.38
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -429,7 +429,7 @@ paths:
                     events: [
                       'artifact.invoice.created',
                       'payment.card.successful',
-                      'payout.disbursed'
+                      'payout.paid'
                     ],
                     authentication: {
                       type: 'bearer_token, basic_auth',
@@ -480,7 +480,7 @@ paths:
                     events: [
                       'artifact.invoice.created',
                       'payment.card.successful',
-                      'payout.disbursed'
+                      'payout.paid'
                     ]
                   }
 
@@ -503,7 +503,7 @@ paths:
                     events: [
                       'artifact.invoice.created',
                       'payment.card.successful',
-                      'payout.disbursed'
+                      'payout.paid'
                     ]
                   }
       responses:
@@ -521,7 +521,7 @@ paths:
                   events: [
                     'artifact.invoice.created',
                     'payment.card.successful',
-                    'payout.disbursed'
+                    'payout.paid'
                   ],
                   status: Enabled,
                   url: https://to.me,
@@ -658,7 +658,7 @@ paths:
           name: topic
           schema:
             type: string
-          example: payout.disbursed
+          example: payout.paid
           required: false
         - in: query
           name: since_webhook_event_id
@@ -702,11 +702,11 @@ paths:
                   {
                     "webhook_event_id": "96d5e476-35d1-4209-a672-d179e0b5111c",
                     "externalId": "bd7fc497-8ad3-4a1f-9a07-7d364e7ab011",
-                    "topic": "payout.disbursed",
+                    "topic": "payout.paid",
                     "status": "sent",
                     "sent_at": "2022-07-28T05:39:32.029314Z",
                     "payload": {
-                        "topic": "payout.disbursed",
+                        "topic": "payout.paid",
                         "object": {
                           "payments": [
                             { "currency": "AUD", "artifact_id": "e9c42bc6-b7b3-4e24-a416-eda2a8c5cae2", "card_scheme": "MASTERCARD", "submit_time": "2022-07-26T04:54:20Z", "payment_type": "card", "total_amount": "3363.51", "artifact_type": "ArtifactInvoice", "payment_reference": "qp.14f4c4207", "card_number_partial": "1555", "customer_surcharge_amount": "61.09", "merchant_surcharge_amount": "0" }
@@ -1600,7 +1600,7 @@ components:
           $ref: "#/components/schemas/WebhookStatus"
         events:
           type: array
-          example: ["artifact.invoice.created", "payment.card.successful", "payout.disbursed"]
+          example: ["artifact.invoice.created", "payment.card.successful", "payout.paid"]
           items:
             type: string
         authentication:
@@ -1946,7 +1946,7 @@ components:
               $ref: '#/components/schemas/AccountType'
             branch_code:
               type: string
-            branch_number:
+            account_number:
               type: string
             alias:
               type: string

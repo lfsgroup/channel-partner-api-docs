@@ -10,10 +10,10 @@ As payouts are made by the system, events may be sent to any registered webhooks
 
 ## Webhooks Subscription
 
-### payout.sent 
+### payout.paid 
 
 [Register a webhook](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1webhooks/post) URL to 
-receive the webhook event type `payout.sent`
+receive the webhook event type `payout.paid`
 
 Events posted to that URL for that event type will contain an 
 [event envelop](../../reference/partner-openapispec.yaml/components/schemas/WebhookEvent) containing a 

@@ -46,10 +46,10 @@ There will be no support for older API versions until version 1.0.x is reached (
 
 ## Payouts
 
-| Endpoint / Event | API | Implementation                                         |   |
-|------------------|-----|--------------------------------------------------------|---|
-| Get Payouts      |  ✅ | Request validation implemented but no results returned | ❌ |
-| payout.sent      |  ✅ | Not Implemented                                        | ❌ | 
+| Endpoint / Event | API | Implementation                                          |    |
+|------------------|-----|---------------------------------------------------------|----|
+| Get Payouts      |  ✅ | Request validation implemented but no results returned  | ❌  |
+| payout.paid      |  ✅ | Implemented                                             | ✅  | 
 
 ## Payments
 
