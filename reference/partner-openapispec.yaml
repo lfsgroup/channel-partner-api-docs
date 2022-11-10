@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.38
+  version: 0.0.39
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -9,7 +9,7 @@ security:
 
 tags:
   - name: Payments
-    description:  Creation and retrieval of payment requests ( Invoices and Trust Deposits ) and client payments.
+    description: Creation and retrieval of payment requests ( Invoices and Trust Deposits ) and client payments.
   - name: Webhook
     description: Webhook management
   - name: Firm
@@ -51,31 +51,31 @@ paths:
               surcharge_choice_override: Customer
               description: Charge for case setup
               matter: {
-                         external_id: my-unique-external-id,
-                         external_reference: my-external-reference,
-                         description: 'The matter of Frank vs Herman ',
-                         type: court
-                      }
+                external_id: my-unique-external-id,
+                external_reference: my-external-reference,
+                description: 'The matter of Frank vs Herman ',
+                type: court
+              }
               debtor: {
-                  external_id: case-client-1234,
-                  name: Frank,
-                  email: frank@email.com,
-                  contact_number: '1300234567'
+                external_id: case-client-1234,
+                name: Frank,
+                email: frank@email.com,
+                contact_number: '1300234567'
               }
 
               line_items: [
                 {
-                    amount: '100',
-                    name: Phone call,
-                    description: Listened to voice message,
-                    quantity: 1,
-                    tax_rate: "10",
+                  amount: '100',
+                  name: Phone call,
+                  description: Listened to voice message,
+                  quantity: 1,
+                  tax_rate: "10",
                 }, {
-                    amount: '1000',
-                    name: Phone call,
-                    description: Replied to voice mail,
-                    quantity: 1,
-                    tax_rate: "15"
+                  amount: '1000',
+                  name: Phone call,
+                  description: Replied to voice mail,
+                  quantity: 1,
+                  tax_rate: "15"
                 }
               ]
               notes: [
@@ -419,7 +419,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/WebhookList'
               example:
-                webhooks:  [
+                webhooks: [
                   {
                     name: mywebhook,
                     party_id: 732c73fc-1778-4acd-b334-20a2f49c2766,
@@ -706,23 +706,23 @@ paths:
                     "status": "sent",
                     "sent_at": "2022-07-28T05:39:32.029314Z",
                     "payload": {
-                        "topic": "payout.paid",
-                        "object": {
-                          "payments": [
-                            { "currency": "AUD", "artifact_id": "e9c42bc6-b7b3-4e24-a416-eda2a8c5cae2", "card_scheme": "MASTERCARD", "submit_time": "2022-07-26T04:54:20Z", "payment_type": "card", "total_amount": "3363.51", "artifact_type": "ArtifactInvoice", "payment_reference": "qp.14f4c4207", "card_number_partial": "1555", "customer_surcharge_amount": "61.09", "merchant_surcharge_amount": "0" }
-                          ],
-                          "branch_code": "063-074",
-                          "account_type": "Office",
-                          "account_number": "10069576",
-                          "disbursed_amount": "3302.42",
-                          "disbursement_date": "2022-07-26T22:28:45.918809Z",
-                          "disbursement_reference": "qp.14f4c4207",
-                          "batch_disbursement_reference": "rp.af27f7727"
-                        },
-                        "event_id": "612d6c74-78e8-4c69-915b-cc05d92e5372",
-                        "party_id": "ca838b5d-8064-4910-aa54-bce2e6e81fbc",
-                        "created_at": "2022-07-27T04:02:26.662446Z",
-                        "channel_partner_id": "5ca1ab1e-cafe-4000-a000-deadbeefdead"
+                      "topic": "payout.paid",
+                      "object": {
+                        "payments": [
+                          { "currency": "AUD", "artifact_id": "e9c42bc6-b7b3-4e24-a416-eda2a8c5cae2", "card_scheme": "MASTERCARD", "submit_time": "2022-07-26T04:54:20Z", "payment_type": "card", "total_amount": "3363.51", "artifact_type": "ArtifactInvoice", "payment_reference": "qp.14f4c4207", "card_number_partial": "1555", "customer_surcharge_amount": "61.09", "merchant_surcharge_amount": "0" }
+                        ],
+                        "branch_code": "063-074",
+                        "account_type": "Office",
+                        "account_number": "10069576",
+                        "disbursed_amount": "3302.42",
+                        "disbursement_date": "2022-07-26T22:28:45.918809Z",
+                        "disbursement_reference": "qp.14f4c4207",
+                        "batch_disbursement_reference": "rp.af27f7727"
+                      },
+                      "event_id": "612d6c74-78e8-4c69-915b-cc05d92e5372",
+                      "party_id": "ca838b5d-8064-4910-aa54-bce2e6e81fbc",
+                      "created_at": "2022-07-27T04:02:26.662446Z",
+                      "channel_partner_id": "5ca1ab1e-cafe-4000-a000-deadbeefdead"
                     },
                   },
                 ]
@@ -930,7 +930,7 @@ paths:
           schema:
             type: string
       summary: Create a magic link
-      description: | 
+      description: |
         Create a magic link that, on click, redirects to a defined URL within the dashboard. Defaults to homepage
       operationId: getMagicLink
       responses:
@@ -1122,7 +1122,7 @@ paths:
     post:
       summary: Set firms default bank account.
       description: Set the given account as the default bank account (Trust or Office). The account type will determine if the bank account
-                   becomes the default office or trust account.
+        becomes the default office or trust account.
       operationId: setFirmsDefaultBankAccount
       tags:
         - Firm
@@ -1600,7 +1600,7 @@ components:
           $ref: "#/components/schemas/WebhookStatus"
         events:
           type: array
-          example: ["artifact.invoice.created", "payment.card.successful", "payout.paid"]
+          example: [ "artifact.invoice.created", "payment.card.successful", "payout.paid" ]
           items:
             type: string
         authentication:
@@ -1751,12 +1751,12 @@ components:
       type: object
       properties:
         firm_id:
-            type: string
-            format: uuid
-            x-go-type: uuid.UUID
-            x-go-type-import:
-              path: github.com/gofrs/uuid
-              name: uuid
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
         trading_name:
           type: string
         status:
@@ -1774,12 +1774,12 @@ components:
       type: object
       properties:
         account_id:
-            type: string
-            format: uuid
-            x-go-type: uuid.UUID
-            x-go-type-import:
-              path: github.com/gofrs/uuid
-              name: uuid
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
         account_type:
           $ref: "#/components/schemas/AccountType"
         account_name:
