@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.39
+  version: 0.0.40
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -913,6 +913,8 @@ paths:
 
   /api/v3/partner/firms/{firm_id}/magic-link:
     post:
+      tags:
+        - Firm
       parameters:
         - in: path
           name: firm_id
@@ -1550,12 +1552,7 @@ components:
       type: string
       enum:
         - Card
-        - Debit
-        - BankTransfer
-        - BNPL10Week
-        - BNPL6Month
-        - BNPL12Month
-
+        - DirectDebit
 
     SurchargeChoice:
       type: string
@@ -1836,13 +1833,7 @@ components:
             path: github.com/gofrs/uuid
             name: uuid
         payment_type:
-          type: string
-          description: How the payment was made.
-          enum:
-            - Card
-            - ACH
-            - BNPL
-            - External
+          $ref: '#/components/schemas/PaymentMethod'
         artifact_id:
           description: The artifact (Invoice, TrustDeposit, ...) the payment is in relation to.
           type: string
