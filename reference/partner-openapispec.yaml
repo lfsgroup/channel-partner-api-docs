@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.43
+  version: 0.0.44
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -29,7 +29,8 @@ paths:
       description: |
         Create an invoice for a channel partner.  
         NB the fields `invoice_id`, `payment_uri` and `status` must NOT be supplied. If supplied, BadResponse will be returned.  
-        These are populated once the invoice has been created and will be available in the response
+        These are populated once the invoice has been created and will be available in the response.
+        The external_id is a unique field, if the same external_id is provided, the matching invoice will be updated instead.
       operationId: createInvoice
       tags:
         - Payments
@@ -348,7 +349,8 @@ paths:
       description: |
         Create a trust deposit for a channel partner.  
         NB the fields trust_deposit_id, payment_uri and status must NOT be supplied. If supplied, BadResponse will be returned.  
-        These are populated once the trust deposit has been created and will be available in the response
+        These are populated once the trust deposit has been created and will be available in the response.
+        The external_id is a unique field, if the same external_id is provided, the matching trust deposit will be updated instead.
       operationId: createTrustDeposit
       tags:
         - Payments
