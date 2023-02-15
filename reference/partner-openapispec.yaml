@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.44
+  version: 0.0.45
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1487,7 +1487,7 @@ paths:
   /api/v3/partner/statements:
     post:
       description: |
-        Creates a statement of account, filtered by a debtor ID and an optional matter ID, payable by the client via the returned URL 
+        Creates a statement of account, filtered by a debtor ID and an optional matter ID, payable by the client via the returned URL
       operationId: createStatement
       tags:
         - Payments
@@ -1827,6 +1827,7 @@ components:
       description: Currency of a payment. If not specified, the local default is used.
       enum:
         - AUD
+        - CAD
         - USD
 
     AccountType:
