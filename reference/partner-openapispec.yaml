@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.45
+  version: 0.0.46
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1484,6 +1484,90 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v3/partner/matters:
+    post:
+      description: |
+        Create a matter, with all matter information, debtor details and artifacts, invoice or trust deposit.
+      operationId: createMatter
+      tags:
+        - Payments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatterRequest'
+            example:
+              firm_id: facade00-0000-4000-a000-000000000000
+              matter:
+                external_id: my-unique-external-id
+                external_reference: my-external-reference
+                description: 'The matter of Frank vs Herman '
+                type: court
+              debtor:
+                external_id: case-client-1234
+                name: Frank
+                email: frank@email.com
+                contact_number: "1300234567"
+              artifacts:
+                - external_id: e69f9433-885b-4321-bb48-9f5084850893
+                  artifact_type: Invoice
+                  amount: "100.00"
+                  settlement_account_type: Office
+                  external_reference: inv-123
+                  currency: AUD
+                  due_date: "1953-07-23T13:56:24.084Z"
+                  surcharge_choice_override: Customer
+                  description: Charge for case setup
+                  line_items:
+                    - amount: "50"
+                      name: Phone call
+                      description: Listened to voice message
+                      quantity: 1
+                      tax_rate: "10"
+                    - amount: "50"
+                      name: Phone call
+                      description: Replied to voice mail
+                      quantity: 1
+                      tax_rate: "15"
+                  notes:
+                    - Got to know client
+                    - Created initial case file
+                  payment_methods_override:
+                    - Card
+                - external_id: 46b3eed1-b469-46f3-ab93-2bb6921b8592
+                  artifact_type: Invoice
+                  amount: "150.00"
+                  settlement_account_type: Office
+                  external_reference: inv-123
+                  currency: AUD
+                  due_date: "1953-07-23T13:56:24.084Z"
+                  surcharge_choice_override: Customer
+                  description: Legal service
+                  line_items:
+                    - amount: "100"
+                      name: Phone call
+                      description: Listened to voice message
+                      quantity: 1
+                      tax_rate: "10"
+                  notes:
+                    - Got to know client
+                    - Created initial case file
+                  payment_methods_override:
+                    - Card
+      responses:
+        '200':
+          description: Matter was created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatterResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /api/v3/partner/statements:
     post:
       description: |
@@ -1794,6 +1878,13 @@ components:
       type: object
       description: The matter that payments are regarding.
       properties:
+        matter_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
         external_id:
           type: string
           description: The id of the matter in the PMS.
@@ -1806,6 +1897,150 @@ components:
         type:
           type: string
           description: Free form type of the matter.
+      required:
+        - "external_id"
+
+    MatterRequest:
+      type: object
+      description: The matter request object contains all matter information, debtor details and artifacts, invoices or trust deposits, to be created for the matter.
+      properties:
+        firm_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+          description: The firm the invoice is raised for.
+        matter:
+          $ref: '#/components/schemas/Matter'
+        debtor:
+          $ref: "#/components/schemas/Debtor"
+        artifacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Artifact'
+      required:
+        - firm_id
+        - matter
+        - artifacts
+
+    MatterResponse:
+      type: object
+      properties:
+        firm_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+          description: The firm the invoice is raised for.
+        matter:
+          $ref: '#/components/schemas/Matter'
+        debtor:
+          $ref: "#/components/schemas/Debtor"
+        artifacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Artifact'
+      required:
+        - firm_id
+        - matter
+        - artifacts
+
+    Artifact:
+      type: object
+      description: |
+        An Artifact can be an Invoice or a Trust Deposit. An Artifact is created to request payment.
+        One of settlement_account_type or settlement_account_id must be specified but not both.
+      properties:
+        artifact_id:
+          type: string
+          description: |
+            This is the uuid of the artifact. This will be used for and 'GET' of the artifact and in webhooks about this artifact
+            NB this is generated and must not be supplied when creating an artifact.
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        artifact_type:
+          $ref: '#/components/schemas/ArtifactType'
+        external_id:
+          type: string
+          description: This is the id supplied by the channel partner / PMS and can be used for filtering artifacts. This should be unique for the PMS but this is not enforced.
+          example: e69f9433-885b-4321-bb48-9f5084850893
+        external_reference:
+          type: string
+          description: This a reference supplied by the channel partner / PMS and can be used for filtering artifacts.
+          example: inv-123
+        amount:
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+          description: The total amount the artifact is for.
+        amount_due:
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+          description: The total amount outstanding on this artifact.
+        currency:
+          $ref: "#/components/schemas/Currency"
+        due_date:
+          type: string
+          format: date-time
+        settlement_account_type:
+          $ref: "#/components/schemas/AccountType"
+        settlement_account_id:
+          description: |
+            The id of the account the artifact settlement should be paid to. 
+            NB, if both the settlement_account_type and settlement_account_id are specified, it is a bad request
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        line_items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LineItem'
+        notes:
+          description: Freeform notes on the artifact
+          type: array
+          items:
+            type: string
+        payments:
+          description: List of payments made against this artifact
+          type: array
+          items:
+            $ref: "#/components/schemas/Payment"
+        payment_methods_override:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentMethod'
+        surcharge_choice_override:
+          $ref: '#/components/schemas/SurchargeChoice'
+        description:
+          type: string
+          description: Freeform text for API user.
+        status:
+          type: string
+          description: The status of the artifact
+          enum:
+            - Draft
+            - Submitted
+            - Authorised
+            - Voided
+      required:
+        - external_id
+        - amount
+        - artifact_type
 
 
     Debtor:
