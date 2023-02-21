@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.46
+  version: 0.0.47
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1568,6 +1568,57 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v3/partner/statements/matters/{matter_id}:
+    get:
+      parameters:
+        - in: path
+          name: matter_id
+          schema:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+          required: true
+        - in: query
+          name: to
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: from
+          required: false
+          schema:
+            type: integer
+      description: |
+        Get a matter statement that is payable by the client via the returned URL. 
+
+        Note: `to` and `from` are not yet implemented.
+      operationId: getMatterStatement
+      tags:
+        - Payments
+      responses:
+        '200':
+          description: Matter Statement was returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatterStatement'
+        '400':
+          description: Incompatible filters provided. Must provide at least a matter_id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
   /api/v3/partner/statements:
     post:
       description: |
@@ -2614,6 +2665,35 @@ components:
       required:
         - firm_id
         - external_debtor_id
+
+    MatterStatement:
+      type: object
+      properties:
+        matter:
+          $ref: '#/components/schemas/Matter'
+        firm_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+          description: The firm the invoice is raised for.
+        debtor:
+          $ref: "#/components/schemas/Debtor"
+        artifacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Artifact'
+        payment_url:
+          type: string
+          description: The URI to get the client payment instructions for this matter statement
+      required:
+        - firm_id
+        - matter
+        - payment_url
+        - artifacts
+        - debtor
 
     StatementResponse:
       type: object
