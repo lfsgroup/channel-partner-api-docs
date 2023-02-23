@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.47
+  version: 0.0.48
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1618,45 +1618,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-
-  /api/v3/partner/statements:
-    post:
-      description: |
-        Creates a statement of account, filtered by a debtor ID and an optional matter ID, payable by the client via the returned URL
-      operationId: createStatement
-      tags:
-        - Payments
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Statement'
-            example:
-              firm_id: facade00-0000-4000-a000-000000000000
-              external_matter_id: external-matter-id
-              external_debtor_id: 691d9ce6-8a8f-41f9-bea1-f90274da016c
-              start_date: '2018-07-23T13:56:24.084Z'
-              end_date: '2023-01-30T13:56:24.084Z'
-      responses:
-        '200':
-          description: Statement was created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StatementResponse'
-        '400':
-          description: Incompatible filters provided. Must provide at least a matter_id or a debtor_id
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Error processing
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
 components:
   securitySchemes:
     PartnerAuth:
@@ -2636,36 +2597,6 @@ components:
         - artifact_type
         - amount
 
-    Statement:
-      description: Parameters for generating a statement of account. The statement of account will include Invoices and Trust Deposits that match the provided information
-      type: object
-      properties:
-        firm_id:
-          description: The FeeWise Firm ID.
-          type: string
-          format: uuid
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/gofrs/uuid
-            name: uuid
-        external_matter_id:
-          description: The ID of a matter from the calling system. See external_id field in '#/components/schemas/Matter'
-          type: string
-        external_debtor_id:
-          description: The ID of a debtor from the calling system. See external_id field in '#/components/schemas/Debtor'
-          type: string
-        end_date:
-          description: an optional end date for retrieving Invoices or Trust Deposits. Will retrieve anything created on or before this date.
-          type: string
-          format: date-time
-        start_date:
-          description: an optional start date for retrieving Invoices or Trust Deposits. Will retrieve anything created on or after this date.
-          type: string
-          format: date-time
-      required:
-        - firm_id
-        - external_debtor_id
-
     MatterStatement:
       type: object
       properties:
@@ -2694,14 +2625,3 @@ components:
         - payment_url
         - artifacts
         - debtor
-
-    StatementResponse:
-      type: object
-      properties:
-        statement:
-          $ref: '#/components/schemas/Statement'
-        payment_url:
-          type: string
-          description: The URI to get the client payment instructions for this invoice
-      required:
-        - statement
