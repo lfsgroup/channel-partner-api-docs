@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.48
+  version: 0.0.49
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -2365,9 +2365,17 @@ components:
       description: Describes a payment coming into the system (client of a firm paying an invoice, trust deposit, ...)
       type: object
       properties:
+        transaction_id:
+          type: string
+          description: The unique id of this single transaction in the payout.
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
         payment_id:
           type: string
-          description: The unique id of the payment.
+          description: The id of the payment. nb A single payment may contain multiple transactions and may not be unique.
           format: uuid
           x-go-type: uuid.UUID
           x-go-type-import:
@@ -2436,6 +2444,7 @@ components:
           format: date-time
       required:
         - payment_id
+        - transaction_id
         - artifact_id
         - artifact_type
         - paid_out
