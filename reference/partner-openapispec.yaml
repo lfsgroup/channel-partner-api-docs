@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.49
+  version: 0.0.50
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1570,6 +1570,7 @@ paths:
 
   /api/v3/partner/statements/matters/{matter_id}:
     get:
+      deprecated: true
       parameters:
         - in: path
           name: matter_id
@@ -1596,6 +1597,66 @@ paths:
 
         Note: `to` and `from` are not yet implemented.
       operationId: getMatterStatement
+      tags:
+        - Payments
+      responses:
+        '200':
+          description: Matter Statement was returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MatterStatement'
+        '400':
+          description: Incompatible filters provided. Must provide at least a matter_id.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v3/partner/statements/debtors/{debtor_id}/matters/{matter_id}:
+    get:
+      parameters:
+        - in: path
+          name: debtor_id
+          schema:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+          required: true
+        - in: path
+          name: matter_id
+          schema:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+          required: true
+        - in: query
+          name: to
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: from
+          required: false
+          schema:
+            type: integer
+      description: |
+        Get a matter statement that is payable by the client via the returned URL. 
+
+        Note: `to` and `from` are not yet implemented.
+      operationId: getDebtorMatterStatement
       tags:
         - Payments
       responses:
@@ -2059,6 +2120,14 @@ components:
       type: object
       description: The entity that should be making the payment. This will normally be a client of the firm.
       properties:
+        debtor_id:
+          description:  This is the uuid of the debtor in FeeWise.
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
         external_id:
           type: string
           description: ID in the PMS
