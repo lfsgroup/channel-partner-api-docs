@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.50
+  version: 0.0.51
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -2137,6 +2137,8 @@ components:
           type: string
         contact_number:
           type: string
+      required:
+        - external_id
 
     Currency:
       type: string
