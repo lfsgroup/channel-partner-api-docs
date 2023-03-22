@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.51
+  version: 0.0.52
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -995,80 +995,27 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
   /api/v3/partner/payouts:
+    parameters:
+      - in: query
+        name: since
+        required: false
+        description: |
+          Return payouts since this timestamp. 
+          If not supplied, payouts for the last 24 hours are returned.
+        schema:
+          type: string
+          format: date-time
+        example: '2022-07-29T15:33:00Z'
+
     get:
-      summary: Search for payouts for the channel partner
       description: |
-        Search for payouts for a channel partner..        
-        The filters supplied in the query params must *all* be met.        
-        The channel partner is derived from the PartnerAuth security context.
+        Get list of payouts for the channel partner since the provided timestamp. 
+        If not supplied, payouts for the last 24 hours are returned.
+        The channel partner is derived from the PartnerAuth security context
+
       operationId: getChannelPartnerPayouts
       tags:
         - Payouts
-      parameters:
-        - name: payout_id
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
-            x-go-type: uuid.UUID
-            x-go-type-import:
-              path: github.com/gofrs/uuid
-              name: uuid
-          description: |
-            Get a specific payout. If this is specified, other query params should not be specified 
-            and will result in a BadRequest if the are.
-        - name: account
-          in: query
-          required: false
-          schema:
-            type: object
-            properties:
-              account_number:
-                type: string
-              bank_code:
-                type: string
-            required:
-              - account_number
-              - branch_code
-          description: |
-            Get payouts going to a specific account.
-        - name: firm_id
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
-            x-go-type: uuid.UUID
-            x-go-type-import:
-              path: github.com/gofrs/uuid
-              name: uuid
-          description: |
-            Get payouts going to a specific firm
-        - name: since_payout_id
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
-            x-go-type: uuid.UUID
-            x-go-type-import:
-              path: github.com/gofrs/uuid
-              name: uuid
-          description: |
-            If supplied, all payouts since this payout was sent, are retrieved. The retrieved payouts are subject to the 
-            other filter params (firm_id, settlement_account_id).  
-            NB - 'since_payout_id' and 'since' are mutually exclusive. Supplying both results in a BadRequest error.
-        - name: since
-          in: query
-          required: false
-          description: |
-            Return payouts sent since this timestamp. If not supplied, payouts for the last 24 hours are returned.  
-            NB - 'since_payout_id' and 'since' are mutually exclusive. Supplying both results in a BadRequest error.
-          schema:
-            type: string
-            format: date-time
-          example: '2022-07-29T15:33:00'
       responses:
         '200':
           description: List of matching Payouts
@@ -1089,7 +1036,57 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v3/partner/payouts/firms/{firm_id}:
+    parameters:
+      - in: path
+        name: firm_id
+        description: |
+          ID of the firm whose payouts are to be retrieved
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+      - in: query
+        name: since
+        required: false
+        description: |
+          Return payouts, for the given channel partner / firm, sent since this timestamp. 
+          If not supplied, payouts for the last 24 hours are returned.
+        schema:
+          type: string
+          format: date-time
+        example: '2022-07-29T15:33:00Z'
 
+    get:
+      description: |
+        Get list of payouts for the specified firm. 
+        If the since parameter is not supplied, payouts for the last 24 hours are returned.
+      operationId: getFirmPayouts
+      tags:
+        - Payouts
+      responses:
+        '200':
+          description: List of matching Payouts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payouts'
+        '400':
+          description: Incompatible search parameters supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /api/v3/partner/payments:
     get:
@@ -2532,13 +2529,27 @@ components:
       required:
         - payments
 
+    PayoutStatus:
+      type: string
+      description: |
+        Current status of the payout.
+        The status changes to paid, if the transaction goes through,
+        or to failed or cancelled (within 5 business days)
+      enum:
+        - None
+        - Submitted
+        - Paid
+        - Failed
+        - Cancelled
+
     Payout:
-      description: Describes a payout made by the system to a channel partner
+      description: Describes a payout made by the system to a channel partner's firm
       type: object
       properties:
         payout_reference:
           type: string
           description: The unique reference of the payout. This will appear in the bank account statement the payout was made to.
+          example: fw.a1f0cdd52
         date:
           description: When the payout was made.
           type: string
@@ -2575,6 +2586,8 @@ components:
           x-go-type-import:
             path: github.com/gofrs/uuid
             name: uuid
+        status:
+          $ref: '#/components/schemas/PayoutStatus'
         transactions:
           description: A list of the payments that are included in this payout
           type: array
@@ -2587,6 +2600,7 @@ components:
         - account
         - date
         - transactions
+        - status
 
     Payouts:
       type: object

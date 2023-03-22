@@ -46,10 +46,10 @@ There will be no support for older API versions until version 1.0.x is reached (
 
 ## Payouts
 
-| Endpoint / Event | API | Implementation                                          |    |
-|------------------|-----|---------------------------------------------------------|----|
-| Get Payouts      |  ✅ | Request validation implemented but no results returned  | ❌  |
-| payout.paid      |  ✅ | Implemented                                             | ✅  | 
+| Endpoint / Event | API | Implementation                                        |    |
+|------------------|-----|-------------------------------------------------------|----|
+| Get Payouts      |  ✅ | Payouts can be searched by filtering on date and firm | ✅  |
+| payout.paid      |  ✅ | Implemented                                           | ✅  | 
 
 ## Payments
 
@@ -82,7 +82,7 @@ Fully implement including HTTP handlers, database updates, and events
 ### Implement payouts
 
 * Record payouts as they are made and send out events. This will activate the payout events and endpoint currently described in the docs
-* Implement payout search
+* Payout search result pagination.
 
 ### Spec and client libraries
 
