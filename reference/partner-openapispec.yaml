@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.52
+  version: 0.0.53
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -2156,6 +2156,9 @@ components:
       enum:
         - Invoice
         - TrustDeposit
+        - Matter
+        - OfficeReplenishment
+        - TrustReplenishment
 
     PaymentMethod:
       type: string
@@ -2638,6 +2641,7 @@ components:
             - $ref: '#/components/schemas/TrustDeposit'
             - $ref: '#/components/schemas/Payment'
             - $ref: '#/components/schemas/Payout'
+            - $ref: '#/components/schemas/PaymentAuthorisedEvent'
 
     ApiKeyRotation:
       type: object
@@ -2719,3 +2723,164 @@ components:
         - payment_url
         - artifacts
         - debtor
+
+    CardPayment:
+      type: object
+      properties:
+        scheme:
+          type: string
+          description: Card scheme (e.g. Visa, Mastercard)
+        scheme_partial_number:
+          type: string
+          description: Partial card number
+        funding_type:
+          type: string
+          description: Funding type (e.g. credit, debit)
+        country:
+          type: string
+          description: Country code (e.g. US, CA)
+
+    DebitPayment:
+      type: object
+      properties:
+        country:
+          type: string
+          description: Country code (e.g. US, CA)
+        bank_name:
+          type: string
+          description: Name of the bank
+        account_name:
+          type: string
+          description: Name of the account holder
+        branch_code:
+          type: string
+          description: Bank branch code
+        account_partial_number:
+          type: string
+          description: Partial account number
+
+
+    ArtifactReceipt:
+      type: object
+      description: An artifact (invoice, matter, deposit, etc...), which also contains the payment receipt id
+      properties:
+        receipt_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+          description: The receipt ID
+          example: "7cf0f73e-4bf4-4f51-8cb4-8db2fcb91b55"
+        artifact_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+          description: The artifact ID
+          example: "7cf0f73e-4bf4-4f51-8cb4-8db2fcb91b56"
+        artifact_type:
+          $ref: '#/components/schemas/ArtifactType'
+        external_id:
+          type: string
+          description: The external ID
+          example: "external123"
+        name:
+          type: string
+          description: The artifact name
+          example: "Artifact Name"
+        description:
+          type: string
+          description: The artifact description
+          example: "Artifact Description"
+        amount_paid:
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+          description: The amount paid for the artifact
+          example: "100.00"
+        account:
+          type: object
+          description: Details of the settlement account
+          properties:
+            account_type:
+              $ref: '#/components/schemas/AccountType'
+            branch_code:
+              type: string
+            account_number:
+              type: string
+            alias:
+              type: string
+              description: The name of the account for the Firm
+            country_code:
+              type: string
+              description: The country the account is in
+          required:
+            - account_type
+            - branch_code
+            - account_number
+            - country_code
+      required:
+        - receipt_id
+        - artifact_id
+        - artifact_type
+        - external_id
+        - name
+        - amount_paid
+        - account
+
+    PaymentAuthorisedEvent:
+      type: object
+      properties:
+        artifacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArtifactReceipt"
+        payment_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+          description: The payment ID
+          example: "7cf0f73e-4bf4-4f51-8cb4-8db2fcb91b54"
+        amount_paid:
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+          description: The amount paid
+          example: "125.00"
+        card_payment:
+          $ref: "#/components/schemas/CardPayment"
+        debit_payment:
+          $ref: "#/components/schemas/DebitPayment"
+        firm_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+          description: The firm ID
+          example: "8b14c470-f6df-4522-9dc6-8fc2bb59fc6f"
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethod'
+        payment_method_detail:
+          type: string
+          description: The payment method detail
+          example: "Visa ending in 1234"
+      required:
+        - amount_paid
+        - payment_id
+        - artifacts
+        - firm_id
+        - payment_method
+
