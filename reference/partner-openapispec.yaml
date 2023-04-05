@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.53
+  version: 0.0.54
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1471,9 +1471,31 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ExternalPayment'
+            example:
+              artifact_id: '4c662be8-0557-406c-ae14-d98118b81f27'
+              amount: '100'
+              payment_type: 'Card'
+              external_id: '123'
+              details: 'external payment'
       responses:
         '200':
           description: The payment was recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExternalPaymentResponse'
+        '404':
+          description: Artifact not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: External payment already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Error processing
           content:
@@ -2112,6 +2134,13 @@ components:
         - amount
         - artifact_type
 
+    ExternalPaymentResponse:
+      type: object
+      properties:
+        artifact_details:
+          $ref: '#/components/schemas/Artifact'
+      required:
+        - artifact_details
 
     Debtor:
       type: object
@@ -2672,8 +2701,6 @@ components:
           x-go-type-import:
             path: github.com/gofrs/uuid
             name: uuid
-        artifact_type:
-          $ref: '#/components/schemas/ArtifactType'
         amount:
           description: The amount of the external payment
           type: string
@@ -2692,7 +2719,7 @@ components:
           description: Freeform description of the payment (eg "Paid in person with cash - receipt GB-6832" )
       required:
         - artifact_id
-        - artifact_type
+        - external_id
         - amount
 
     MatterStatement:
