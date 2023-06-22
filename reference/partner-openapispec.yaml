@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.54
+  version: 0.0.55
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1698,6 +1698,98 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v3/partner/charges:
+    post:
+      summary: Create a Charge
+      description: |
+        Create an charge for a channel partner.  
+        NB the fields `charge_id`, and `payment_uri` must NOT be supplied. If supplied, BadResponse will be returned.  
+        These are populated once the charge has been created and will be available in the response.
+      operationId: createCharge
+      tags:
+        - Payments
+      requestBody:
+        description: Charge details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Charge'
+            example:
+              firm_id: facade00-0000-4000-a000-000000000000
+              amount: '123.45'
+              settlement_account_type: Office
+              description: Charge for case setup
+              debtor: {
+                external_id: case-client-1234,
+                first_name: Frank,
+                last_name: Smith,
+                email: frank@email.com,
+                contact_number: '1300234567'
+              }
+              notes: [
+                'Got to know client',
+                'Created initial case file'
+              ]
+              payment_methods_override: [
+                'Card',
+                'DirectDebit'
+              ]
+              store_payment_methods: [
+                'Card'
+              ]
+      responses:
+        '200':
+          description: Created Charge
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChargeResponse'
+              example:
+                charge:
+                  charge_id: bf311c82-a0d1-4e31-998b-f00de9250d4a
+                  firm_id: facade00-0000-4000-a000-000000000000
+                  amount: '123.45'
+                  settlement_account_type: Office
+                  description: Charge for case setup
+                  debtor: {
+                    external_id: case-client-1234,
+                    first_name: Frank,
+                    last_name: Smith,
+                    email: frank@email.com,
+                    contact_number: '1300234567'
+                  }
+                  notes: [
+                    'Got to know client',
+                    'Created initial case file'
+                  ]
+                  payment_methods_override: [
+                    'Card',
+                    'DirectDebit'
+                  ]
+                  store_payment_methods: [
+                    'Card'
+                  ]
+                  payment_uri: http://localhost:8080/pay/d3010d67-06d3-46bf-be6a-b894ec743c96
+        '400':
+          description: Bad request, do not include charge_id or payment_uri in the request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Firm or Settlement Account could not be found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'        
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   securitySchemes:
     PartnerAuth:
@@ -2188,6 +2280,7 @@ components:
         - Matter
         - OfficeReplenishment
         - TrustReplenishment
+        - Charge
 
     PaymentMethod:
       type: string
@@ -2911,3 +3004,103 @@ components:
         - firm_id
         - payment_method
 
+    Charge:
+      type: object
+      description: |
+        A Charge is created to request payment.
+        Either the settlement_account_type or the settlement_account_id must be provided but not both.
+      properties:
+        charge_id:
+            type: string
+            description: |
+              This is the uuid of the charge. This will be used for a 'GET' of the charge and in webhooks about this charge.
+              NB: this is generated and must not be supplied when creating an charge.
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+        firm_id:
+          type: string
+          description: The firm the charge is being created for.
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        matter:
+          $ref: "#/components/schemas/Matter"
+        debtor:
+          $ref: "#/components/schemas/Debtor"
+        external_id:
+          type: string
+          description: This is the id supplied by the channel partner / PMS and can be used for filtering charges. This should be unique for the PMS but this is not enforced.
+          example: e69f9433-885b-4321-bb48-9f5084850893
+        external_reference:
+          type: string
+          description: This a reference supplied by the channel partner / PMS and can be used for filtering charges.
+          example: charge-123
+        amount:
+          type: string
+          description: The total amount the charge is for.
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+        amount_due:
+          type: string
+          description: The total amount outstanding on this charge.
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+        currency:
+          $ref: "#/components/schemas/Currency"
+        due_date:
+          type: string
+          format: date-time
+        settlement_account_type:
+          $ref: "#/components/schemas/AccountType"
+        settlement_account_id:
+          description: |
+            The id of the account the charge should be paid to.
+            NB: if both the settlement_account_type and settlement_account_id are specified, it is a bad request.
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        notes:
+          description: Any notes relevant to the charge.
+          type: array
+          items:
+            type: string
+        payment_methods_override:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentMethod'
+        description:
+          type: string
+          description: Description of the charge.
+        store_payment_methods:
+          type: array
+          description: Choose which payment methods to save when the customer pays a charge.
+          items:
+            $ref: '#/components/schemas/PaymentMethod'
+        surcharge_choice_override:
+          $ref: '#/components/schemas/SurchargeChoice'
+        payment_uri:
+          type: string
+          description: The URI to pay the charge.
+      required:
+        - firm_id
+        - amount
+
+    ChargeResponse:
+      type: object
+      properties:
+        charge:
+          $ref: '#/components/schemas/Charge'
+      required:
+        - charge
