@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.55
+  version: 0.0.56
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -2250,6 +2250,11 @@ components:
           type: string
           description: ID in the PMS
         name:
+          type: string
+          deprecated: true
+        first_name:
+          type: string
+        last_name:
           type: string
         email:
           type: string
