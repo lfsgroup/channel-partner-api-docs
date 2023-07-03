@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.56
+  version: 0.0.57
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1790,6 +1790,66 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v3/partner/firms/{firm_id}/customers:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+    get:
+      summary: List all the customers for a firm.
+      description: Return an array of all customers with their saved payment methods. If no customers, an empty array is returned.
+      operationId: getFirmCustomers
+      tags:
+        - Firm
+      responses:
+        '200':
+          description: Return the list of customers.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomersResponse'
+              example:
+                customers:
+                  - debtor:
+                      debtor_id: e9f17c2b-8dac-49f4-b022-739e62e0ab47
+                      external_id: case-client-1234,
+                      first_name: Frank,
+                      last_name: Smith,
+                      email: frank@email.com,
+                      contact_number: '1300234567'
+                    payment_methods:
+                      - payment_method_id: f8fb61a7-5589-4bf7-b7df-3b53e67d7195
+                        scheme: visa
+                        scheme_partial_number: '1234'
+                        funding_type: credit
+                        country: US
+                        expiration_date: '2025-07-27T04:02:26.662446Z'
+                      - payment_method_id: 07c068ed-acb0-4335-9eef-dea2fbcb9ff3
+                        scheme: amex
+                        scheme_partial_number: '2345'
+                        funding_type: credit
+                        country: US
+                        expiration_date: '2025-08-25T04:02:26.662446Z'
+        '404':
+          description: Firm not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   securitySchemes:
     PartnerAuth:
@@ -2864,6 +2924,10 @@ components:
         country:
           type: string
           description: Country code (e.g. US, CA)
+        expiration_date:
+          type: string
+          format: date-time
+
 
     DebitPayment:
       type: object
@@ -3109,3 +3173,37 @@ components:
           $ref: '#/components/schemas/Charge'
       required:
         - charge
+
+    CustomerDetails:
+      type: object
+      properties:
+        debtor:
+          $ref: '#/components/schemas/Debtor'
+        payment_methods:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerPaymentMethod'
+
+    CustomerPaymentMethod:
+      allOf:
+        - type: object
+          properties:
+            payment_method_id:
+              description: The unique ID for this customer's payment method, this can be used to charge the associated customer
+              type: string
+              format: uuid
+              x-go-type: uuid.UUID
+              x-go-type-import:
+                path: github.com/gofrs/uuid
+                name: uuid
+        - $ref: '#/components/schemas/CardPayment'
+
+    CustomersResponse:
+      type: object
+      properties:
+        customers:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerDetails'
+      required:
+      - customers
