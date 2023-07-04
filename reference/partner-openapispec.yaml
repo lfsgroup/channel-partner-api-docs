@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.57
+  version: 0.0.58
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -3183,12 +3183,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CustomerPaymentMethod'
+      required:
+      - debtor
 
     CustomerPaymentMethod:
       allOf:
         - type: object
           properties:
-            payment_method_id:
+            payment_token:
               description: The unique ID for this customer's payment method, this can be used to charge the associated customer
               type: string
               format: uuid
