@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.59
+  version: 0.0.60
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1868,6 +1868,7 @@ paths:
                   store_payment_methods: [
                     'Card'
                   ]
+                payment_id: 74a30957-4f49-42f5-b037-9145fc2fbb19
         '400':
           description: Bad request, do not include charge_id or payment_uri in the request.
           content:
