@@ -30,6 +30,7 @@ The events are used to receive updates without polling an API.
 * [Road map](./ROADMAP.md)
 * [Client Code Generation](./API_CODE_GENERATION.md)
 * [Sandbox Environment](./SANDBOX.md)
+* [Metadata](./METADATA.md)
 
 
 

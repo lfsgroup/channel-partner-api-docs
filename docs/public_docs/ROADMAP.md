@@ -64,6 +64,19 @@ There will be no support for older API versions until version 1.0.x is reached (
 |------------------|-----|-------------|----|
 | RotateApiKey     | ✅   | Implemented |  ✅ |
 
+## Charges
+| Endpoint / Event      | API | Status                                                                          |     |
+|-----------------------|-----|---------------------------------------------------------------------------------|-----|
+| Get Firm Customers    | ✅ | Partially implemented  | ❌   |
+| Create Charge         | ✅ | Partially implemented     | ❌   | 
+| Create Charge and Pay | ✅ | Partially implemented   | ❌   | 
+
+
+## Metadata
+| Endpoint / Event         | API | Status                |     |
+|--------------------------|-----|-----------------------|-----|
+| Add metadata to objects  | ✅ | Not implemented       | ❌   |
+| Search object by metdata | ✅ | Not implemented       | ❌   | 
 
 
 

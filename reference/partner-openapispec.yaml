@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.60
+  version: 0.0.61
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1738,6 +1738,10 @@ paths:
               store_payment_methods: [
                 'Card'
               ]
+              metadata: {
+                "key1": value,
+                "key2": value2
+              }
       responses:
         '200':
           description: Created Charge
@@ -3260,6 +3264,14 @@ components:
         payment_uri:
           type: string
           description: The URI to pay the charge.
+        metadata:
+          additionalProperties:
+            maxLength: 500
+            type: string
+          description: >-
+            Set of key value pairs that you can attach to an object. Useful for storing additional information about the object in a structured format.
+          type: object
+
       required:
         - firm_id
         - amount
