@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.61
+  version: 0.0.62
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1952,6 +1952,67 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v3/partner/firms/{firm_id}/payment_token:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+    post:
+      summary: Create a payment token for a customer.
+      description: Create a payment token for a customer to capture their payment method details and later use to charge them via the charge and pay endpoint /api/v3/partner/charges/pay/payment_token/{payment_token}.
+      operationId: createPaymentToken
+      tags:
+        - Firm
+      requestBody:
+        description: Customer details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Debtor'
+            example:
+                external_id: eb83fb91-1a42-478f-adde-b0b790c99b5e,
+                first_name: John,
+                last_name: Smith,
+                email: john@email.com,
+                contact_number: '1300234567'
+      responses:
+        '200':
+          description: Return the customer and payment token.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentTokenResponse'
+              example:
+                debtor:
+                  debtor_id: e9f17c2b-8dac-49f4-b022-739e62e0ab47
+                  external_id: eb83fb91-1a42-478f-adde-b0b790c99b5e,
+                  first_name: John,
+                  last_name: Smith,
+                  email: john@email.com,
+                  contact_number: '1300234567'
+                payment_token: f8fb61a7-5589-4bf7-b7df-3b53e67d7195
+                capture_uri: http://localhost:8080/capture/f8fb61a7-5589-4bf7-b7df-3b53e67d7195
+        '404':
+          description: Firm not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'                
+
 components:
   securitySchemes:
     PartnerAuth:
@@ -3333,3 +3394,20 @@ components:
             $ref: '#/components/schemas/CustomerDetails'
       required:
       - customers
+
+    PaymentTokenResponse:
+      type: object
+      properties:
+        debtor:
+          $ref: '#/components/schemas/Debtor'
+        payment_token:
+          description: The unique ID for this customer's payment method, this can be used to charge the associated customer
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        capture_uri:
+          type: string
+          description: The URI to capture the payment details for this payment token
