@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.62
+  version: 0.0.63
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1921,10 +1921,10 @@ paths:
                 customers:
                   - debtor:
                       debtor_id: e9f17c2b-8dac-49f4-b022-739e62e0ab47
-                      external_id: case-client-1234,
-                      first_name: Frank,
-                      last_name: Smith,
-                      email: frank@email.com,
+                      external_id: case-client-1234
+                      first_name: Frank
+                      last_name: Smith
+                      email: frank@email.com
                       contact_number: '1300234567'
                     payment_methods:
                       - payment_method_id: f8fb61a7-5589-4bf7-b7df-3b53e67d7195
@@ -1978,10 +1978,10 @@ paths:
             schema:
               $ref: '#/components/schemas/Debtor'
             example:
-                external_id: eb83fb91-1a42-478f-adde-b0b790c99b5e,
-                first_name: John,
-                last_name: Smith,
-                email: john@email.com,
+                external_id: eb83fb91-1a42-478f-adde-b0b790c99b5e
+                first_name: John
+                last_name: Smith
+                email: john@email.com
                 contact_number: '1300234567'
       responses:
         '200':
@@ -1993,10 +1993,10 @@ paths:
               example:
                 debtor:
                   debtor_id: e9f17c2b-8dac-49f4-b022-739e62e0ab47
-                  external_id: eb83fb91-1a42-478f-adde-b0b790c99b5e,
-                  first_name: John,
-                  last_name: Smith,
-                  email: john@email.com,
+                  external_id: eb83fb91-1a42-478f-adde-b0b790c99b5e
+                  first_name: John
+                  last_name: Smith
+                  email: john@email.com
                   contact_number: '1300234567'
                 payment_token: f8fb61a7-5589-4bf7-b7df-3b53e67d7195
                 capture_uri: http://localhost:8080/capture/f8fb61a7-5589-4bf7-b7df-3b53e67d7195
