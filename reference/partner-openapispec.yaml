@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.63
+  version: 0.0.64
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1161,6 +1161,135 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+
+  /api/v3/partner/firms:
+    post:
+      summary: Create a new firm
+      description: >
+        The createFirm API endpoint facilitates the onboarding of a new firm into the current system. The endpoint allows clients to initiate the onboarding process for their respective firms. Upon a successful http response, the firm's status will be set to "pending" in FeeWise.
+        The onboarding process follows a two-step procedure. Initially, the operational team will review the firm's details and perform necessary verifications. Once the firm's information has been validated and approved by the operational team, the firm will be officially onboarded into FeeWise.
+        During the onboarding approval process, a webhook will be triggered for the "firm.onboarded" event. The webhook serves as a notification mechanism, enabling integrations and external systems to be updated about the newly onboarded firm.
+        It is important to note that the onboarding process might take some time to complete, as it involves manual verification steps by the operational team. However, clients can track the status of their firm through FeeWise and receive real-time updates through the webhook once the firm onboarding is successfully approved.
+        Please ensure that all necessary information is provided accurately when using this API endpoint to avoid delays in the onboarding process. Additionally, clients should handle the webhook appropriately to capture the "firm.onboarded" event and update their internal systems accordingly.
+
+      operationId: createFirm
+      tags:
+        - Firm
+      requestBody:
+        description: Firm Details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFirm'
+            example:
+              firm_details: 
+                external_id: firm_123"
+                legal_name: My Firm LLC
+                legal_identifier: '0654047864'
+                legal_structure: PrivateCorporation
+                trading_name: My Firm
+                tax_id: '12-3456789'
+                website: https://rapidpaylegal.com.au/
+                support_email: support@getfeewise.com
+                support_number: (323) 467-7124
+                contact_email: support@getfeewise.com
+                contact_number: (323) 467-7124
+                billing_email: support@getfeewise.com
+                billing_number: (323) 467-7124
+              address:
+                address1: 5969 Melrose Ave,
+                city: Los Angeles
+                state_code: CA
+                postal_code: '90038'
+                country_code: US
+              office_account:
+                account_type: Office
+                country_code: AU
+                account_name: John Smith
+                account_holder_type: Company
+                branch_code: '110000000'
+                account_number: '000123456789'
+                address: 123 Main St
+                alias: Office Account
+                bank: Rapid Bank of Australia
+              trust_account:
+                account_type: Trust
+                country_code: AU
+                account_name: John Smith
+                account_holder_type: Company
+                branch_code: '110000000'
+                account_number: '000111111116'
+                address: 123 Main St
+                alias: Trust Account
+                bank: Rapid Bank of Australia
+
+      responses:
+        '201':
+          description: Firm successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateFirmResponse'
+              example:
+                firm_details:
+                  firm_id: 6901804a-66eb-4ec9-b01d-931bd2cc6940
+                  external_id: firm_123"
+                  legal_name: My Firm LLC
+                  legal_identifier: '0654047864'
+                  legal_structure: PrivateCorporation
+                  trading_name: My Firm
+                  tax_id: '12-3456789'
+                  website: https://rapidpaylegal.com.au/
+                  support_email: support@getfeewise.com
+                  support_number: (323) 467-7124
+                  contact_email: support@getfeewise.com
+                  contact_number: (323) 467-7124
+                  billing_email: support@getfeewise.com
+                  billing_number: (323) 467-7124
+                address:
+                  address1: 5969 Melrose Ave,
+                  city: Los Angeles
+                  state_code: CA
+                  postal_code: '90038'
+                  country_code: US
+                accounts:
+                  - account_id: b6fb6bd2-1ae1-4784-896f-1d00a9457c44
+                    account_type: Office
+                    country_code: AU
+                    account_name: John Smith
+                    account_holder_type: Company
+                    branch_code: '110000000'
+                    account_number: '000123456789'
+                    address: 123 Main St
+                    alias: Office Account
+                    bank: Rapid Bank of Australia
+                    is_default: true
+                  - account_id: 4c2cc488-1d71-4a2b-b226-4c6e5ce85470
+                    account_type: Trust
+                    country_code: AU
+                    account_name: John Smith
+                    account_holder_type: Company
+                    branch_code: '110000000'
+                    account_number: '000111111116'
+                    address: 123 Main St
+                    alias: Trust Account
+                    bank: Rapid Bank of Australia
+                    is_default: true
+                roles: []
+        '400':
+          description: Bad JSON request or request contains an invalid uuid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Channel Partner Not Found
+        '409':
+          description: External ID is not unique or a Bank Account is invalid
+        '500':
+          description: Internal Server Error
 
 
   /api/v3/partner/firms/{firm_id}/magic-link:
@@ -3411,3 +3540,196 @@ components:
         capture_uri:
           type: string
           description: The URI to capture the payment details for this payment token
+
+    CreateFirm:
+      type: object
+      properties:
+        firm_details:
+          $ref: '#/components/schemas/FirmDetails'
+        address:
+          $ref: '#/components/schemas/Address'
+        office_account:
+          type: object
+          properties:
+            account_name:
+              type: string
+            account_number:
+              type: string
+            branch_code:
+              type: string
+            bank:
+              type: string
+        trust_account:
+          type: object
+          properties:
+            account_name:
+              type: string
+            account_number:
+              type: string
+            branch_code:
+              type: string
+            bank:
+              type: string
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Person'
+          description: Roles can be either Representative, Executives or Owners.
+        metadata:
+          additionalProperties:
+            maxLength: 500
+            type: string
+            description: >-
+              Set of key value pairs that you can attach to an object. Useful for storing additional information about the object in a structured format.
+
+      required:
+        - firm_details
+        - address
+        - office_account
+
+    CreateFirmResponse:
+      type: object
+      properties:
+        firm_details:
+          $ref: '#/components/schemas/FirmDetails'
+        address:
+          $ref: '#/components/schemas/Address'
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BankAccount'
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Person'
+      required:
+        - firm_details
+        - address
+        - accounts
+
+    FirmDetails:
+      type: object
+      properties:
+        firm_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        external_id:
+          type: string
+        legal_name:
+          type: string
+        legal_identifier:
+          type: string
+        legal_structure:
+          type: string
+          enum:
+            - MultiMemberLLC
+            - PrivateCorporation
+            - PrivatePartnership
+            - PublicCorporation
+            - PublicPartnership
+            - SingleMemberLLC
+            - SoleProprietorship
+            - UnincorporatedAssociation
+            - Individual
+        tax_id:
+          type: string
+        trading_name:
+          type: string
+        website:
+          type: string
+        support_email:
+          type: string
+          oneOf:
+          - enum: [""]
+          - format: email
+        support_number:
+          type: string
+        contact_email:
+          type: string
+          format: email
+        contact_number:
+          type: string
+        billing_email:
+          type: string
+          format: email
+        billing_number:
+          type: string
+        status:
+          type: string
+          description: Firm's status.
+          enum:
+            - Pending
+            - Awaiting
+            - Active
+            - Closed
+      required:
+        - legal_name
+        - legal_structure
+        - tax_id
+        - trading_name
+        - contact_number
+        - contact_email
+        - billing_email
+        - website
+
+
+    Address:
+      type: object
+      properties:
+        address1:
+          type: string
+        address2:
+          type: string
+        city:
+          type: string
+        state_code:
+          type: string
+        postal_code:
+          type: string
+        country_code:
+          type: string
+      required:
+        - address1
+        - city
+        - state_code
+        - postal_code
+        - country_code
+
+    Person:
+      type: object
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        title:
+          type: string
+        phone:
+          type: string
+        national_id:
+          type: string
+        email:
+          type: string
+        address:
+          $ref: '#/components/schemas/Address'
+        date_of_birth:
+          type: string
+          format: date
+        is_executive:
+          type: boolean
+          description: Indicates if the individual bears substantial responsibility for controlling, managing, or directing the organization.
+        is_representative:
+          type: boolean
+          description: Representative refers to the designated primary representative of the account, authorized by the business to provide both personal information about themselves and general details about the account. It is essential to note that there can only be one representative assigned to the account at any given time, and during the account creation, this role is typically assigned to the individual responsible for opening the account.
+        ownership_percentage:
+          type: number
+          format: double
+          description: The percent owned of firm's legal entity owned by the person.
+        ssn_last_4:
+          type: string
+          description: The last four digits of the person's Social Security number, US only
+          
