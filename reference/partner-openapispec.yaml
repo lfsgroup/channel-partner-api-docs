@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.65
+  version: 0.0.67
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1184,8 +1184,8 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateFirm'
             example:
-              firm_details: 
-                external_id: firm_123"
+              company:
+                external_id: firm_123
                 legal_name: My Firm LLC
                 legal_identifier: '0654047864'
                 legal_structure: PrivateCorporation
@@ -1231,9 +1231,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CreateFirmResponse'
+                $ref: '#/components/schemas/FirmDetails'
               example:
-                firm_details:
+                company:
                   firm_id: 6901804a-66eb-4ec9-b01d-931bd2cc6940
                   external_id: firm_123"
                   legal_name: My Firm LLC
@@ -1838,7 +1838,7 @@ paths:
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
-            name: uuid  
+            name: uuid
     post:
       summary: Create a Charge
       description: |
@@ -1954,7 +1954,7 @@ paths:
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
-            name: uuid            
+            name: uuid
     post:
       summary: Create a Charge, and pay directly, using a customer payment token.
       description: |
@@ -2159,7 +2159,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'                
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   securitySchemes:
@@ -2891,20 +2891,27 @@ components:
           $ref: "#/components/schemas/AccountType"
         account_name:
           type: string
+        account_holder_type:
+          type: string
+          enum:
+            - Company
+            - Individual
         account_number:
           type: string
         branch_code:
           type: string
+        alias:
+          type: string
         bank:
+          type: string
+        country_code:
           type: string
         is_default:
           type: boolean
       required:
-        - account_id
         - account_type
         - account_number
         - branch_code
-        - is_default
 
     BankAccountResponse:
       type: object
@@ -3562,32 +3569,14 @@ components:
     CreateFirm:
       type: object
       properties:
-        firm_details:
-          $ref: '#/components/schemas/FirmDetails'
+        company:
+          $ref: '#/components/schemas/Company'
         address:
           $ref: '#/components/schemas/Address'
         office_account:
-          type: object
-          properties:
-            account_name:
-              type: string
-            account_number:
-              type: string
-            branch_code:
-              type: string
-            bank:
-              type: string
+          $ref: '#/components/schemas/BankAccount'
         trust_account:
-          type: object
-          properties:
-            account_name:
-              type: string
-            account_number:
-              type: string
-            branch_code:
-              type: string
-            bank:
-              type: string
+          $ref: '#/components/schemas/BankAccount'
         roles:
           type: array
           items:
@@ -3601,15 +3590,15 @@ components:
               Set of key value pairs that you can attach to an object. Useful for storing additional information about the object in a structured format.
 
       required:
-        - firm_details
+        - company
         - address
         - office_account
 
-    CreateFirmResponse:
+    FirmDetails:
       type: object
       properties:
-        firm_details:
-          $ref: '#/components/schemas/FirmDetails'
+        company:
+          $ref: '#/components/schemas/Company'
         address:
           $ref: '#/components/schemas/Address'
         accounts:
@@ -3621,14 +3610,19 @@ components:
           items:
             $ref: '#/components/schemas/Person'
       required:
-        - firm_details
+        - company
         - address
         - accounts
 
-    FirmDetails:
+    Company:
       type: object
       properties:
         firm_id:
+          description: | 
+              Create the company details for a firm.
+              NB the field `firm_id`, must NOT be supplied during `create`. If supplied, BadResponse will be returned.
+              The firm_id is used by FeeWise to refer to a firm. It is populated once the firm has been created and will be available in the response. (or any GET Firm requests)
+              See external_id
           type: string
           format: uuid
           x-go-type: uuid.UUID
@@ -3636,6 +3630,7 @@ components:
             path: github.com/gofrs/uuid
             name: uuid
         external_id:
+          description: Allows callers to use their own system id, for the firm. external_id will always be returned in any responses, where a FeeWise Firm is returned.
           type: string
         legal_name:
           type: string
@@ -3659,6 +3654,7 @@ components:
           type: string
         website:
           type: string
+          format: uri
         support_email:
           type: string
           oneOf:
@@ -3732,6 +3728,7 @@ components:
           type: string
         email:
           type: string
+          format: email
         address:
           $ref: '#/components/schemas/Address'
         date_of_birth:
@@ -3750,4 +3747,6 @@ components:
         ssn_last_4:
           type: string
           description: The last four digits of the person's Social Security number, US only
-          
+
+
+
