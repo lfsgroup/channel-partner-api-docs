@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.67
+  version: 0.0.68
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -2124,13 +2124,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Debtor'
+              $ref: '#/components/schemas/PaymentTokenBody'
             example:
+              debtor:
                 external_id: eb83fb91-1a42-478f-adde-b0b790c99b5e
                 first_name: John
                 last_name: Smith
                 email: john@email.com
                 contact_number: '1300234567'
+              token_type: SingleUse
       responses:
         '200':
           description: Return the customer and payment token.
@@ -2604,6 +2606,27 @@ components:
           $ref: '#/components/schemas/Artifact'
       required:
         - artifact_details
+
+    PaymentTokenBody:
+      type: object
+      properties:
+        debtor:
+          $ref: '#/components/schemas/Debtor'
+        token_type:
+          $ref: '#/components/schemas/TokenType'
+      required:
+        - debtor
+
+    TokenType:
+      type: string
+      description: | 
+            A token represents a customer's payment details. 
+            Payment Tokens can be used in place of a payment method, for Charge types. 
+            If the token type is SingleUse, it can only be used once.
+      enum:
+        - SingleUse
+        - MultiUse
+      default: SingleUse
 
     Debtor:
       type: object
@@ -3565,6 +3588,8 @@ components:
         capture_uri:
           type: string
           description: The URI to capture the payment details for this payment token
+        token_type:
+          $ref: '#/components/schemas/TokenType'
 
     CreateFirm:
       type: object
