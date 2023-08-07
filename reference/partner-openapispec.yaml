@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.68
+  version: 0.0.69
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1288,6 +1288,105 @@ paths:
           description: Channel Partner Not Found
         '409':
           description: External ID is not unique or a Bank Account is invalid
+        '500':
+          description: Internal Server Error
+    get:
+      summary: Get firms
+      description: get all firms for current channel partner
+      operationId: getFirms
+      tags:
+        - Firm
+
+      responses:
+        '200':
+          description: Firms have been retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FirmsResponse'
+              example:
+                firms: 
+                - company:
+                    firm_id: 6901804a-66eb-4ec9-b01d-931bd2cc6940
+                    external_id: firm_123"
+                    legal_name: My Firm LLC
+                    legal_identifier: '0654047864'
+                    legal_structure: PrivateCorporation
+                    trading_name: My Firm
+                    tax_id: '12-3456789'
+                    website: https://rapidpaylegal.com.au/
+                    support_email: support@getfeewise.com
+                    support_number: (323) 467-7124
+                    contact_email: support@getfeewise.com
+                    contact_number: (323) 467-7124
+                    billing_email: support@getfeewise.com
+                    billing_number: (323) 467-7124
+                    status: Active
+                  address:
+                    address1: 5969 Melrose Ave,
+                    city: Los Angeles
+                    state_code: CA
+                    postal_code: '90038'
+                    country_code: US
+                  accounts:
+                  - account_id: b6fb6bd2-1ae1-4784-896f-1d00a9457c44
+                    account_type: Office
+                    country_code: AU
+                    account_name: John Smith
+                    account_holder_type: Company
+                    branch_code: '110000000'
+                    account_number: '000123456789'
+                    address: 123 Main St
+                    alias: Office Account
+                    bank: Rapid Bank of Australia
+                    is_default: true
+                  - account_id: 4c2cc488-1d71-4a2b-b226-4c6e5ce85470
+                    account_type: Trust
+                    country_code: AU
+                    account_name: John Smith
+                    account_holder_type: Company
+                    branch_code: '110000000'
+                    account_number: '000111111116'
+                    address: 123 Main St
+                    alias: Trust Account
+                    bank: Rapid Bank of Australia
+                    is_default: true
+                - company:
+                    firm_id: 8901804a-66eb-4ec9-b01d-931bd2cc6945
+                    external_id: firm_456
+                    legal_name: My Firm LLC 2
+                    legal_identifier: '0654047864'
+                    legal_structure: PrivateCorporation
+                    trading_name: My Firm 2
+                    tax_id: '12-3456789'
+                    website: https://rapidpaylegal.com.au/
+                    support_email: support@getfeewise.com
+                    support_number: (323) 467-7124
+                    contact_email: support@getfeewise.com
+                    contact_number: (323) 467-7124
+                    billing_email: support@getfeewise.com
+                    billing_number: (323) 467-7124
+                    status: Active
+                  address:
+                    address1: 5969 Melrose Ave,
+                    city: Los Angeles
+                    state_code: CA
+                    postal_code: '90038'
+                    country_code: US
+                  accounts:
+                  - account_id: b6fb6bd2-1ae1-4784-896f-1d00a9457c44
+                    account_type: Office
+                    country_code: AU
+                    account_name: John Smith
+                    account_holder_type: Company
+                    branch_code: '110000000'
+                    account_number: '000123456789'
+                    address: 123 Main St
+                    alias: Office Account
+                    bank: Rapid Bank of Australia
+                    is_default: true
+        '404':
+          description: Channel Partner Not Found
         '500':
           description: Internal Server Error
 
@@ -3618,6 +3717,16 @@ components:
         - company
         - address
         - office_account
+
+    FirmsResponse:
+      type: object
+      properties:
+        firms:
+          type: array
+          items:
+            $ref: '#/components/schemas/FirmDetails'
+      required:
+        - firms
 
     FirmDetails:
       type: object
