@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.70
+  version: 0.0.71
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -2305,6 +2305,108 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v3/partner/firms/{firm_id}/charges/search:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid  
+    get:
+      summary: Query metadata to search for Charges, for the given firm
+      description: Retrieve a firm's charges that are associated with a specific metadata key-value pair
+      operationId: searchChargesByMetadata
+      tags:
+        - Firm      
+      requestBody:
+        description: Metadata search details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MetadataSearch'
+            example:
+              key: external_id
+              value: 83aac8f5-f5da-4779-b852-bdafa1575e09
+      responses:
+        '200':
+          description: Return the objects that match the metadata key value pairs.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ChargeResponse'
+              example:
+                - charge:
+                    charge_id: bf311c82-a0d1-4e31-998b-f00de9250d4a
+                    firm_id: facade00-0000-4000-a000-000000000000
+                    amount: '123.45'
+                    settlement_account_type: Office
+                    description: Charge for case setup
+                    debtor: {
+                      external_id: case-client-1234,
+                      first_name: Frank,
+                      last_name: Smith,
+                      email: frank@email.com,
+                      contact_number: '1300234567'
+                    }
+                    notes: [
+                      'Got to know client',
+                      'Created initial case file'
+                    ]
+                    payment_methods_override: [
+                      'Card',
+                      'DirectDebit'
+                    ]
+                    store_payment_methods: [
+                      'Card'
+                    ]
+                    payment_uri: http://localhost:8080/pay/d3010d67-06d3-46bf-be6a-b894ec743c96
+                    metadata: {
+                      "external_id": 83aac8f5-f5da-4779-b852-bdafa1575e09,
+                    }
+                - charge:
+                    charge_id: 86a195f4-e8f4-415c-90dd-95bfba686976
+                    firm_id: facade00-0000-4000-a000-000000000000
+                    amount: '2345.67'
+                    settlement_account_type: Office
+                    description: Charge for case setup
+                    debtor: {
+                      external_id: case-client-1234,
+                      first_name: Frank,
+                      last_name: Smith,
+                      email: frank@email.com,
+                      contact_number: '1300234567'
+                    }
+                    notes: [
+                      'Got to know client',
+                      'Created initial case file'
+                    ]
+                    payment_methods_override: [
+                      'Card',
+                      'DirectDebit'
+                    ]
+                    store_payment_methods: [
+                      'Card'
+                    ]
+                    payment_uri: http://localhost:8080/pay/d3010d67-06d3-46bf-be6a-b894ec743c96
+                    metadata: {
+                      "external_id": 83aac8f5-f5da-4779-b852-bdafa1575e09,
+                    }                    
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   securitySchemes:
     PartnerAuth:
@@ -3925,5 +4027,11 @@ components:
           type: string
           description: The last four digits of the person's Social Security number, US only
 
-
+    MetadataSearch:
+      type: object
+      properties:
+        key:
+          type: string
+        value:
+          type: string
 
