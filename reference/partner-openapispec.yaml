@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.71
+  version: 0.0.72
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -2293,6 +2293,12 @@ paths:
       responses:
         '204':
           description: Payment token has been successfully deleted.
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '404':
           description: Firm or token not found
           content:
