@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.72
+  version: 0.0.73
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -4026,8 +4026,11 @@ components:
           type: boolean
           description: Representative refers to the designated primary representative of the account, authorized by the business to provide both personal information about themselves and general details about the account. It is essential to note that there can only be one representative assigned to the account at any given time, and during the account creation, this role is typically assigned to the individual responsible for opening the account.
         ownership_percentage:
-          type: number
-          format: double
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
           description: The percent owned of firm's legal entity owned by the person.
         ssn_last_4:
           type: string
