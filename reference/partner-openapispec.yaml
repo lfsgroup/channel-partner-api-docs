@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.73
+  version: 0.0.74
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -3420,6 +3420,7 @@ components:
             - $ref: '#/components/schemas/Payment'
             - $ref: '#/components/schemas/Payout'
             - $ref: '#/components/schemas/PaymentAuthorisedEvent'
+            - $ref: '#/components/schemas/FirmStatusUpdatedEvent'
 
     ApiKeyRotation:
       type: object
@@ -3878,7 +3879,14 @@ components:
             $ref: '#/components/schemas/FirmDetails'
       required:
         - firms
-
+    FirmOnboardingStatus:
+          type: string
+          description: Firm's status.
+          enum:
+            - Pending
+            - Awaiting
+            - Active
+            - Closed
     FirmDetails:
       type: object
       properties:
@@ -3958,13 +3966,7 @@ components:
         billing_number:
           type: string
         status:
-          type: string
-          description: Firm's status.
-          enum:
-            - Pending
-            - Awaiting
-            - Active
-            - Closed
+          $ref: '#/components/schemas/FirmOnboardingStatus'
       required:
         - legal_name
         - legal_structure
@@ -4043,4 +4045,20 @@ components:
           type: string
         value:
           type: string
-
+  
+    FirmStatusUpdatedEvent:
+      type: object
+      properties:
+        firm_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        legal_name:
+          type: string
+        trading_name:
+          type: string
+        status:
+          $ref: '#/components/schemas/FirmOnboardingStatus'
