@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.74
+  version: 0.0.76
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1305,7 +1305,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/FirmsResponse'
               example:
-                firms: 
+                firms:
                 - company:
                     firm_id: 6901804a-66eb-4ec9-b01d-931bd2cc6940
                     external_id: firm_123"
@@ -1636,6 +1636,117 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v3/partner/firms/{firm_id}/upload:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+      - in: query
+        name: person_id
+        required: false
+        description: |
+          person_id is required when the file_purpose is "identity_document".
+          The person_id can be retrieved from the firm details endpoint.
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+      - name: file_purpose
+        in: query
+        description: Purpose of the uploaded file, must match one of the enum values
+        required: true
+        schema:
+          type: string
+          description: |
+            file_purpose describes the purpose of a file being uploaded to FeeWise
+            e.g. An identity document, a tax document required during firm onboarding
+                 or, the logo of a firm
+            supported file types are: 
+              business_logo .png, .jpg, .jpeg, 
+              identity_document .pdf, .png, .jpg, .jpeg,
+          enum:
+            - business_logo
+            - business_icon
+            - identity_document
+            - tax_document_user_upload
+    post:
+      operationId: postUpload
+      description: |
+        Upload files to FeeWise.
+        nb Content-Type header must be multipart/form-data
+        example 
+        curl -X POST -F "fwUploadFile=@/path/to/file.png" \
+            http://localhost:8080/api/v3/partner/firms/<firm_id>/upload?file_purpose=identity_document \
+              --header 'X-CHANNEL-PARTNER-ID: <channel partner id>'         
+              --header 'X-API-KEY: <api key>' \
+              --header "Content-Type: multipart/form-data"
+      requestBody:
+        description: File to be uploaded to FeeWise
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                fwUploadFile:
+                  type: string
+                  format: binary
+      tags:
+        - Firm
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                properties:
+                  url:
+                    type: string
+                    format: uri
+                    description: URL of the uploaded file, in FeeWise.
+                  uploaded_file_name:
+                    type: string
+                    description: Name of the uploaded file.
+                  uploaded_file_size_in_bytes:
+                    type: integer
+                    description: Size of the uploaded file, in bytes.
+
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '401':
+          description: Unauthorized request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '403':
+          description: Forbidden request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+        '500':
+          description: Generic Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
 
   /api/v3/partner/rotatekey:
@@ -2323,13 +2434,13 @@ paths:
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
-            name: uuid  
+            name: uuid
     get:
       summary: Query metadata to search for Charges, for the given firm
       description: Retrieve a firm's charges that are associated with a specific metadata key-value pair
       operationId: searchChargesByMetadata
       tags:
-        - Firm      
+        - Firm
       requestBody:
         description: Metadata search details
         required: true
@@ -2405,7 +2516,7 @@ paths:
                     payment_uri: http://localhost:8080/pay/d3010d67-06d3-46bf-be6a-b894ec743c96
                     metadata: {
                       "external_id": 83aac8f5-f5da-4779-b852-bdafa1575e09,
-                    }                    
+                    }
         '500':
           description: Error processing
           content:
@@ -4045,7 +4156,7 @@ components:
           type: string
         value:
           type: string
-  
+
     FirmStatusUpdatedEvent:
       type: object
       properties:
