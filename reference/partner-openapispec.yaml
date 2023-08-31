@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.76
+  version: 0.0.77
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -2243,6 +2243,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Charge was unsuccessful and the payment failed to process.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: Your card was declined.
+                title: Conflict
+                type: card_error
+                error_context:
+                  code: card_declined
+                  decline_code: generic_decline
         '500':
           description: Error processing charge
           content:
@@ -3165,6 +3178,14 @@ components:
           type: string
         type:
           type: string
+        error_context:
+          type: object
+          description: Optional fields, may be populated with additional context of the error.
+          properties:
+            code:
+              type: string
+            decline_code:
+              type: string
 
 
     Event:
