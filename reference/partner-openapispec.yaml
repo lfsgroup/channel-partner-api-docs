@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.78
+  version: 0.0.80
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -14,6 +14,8 @@ tags:
     description: Webhook management
   - name: Firm
     description: View details about a firm and it's accounts.
+  - name: Partner
+    description: View and manage partner details.
   - name: Bank Account
     description: View details about a firm linked bank accounts.
   - name: API Key
@@ -1637,6 +1639,50 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v3/partner/branding:
+
+    get:
+      operationId: getPartnerBranding
+      description: Get partner branding. Nb if branding is not set, an empty model will be returned
+      tags:
+        - Partner
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                properties:
+                  branding:
+                    $ref: "#/components/schemas/PartyBranding"
+              example:
+                branding:
+                  colour: "#rrggbb"
+                  icon: http://somehost/firm/branding/58919984-29d4-4d6a-8469-84a97eb298df-icon-b5073bc0-3ea9-44bb-bbf3-d875549cd8fb.jpg
+                  logo: http://somehost/firm/branding/58919984-29d4-4d6a-8469-84a97eb298df-logo-88425486-205a-4610-ab26-ab2a14cf5d14.png
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '401':
+          description: Unauthorized request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+        '500':
+          description: Generic Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+
+
+
   /api/v3/partner/firms/{firm_id}/upload:
     parameters:
       - in: path
@@ -1688,7 +1734,7 @@ paths:
         example 
         curl -X POST -F "fwUploadFile=@/path/to/file.png" \
             http://localhost:8080/api/v3/partner/firms/<firm_id>/upload?file_purpose=identity_document \
-              --header 'X-CHANNEL-PARTNER-ID: <channel partner id>'         
+              --header 'X-CHANNEL-PARTNER-ID: <channel partner id>'  \
               --header 'X-API-KEY: <api key>' \
               --header "Content-Type: multipart/form-data"
       requestBody:
@@ -1751,13 +1797,15 @@ paths:
   /api/v3/partner/upload:
     post:
       operationId: postPartnerLogoUpload
+      tags:
+        - Partner
       description: |
         Upload a partner logo to FeeWise. This logo will be used wherever FeeWise and the partner have agreed to show a logo in the FeeWise UI.
         nb Content-Type header must be multipart/form-data
         example 
         curl -X POST -F "fwUploadFile=@/path/to/file.png" \
             http://localhost:8080/api/v3/partner/upload \
-              --header 'X-CHANNEL-PARTNER-ID: <channel partner id>'         
+              --header 'X-CHANNEL-PARTNER-ID: <channel partner id>' \
               --header 'X-API-KEY: <api key>' \
               --header "Content-Type: multipart/form-data"
       requestBody:
@@ -4253,3 +4301,14 @@ components:
           type: string
         status:
           $ref: '#/components/schemas/FirmOnboardingStatus'
+
+    PartyBranding:
+      description: Branding for a party (firm or channel partner)
+      type: object
+      properties:
+        logo:
+          type: string
+        icon:
+          type: string
+        colour:
+          type: string
