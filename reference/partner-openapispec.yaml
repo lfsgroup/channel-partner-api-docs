@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.80
+  version: 0.0.81
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -4244,6 +4244,8 @@ components:
       properties:
         first_name:
           type: string
+        middle_name:
+          type: string
         last_name:
           type: string
         title:
@@ -4276,6 +4278,16 @@ components:
         ssn_last_4:
           type: string
           description: The last four digits of the person's Social Security number, US only
+      required:
+        - first_name
+        - last_name
+        - email
+        - date_of_birth
+        - address
+        - title
+        - is_executive
+        - is_representative
+        - ownership_percentage
 
     MetadataSearch:
       type: object
