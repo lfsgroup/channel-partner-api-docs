@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.81
+  version: 0.0.82
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1226,6 +1226,10 @@ paths:
                 address: 123 Main St
                 alias: Trust Account
                 bank: Rapid Bank of Australia
+              terms_of_service:   
+                document_name: FeeWise Terms of Service
+                accepted: '2022-10-26T04:59:59.690Z'
+                accepted_ip: '192.168.1.1'
 
       responses:
         '201':
@@ -1280,6 +1284,10 @@ paths:
                     bank: Rapid Bank of Australia
                     is_default: true
                 roles: []
+                terms_of_service:   
+                  document_name: FeeWise Terms of Service
+                  accepted: '2022-10-26T04:59:59.690Z'
+                  accepted_ip: '192.168.1.1'
         '400':
           description: Bad JSON request or request contains an invalid uuid
           content:
@@ -4103,11 +4111,32 @@ components:
             type: string
             description: >-
               Set of key value pairs that you can attach to an object. Useful for storing additional information about the object in a structured format.
+        terms_of_service:
+          $ref: '#/components/schemas/TermsOfService'
 
       required:
         - company
         - address
         - office_account
+        - terms_of_service
+
+    TermsOfService:
+      type: object
+      description: Document that the firm has signed and provided, e.g. FeeWise Terms of Service
+      properties:
+        document_name:
+          type: string
+        accepted:
+          type: string
+          format: date-time
+        accepted_ip:
+          type: string
+          format: ipv4
+      required:
+        - document_name
+        - accepted
+        - accepted_ip
+
 
     FirmsResponse:
       type: object
@@ -4141,6 +4170,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Person'
+        terms_of_service:
+          $ref: '#/components/schemas/TermsOfService'
       required:
         - company
         - address
