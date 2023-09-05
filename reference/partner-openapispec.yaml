@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.82
+  version: 0.0.84
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -859,6 +859,7 @@ paths:
             name: uuid
     delete:
       description: Delete a webhook by id
+      summary: Delete Webhook
       operationId: deleteWebhook
       tags:
         - Webhook
@@ -1015,6 +1016,7 @@ paths:
         If not supplied, payouts for the last 24 hours are returned.
         The channel partner is derived from the PartnerAuth security context
 
+      summary: Get payouts for the channel partner
       operationId: getChannelPartnerPayouts
       tags:
         - Payouts
@@ -1067,6 +1069,7 @@ paths:
       description: |
         Get list of payouts for the specified firm. 
         If the since parameter is not supplied, payouts for the last 24 hours are returned.
+      summary: Get payouts for the specified firm
       operationId: getFirmPayouts
       tags:
         - Payouts
@@ -1226,7 +1229,7 @@ paths:
                 address: 123 Main St
                 alias: Trust Account
                 bank: Rapid Bank of Australia
-              terms_of_service:   
+              terms_of_service:
                 document_name: FeeWise Terms of Service
                 accepted: '2022-10-26T04:59:59.690Z'
                 accepted_ip: '192.168.1.1'
@@ -1284,7 +1287,7 @@ paths:
                     bank: Rapid Bank of Australia
                     is_default: true
                 roles: []
-                terms_of_service:   
+                terms_of_service:
                   document_name: FeeWise Terms of Service
                   accepted: '2022-10-26T04:59:59.690Z'
                   accepted_ip: '192.168.1.1'
@@ -1651,6 +1654,7 @@ paths:
 
     get:
       operationId: getPartnerBranding
+      summary: Get partner branding
       description: Get partner branding. Nb if branding is not set, an empty model will be returned
       tags:
         - Partner
@@ -1736,6 +1740,7 @@ paths:
             - tax_document_user_upload
     post:
       operationId: postUpload
+      summary: Upload file
       description: |
         Upload files to FeeWise.
         nb Content-Type header must be multipart/form-data
@@ -1807,6 +1812,7 @@ paths:
       operationId: postPartnerLogoUpload
       tags:
         - Partner
+      summary: Upload partner logo
       description: |
         Upload a partner logo to FeeWise. This logo will be used wherever FeeWise and the partner have agreed to show a logo in the FeeWise UI.
         nb Content-Type header must be multipart/form-data
@@ -1870,6 +1876,7 @@ paths:
         Produces a new API-KEY. This new key and the previous key will both be valid until they expire.
         The key expiry is set by system defaults but may be customised for this specific key in the request.
       operationId: rotateApiKey
+      summary: Rotate API Key
       tags:
         - API Key
       requestBody:
@@ -1961,6 +1968,7 @@ paths:
     post:
       description: |
         Create a matter, with all matter information, debtor details and artifacts, invoice or trust deposit.
+      summary: Create a matter
       operationId: createMatter
       tags:
         - Payments
@@ -2069,6 +2077,7 @@ paths:
         Get a matter statement that is payable by the client via the returned URL. 
 
         Note: `to` and `from` are not yet implemented.
+      summary: Get a matter statement
       operationId: getMatterStatement
       tags:
         - Payments
@@ -2125,6 +2134,7 @@ paths:
           required: false
           schema:
             type: integer
+      summary: Get a matter debtor statement
       description: |
         Get a matter statement that is payable by the client via the returned URL. 
 
@@ -2281,7 +2291,7 @@ paths:
             path: github.com/gofrs/uuid
             name: uuid
     post:
-      summary: Create a Charge, and pay directly, using a customer payment token.
+      summary: Create Charge, and pay directly.
       description: |
         Create a charge (and pay for it) for a firm, using an existing customer payment token. 
         A list of customer payment tokens can be retrieved from the `/customers` endpoint.
