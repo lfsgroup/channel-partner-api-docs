@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.84
+  version: 0.0.85
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -4283,6 +4283,13 @@ components:
     Person:
       type: object
       properties:
+        person_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
         first_name:
           type: string
         middle_name:
