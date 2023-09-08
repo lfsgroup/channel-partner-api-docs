@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.85
+  version: 0.0.86
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1773,7 +1773,8 @@ paths:
                   url:
                     type: string
                     format: uri
-                    description: URL of the uploaded file, in FeeWise.
+                    description: |
+                      URL of the uploaded file. For security reasons the URL will be only provided for logo and icon files.
                   uploaded_file_name:
                     type: string
                     description: Name of the uploaded file.
