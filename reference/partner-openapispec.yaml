@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.86
+  version: 0.0.87
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1462,7 +1462,7 @@ paths:
             name: uuid
     get:
       summary: Get a firm
-      description: Get a firm by the firm's ID.  The firm will have the current sync status.
+      description: Deprecated, prefer /api/v3/partner/firms/firm-details.
       operationId: getFirm
       tags:
         - Firm
@@ -1491,7 +1491,110 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-
+  /api/v3/partner/firms/firm-details:
+    parameters:
+        - name: firm_id
+          in: query
+          description: Firm ID (UUID)
+          schema:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+        - name: external_id
+          in: query
+          description: External ID (string)
+          schema:
+            type: string
+    get:
+      summary: Get firm details
+      description: |
+           Get firm details by Firm ID (UUID) - This is the FeeWise unique ID for a firm OR
+           by External ID (string), the partner's own unique id for a firm. Both will return the same model
+      operationId: getFirmDetails
+      tags:
+        - Firm
+      responses:
+        '200':
+          description: Return the Firm.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FirmDetails'
+              example:
+                company:
+                    firm_id: 6901804a-66eb-4ec9-b01d-931bd2cc6940
+                    external_id: firm_123"
+                    legal_name: My Firm LLC
+                    legal_identifier: '0654047864'
+                    legal_structure: PrivateCorporation
+                    trading_name: My Firm
+                    tax_id: '12-3456789'
+                    website: https://rapidpaylegal.com.au/
+                    support_email: support@getfeewise.com
+                    support_number: (323) 467-7124
+                    contact_email: support@getfeewise.com
+                    contact_number: (323) 467-7124
+                    billing_email: support@getfeewise.com
+                    billing_number: (323) 467-7124
+                    status: Active
+                address:
+                    address1: 5969 Melrose Ave,
+                    city: Los Angeles
+                    state_code: CA
+                    postal_code: '90038'
+                    country_code: US
+                accounts:
+                  - account_id: b6fb6bd2-1ae1-4784-896f-1d00a9457c44
+                    account_type: Office
+                    country_code: AU
+                    account_name: John Smith
+                    account_holder_type: Company
+                    branch_code: '110000000'
+                    account_number: '000123456789'
+                    address: 123 Main St
+                    alias: Office Account
+                    bank: Rapid Bank of Australia
+                    is_default: true
+                terms_of_service:
+                  document_name: FeeWise Terms of Service
+                  accepted: '2023-09-18T14:30:00Z'
+                  accepted_ip: 192.168.1.100
+                roles:
+                  - address:
+                      address1: 476 W Los Angeles Ave
+                      address2: ''
+                      city: Moorpark
+                      state_code: California
+                      postal_code: '93021'
+                      country_code: US
+                    date_of_birth: '1969-03-12'
+                    first_name: testfirstname
+                    last_name: testlastname
+                    email: kimia.asarroodi+56@rapidpaylegal.com
+                    is_executive: true
+                    is_representative: true
+                    national_id: '123456789'
+                    ownership_percentage: '80'
+                    phone: '(201) 555-0123'
+                    ssn_last_4: '9595'
+                    title: Director
+        '400':
+          description: Bad request
+        '404':
+          description: Firm not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /api/v3/partner/firms/sync/{connect_id}:
     parameters:
       - in: path
