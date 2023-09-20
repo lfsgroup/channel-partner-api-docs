@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.88
+  version: 0.0.89
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -941,7 +941,7 @@ paths:
             type: string
             format: date-time
           required: false
-          example: "2022-07-29T15:33:00"
+          example: "2023-09-01T00:00:00Z"
         - in: query
           name: status
           description: Webhook send status
@@ -1824,7 +1824,7 @@ paths:
                     RGB hex colour code. Alpha channel not supported
                     The branding will be used in the FeeWise firm dashboard
               required:
-                - colour                  
+                - colour
             example:
               colour: "#ffffff"
 
@@ -4343,6 +4343,14 @@ components:
             $ref: '#/components/schemas/Person'
         terms_of_service:
           $ref: '#/components/schemas/TermsOfService'
+        metadata:
+          additionalProperties:
+            maxLength: 500
+            type: string
+          description: >-
+            Set of key value pairs attached to the firm object when it was created.
+          type: object
+
       required:
         - company
         - address
@@ -4463,6 +4471,10 @@ components:
           type: string
         national_id:
           type: string
+          description: |
+            This field may be required to be populated, depending on the region. 
+            For the US , this is the social security number, and is required.
+            For CA, this is the social insurance number.
         email:
           type: string
           format: email
@@ -4510,18 +4522,29 @@ components:
       type: object
       properties:
         firm_id:
+          description: FeeWise' unique ID for the firm
           type: string
           format: uuid
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
             name: uuid
+        external_id:
+          description: Unique ID for the firm, set by partners
+          type: string
         legal_name:
           type: string
         trading_name:
           type: string
         status:
           $ref: '#/components/schemas/FirmOnboardingStatus'
+        metadata:
+          additionalProperties:
+            maxLength: 500
+            type: string
+          description: >-
+            Set of key value pairs attached to the firm object when it was created.
+          type: object
 
     PartyBranding:
       description: Branding for a party (firm or channel partner)
