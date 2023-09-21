@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.89
+  version: 0.0.90
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1811,6 +1811,7 @@ paths:
     post:
       operationId: postFirmBrandingColour
       description: Update firm branding colour
+      summary: Set firm branding colour for firm dashboard
       requestBody:
         content:
           application/json:
@@ -1829,7 +1830,7 @@ paths:
               colour: "#ffffff"
 
       tags:
-        - Firms
+        - Firm
       responses:
         '204':
           description: Successful Response
