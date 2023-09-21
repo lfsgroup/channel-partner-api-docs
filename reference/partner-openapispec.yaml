@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.91
+  version: 0.0.92
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1899,6 +1899,20 @@ paths:
             - business_icon
             - identity_document
             - tax_document_user_upload
+      - name: document_side
+        in: query
+        description: The side of the "identity_document" being uploaded.
+        required: false
+        schema:
+          type: string
+          description: |
+            document_side specifies the side of an identity document being uploaded to FeeWise. 
+            If no side is explicitly provided, it will default to the front side.
+            Certain identity documents may require the submission of both their front and back sides for verification.
+          enum:
+            - front
+            - back
+          default: front
     post:
       operationId: postUpload
       summary: Upload file
