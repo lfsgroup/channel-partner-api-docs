@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.90
+  version: 0.0.91
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -2629,7 +2629,9 @@ paths:
       tags:
         - Firm
       requestBody:
-        description: Customer details
+        description: |
+          Customer and payment method details
+          nb If payment method is not provided, the default will be set to Card.
         required: true
         content:
           application/json:
@@ -2643,6 +2645,11 @@ paths:
                 email: john@email.com
                 contact_number: '1300234567'
               token_type: SingleUse
+              payment_methods: [
+                'Card',
+                'DirectDebit'
+              ]
+
       responses:
         '200':
           description: Return the customer and payment token.
@@ -3275,6 +3282,10 @@ components:
           $ref: '#/components/schemas/Debtor'
         token_type:
           $ref: '#/components/schemas/TokenType'
+        payment_methods:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentMethod'
       required:
         - debtor
 
