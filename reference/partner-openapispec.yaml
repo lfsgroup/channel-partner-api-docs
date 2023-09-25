@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.92
+  version: 0.0.93
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -4244,18 +4244,22 @@ components:
       - debtor
 
     CustomerPaymentMethod:
-      allOf:
-        - type: object
-          properties:
-            payment_token:
-              description: The unique ID for this customer's payment method, this can be used to charge the associated customer
-              type: string
-              format: uuid
-              x-go-type: uuid.UUID
-              x-go-type-import:
-                path: github.com/gofrs/uuid
-                name: uuid
-        - $ref: '#/components/schemas/CardPayment'
+      type: object
+      properties:
+        payment_token:
+          description: The unique ID for this customer's payment method, this can be used to charge the associated customer
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethod'
+        card:
+            $ref: '#/components/schemas/CardPayment'
+        debit:
+            $ref: '#/components/schemas/DebitPayment'
 
     CustomersResponse:
       type: object
