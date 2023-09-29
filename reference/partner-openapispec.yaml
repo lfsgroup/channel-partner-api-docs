@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.94
+  version: 0.0.95
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -347,6 +347,8 @@ paths:
       responses:
         '204':
           description: Successfully created firm account owner
+        '401':
+          description: Unauthorized error
         '404':
           description: Firm not found
         '409':
