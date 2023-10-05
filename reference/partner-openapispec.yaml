@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.95
+  version: 0.0.96
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1229,6 +1229,8 @@ paths:
         During the onboarding approval process, a webhook will be triggered for the "firm.onboarded" event. The webhook serves as a notification mechanism, enabling integrations and external systems to be updated about the newly onboarded firm.
         It is important to note that the onboarding process might take some time to complete, as it involves manual verification steps by the operational team. However, clients can track the status of their firm through FeeWise and receive real-time updates through the webhook once the firm onboarding is successfully approved.
         Please ensure that all necessary information is provided accurately when using this API endpoint to avoid delays in the onboarding process. Additionally, clients should handle the webhook appropriately to capture the "firm.onboarded" event and update their internal systems accordingly.
+        Roles must have one and only one representative.  Representative person is an authorised person who represents the firms. The representative must be either an executive or owner.
+        All owners of the firm with greater that 25% must be specified in the roles.
 
       operationId: createFirm
       tags:
@@ -4421,6 +4423,9 @@ components:
             $ref: '#/components/schemas/BankAccount'
         roles:
           type: array
+          description: |
+            Must have one and only one representative.  Representative person is an authorised person who represents the firms. The representative must be either an executive or owner.
+            All owners of the firm with greater that 25% must be specified.
           items:
             $ref: '#/components/schemas/Person'
         terms_of_service:
