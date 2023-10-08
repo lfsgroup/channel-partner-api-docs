@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.96
+  version: 0.0.97
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -3919,6 +3919,7 @@ components:
             - $ref: '#/components/schemas/Payout'
             - $ref: '#/components/schemas/PaymentAuthorisedEvent'
             - $ref: '#/components/schemas/FirmStatusUpdatedEvent'
+            - $ref: '#/components/schemas/PaymentNotificationEvent'
 
     ApiKeyRotation:
       type: object
@@ -4643,3 +4644,76 @@ components:
           type: string
         colour:
           type: string
+
+    PaymentNotificationEvent:
+      type: object
+      properties:
+        artifacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArtifactReceipt"
+        payment_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+          description: The payment ID
+          example: "7cf0f73e-4bf4-4f51-8cb4-8db2fcb91b54"
+        amount_paid:
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+          description: The amount paid
+          example: "125.00"
+        card_payment:
+          $ref: "#/components/schemas/CardPayment"
+        debit_payment:
+          $ref: "#/components/schemas/DebitPayment"
+        firm_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+          description: The firm ID
+          example: "8b14c470-f6df-4522-9dc6-8fc2bb59fc6f"
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethod'
+        payment_method_detail:
+          type: string
+          description: The payment method detail
+          example: "Visa ending in 1234"
+        payment_status:
+          type: string
+          description: The status of the payment.
+            Card payments have either a Successful or Failed status.
+            Direct Debit payments can have a Processing, Successful or Failed status.
+          enum:
+            - Successful
+            - Processing
+            - Failed
+            - N/A
+        failure_message:
+            type: string
+            description: When the payment_status is Failed 
+              this will show the reason for payment failure. 
+              E.g. Card does not have sufficient funds.
+        metadata:
+          additionalProperties:
+            maxLength: 500
+            type: string
+          description: >-
+            Set of key value pairs attached to the payment object when it was created.
+          type: object              
+      required:
+        - amount_paid
+        - payment_id
+        - artifacts
+        - firm_id
+        - payment_method
+        - payment_status
