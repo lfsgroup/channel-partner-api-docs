@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.97
+  version: 0.0.99
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -20,6 +20,8 @@ tags:
     description: View details about a firm linked bank accounts.
   - name: API Key
     description: API Key management
+  - name: Transactions
+    description: Retrieve payment transactions
   - name: Payouts
     description: Payouts from the platform to the firms
 
@@ -175,6 +177,186 @@ paths:
           description: Requested invoice not found
         '500':
           description: Error processing
+
+  /api/v3/partner/firms/{firm_id}/transactions:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+
+      - name: from
+        in: query
+        description: |
+          Return transactions since this timestamp. If not supplied, "from" defaults to the last 7 days".
+        schema:
+          type: string
+          format: date-time
+        required: false
+        example: '2023-09-20T00:00:00.000Z'
+
+      - name: to
+        in: query
+        description: |
+          Return payments created before timestamp. If not supplied, "to" defaults to now.
+        schema:
+          type: string
+          format: date-time
+        required: false
+        example: '2023-09-20T00:00:00.000Z'
+
+      - name: page
+        in: query
+        description: |
+          Pagination - Page number to return
+        schema:
+          type: integer
+          default: 1
+          maximum: 10000
+          minimum: 1
+
+      - name: page_size
+        in: query
+        description: |
+          Pagination - Transactions per page
+        schema:
+          type: integer
+          default: 20
+          maximum: 100
+          minimum: 5
+
+      - name: sort_by
+        in: query
+        description: Field to sort by, from the transaction model
+        schema:
+          type: string
+          enum: [account_type, amount, matter_reference, payment_date, payment_method, scheme, status]
+          default: payment_date
+
+      - name: order
+        in: query
+        description: |
+          Sorting order (asc or desc). Default is desc
+        schema:
+          type: string
+          enum: [asc, desc]
+          default: desc
+
+      - name: status_filter
+        in: query
+        explode: false
+        style: form
+        description: |
+          Filter by status
+          nb: Example usage, comma separated, in query... /transactions?status_filter=Paid,Initialised
+        schema:
+          type: array
+          items:
+            type: string
+            enum: [Clearing,Failed,Initialised,Paid,Processing]
+
+      - name: account_id_filter
+        in: query
+        explode: false
+        style: form
+        description: |
+          Filter by account id
+          nb: Example usage, comma separated, in query... /transactions?account_id=57d43c4e-f18d-40ae-9511-2aeafbf68def,b7dc7851-5cc4-41d5-8174-f00ad916f76b
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+
+
+    get:
+      description: |
+        Search for transactions for a channel partner..        
+        Filters supplied in the query params must *all* be met.
+      operationId: getFirmTransactions
+      tags:
+        - Transactions
+      responses:
+        '200':
+          description: List of transactions for the firm
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionsResponse'
+              example:
+                pagination_metadata:
+                  current_page_end_index: 10
+                  current_page_start_index: 1
+                  requested_from_date: "2023-09-05T00:00:00Z"
+                  requested_page: 1
+                  requested_page_size: 10
+                  requested_sort_by: payment_date
+                  requested_sort_order: desc
+                  requested_status_filter:
+                    - Processing
+                    - Paid
+                  requested_to_date: "2023-10-09T16:48:12.131776+11:00"
+                  total_pages: 1
+                  total_records: 1
+                transactions:
+                  - account_alias: Office Account
+                    account_id: d986578d-fe03-4dc2-8fb7-28c579ee45ec
+                    account_type: Office
+                    amount: "999.68"
+                    customer_payment_method:
+                      card:
+                        scheme: visa
+                        scheme_partial_number: "0077"
+                      payment_method: Card
+                    debtor:
+                      external_id: ""
+                      first_name: Joe
+                      last_name: Bloggs
+                    matter_description: 'The matter of Joe vs Bloggs '
+                    matter_reference: Joes-inv
+                    payer_details:
+                      address: 25 Smith St, Sydney, New South Wales, 2000, AU
+                      email: devops+example@rapidpaylegal.com
+                      name: Jimmy Generous
+                    payment_date: "2023-10-09T03:40:22.477921Z"
+                    payment_reference: 0257f4c3-0ec0-4ff3-bc0f-16581b095f77
+                    payout_id: 13bf5ee1-47ec-41e2-b292-3b3be50fca58
+                    reference: Joes-inv
+                    status: Paid
+
+        '400':
+          description: Incompatible search parameters supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+
+
+
+
+
+
+
+
+
 
   /api/v3/partner/invoices/{invoice_id}/adjust-amount:
     parameters:
@@ -1147,7 +1329,8 @@ paths:
 
   /api/v3/partner/payments:
     get:
-      summary: Search for payments for the channel partner
+      deprecated: true
+      summary: DEPRECATED use /transactions - Search for payments for the channel partner
       description: |
         Search for payments for a channel partner..        
         The filters supplied in the query params must *all* be met.        
@@ -3386,16 +3569,39 @@ components:
         name:
           type: string
           deprecated: true
+          description: The debtor name (e.g. concatenated first and last name)
         first_name:
           type: string
         last_name:
           type: string
         email:
           type: string
+        address:
+          type: string
         contact_number:
           type: string
       required:
         - external_id
+
+    Payer:
+      type: object
+      description: |
+        The entity that actually made the payment. 
+        Will normally be the debtor, but may be someone that paid on their behalf.
+      properties:
+        name:
+          description: The payer name (i.e. concatenated first and last name)
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        address:
+          type: string
+        contact_number:
+          type: string
 
     Currency:
       type: string
@@ -4023,6 +4229,9 @@ components:
     DebitPayment:
       type: object
       properties:
+        scheme:
+          type: string
+          description: Scheme (e.g. us_bank_account, au_bsb_account)
         country:
           type: string
           description: Country code (e.g. US, CA)
@@ -4645,6 +4854,189 @@ components:
         colour:
           type: string
 
+
+    TransactionsResponse:
+      type: object
+      properties:
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+        pagination_metadata:
+          $ref: '#/components/schemas/PaginationMetadata'
+      required:
+        - transactions
+
+    Transaction:
+      type: object
+      properties:
+        payment_reference:
+          description: UUID of the payment intent (in FeeWise). This is the Payment id shown in the payment receipt.
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        account_id:
+          description: FW ID of the settlement account
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        payout_id:
+          description: ID of the payout (if paid out).
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        reference:
+          description: The artifact reference.
+          type: string
+        debtor:
+          $ref: "#/components/schemas/Debtor"
+        matter_reference:
+          description: The name of the matter the payment is made for.
+          type: string
+        matter_description:
+          description: The description of the matter the payment is made for.
+          type: string
+        payment_date:
+          description: Timestamp when the payment was made by the client.
+          type: string
+          format: date-time
+        customer_payment_method:
+          $ref: "#/components/schemas/CustomerPaymentMethod"
+        account_alias:
+          description: The account alias (name).
+          type: string
+        account_type:
+          $ref: '#/components/schemas/AccountType'
+        amount:
+          description: Amount paid (received from client gross)
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+        status:
+          $ref: '#/components/schemas/TransactionStatus'
+        payer_details:
+          $ref: "#/components/schemas/Payer"
+        client_reference:
+          type: string
+          description: Only present if the artifact is of type payment link
+      required:
+        - payment_reference
+        - payment_date
+        - reference
+        - account_alias
+        - account_type
+        - amount
+        - status
+
+    TransactionStatus:
+      type: string
+      enum:
+        - Processing    # Payment complete but not available
+        - Clearing      # Payment marked as complete which has been included in a payout that is not finished
+        - Paid          # In a payout marked as paid
+        - Failed        # In a failed payout
+
+    PaginatedTransaction:
+      allOf:
+        - $ref: '#/components/schemas/Transaction'
+        - type: integer
+          description: Index of the transaction in the paginated list
+
+    PaginationMetadata:
+      description: |
+        Metadata about the pagination of a list of objects.
+        Returned in the response body of any paginated list.
+      type: object
+      properties:
+        requested_page:
+          type: integer
+          description: The requested page number
+
+        requested_page_size:
+          type: integer
+          description: Records per page.
+
+        requested_from_date:
+          type: string
+          format: date-time
+          description: The requested from date
+          example: '2023-12-01T00:00:00.000Z'
+
+        requested_to_date:
+          type: string
+          format: date-time
+          description: The requested to date
+          example: '2023-12-31T00:00:00.000Z'
+
+        requested_sort_by:
+          type: string
+          description: Field that the records were requested to be sorted by.
+
+        requested_status_filter:
+          type: array
+          items:
+            type: string
+          description: Status that the records were requested to be filtered with.
+
+        requested_account_id_filter:
+          type: array
+          description: Account IDs that the results were filtered with
+          items:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+
+        requested_sort_order:
+          type: string
+          description: Order the records are sorted by, using the sort_by property
+          enum:
+            - asc
+            - desc
+          default: asc
+
+        current_page_start_index:
+          type: integer
+          description: |
+            Index of the first record on the current page. 
+            E.g. To render- Items 1-10, on page 1, 11-20 on page 2, etc.
+
+        current_page_end_index:
+          type: integer
+          description: |
+            Index of the last record on the current page. 
+            E.g. To render- Items 1-10, on page 1, 11-20 on page 2, etc.
+
+        total_records:
+          type: integer
+          description: Total number of records returned.
+
+        total_pages:
+          type: integer
+          description: Total number of pages returned. TODO
+
+        first_page:
+          type: integer
+          description: Number of the first page. TODO
+
+        last_page:
+          type: integer
+          description: Number of the last page. TODO
+
+
     PaymentNotificationEvent:
       type: object
       properties:
@@ -4699,17 +5091,17 @@ components:
             - Failed
             - N/A
         failure_message:
-            type: string
-            description: When the payment_status is Failed 
-              this will show the reason for payment failure. 
-              E.g. Card does not have sufficient funds.
+          type: string
+          description: When the payment_status is Failed
+            this will show the reason for payment failure.
+            E.g. Card does not have sufficient funds.
         metadata:
           additionalProperties:
             maxLength: 500
             type: string
           description: >-
             Set of key value pairs attached to the payment object when it was created.
-          type: object              
+          type: object
       required:
         - amount_paid
         - payment_id
