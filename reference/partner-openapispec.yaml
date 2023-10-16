@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.99
+  version: 0.0.100
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -178,6 +178,208 @@ paths:
         '500':
           description: Error processing
 
+  /api/v3/partner/firms/{firm_id}/payouts:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+
+      - name: from
+        in: query
+        description: |
+          Return payouts since this timestamp. If not supplied, "from" defaults to the last 7 days".
+        schema:
+          type: string
+          format: date-time
+        required: false
+        example: '2023-09-20T00:00:00.000Z'
+
+      - name: to
+        in: query
+        description: |
+          Return payouts created before timestamp. If not supplied, "to" defaults to now.
+        schema:
+          type: string
+          format: date-time
+        required: false
+        example: '2023-09-20T00:00:00.000Z'
+
+      - name: page
+        in: query
+        description: |
+          Pagination - Page number to return
+        schema:
+          type: integer
+          default: 1
+          maximum: 10000
+          minimum: 1
+
+      - name: page_size
+        in: query
+        description: |
+          Pagination - payouts per page
+        schema:
+          type: integer
+          default: 20
+          maximum: 100
+          minimum: 5
+
+      - name: sort_by
+        in: query
+        description: Field to sort by, from the payout model
+        schema:
+          type: string
+          enum: [account_id, account_type, date, payout_total, payment_method, payout_reference, status]
+          default: date
+
+      - name: order
+        in: query
+        description: |
+          Sorting order (asc or desc). Default is desc
+        schema:
+          type: string
+          enum: [asc, desc]
+          default: desc
+
+      - name: status_filter
+        in: query
+        explode: false
+        style: form
+        description: |
+          Filter by status
+          nb: Example usage, comma separated, in query... /payouts?status_filter=Paid,Initialised
+        schema:
+          type: array
+          items:
+            type: string
+            enum: [Initialised, ReadyToSubmit, Submitted, Paid, Failed, Cancelled, Error]
+
+      - name: account_id_filter
+        in: query
+        explode: false
+        style: form
+        description: |
+          Filter by account id
+          nb: Example usage, comma separated, in query... /payouts?account_id=57d43c4e-f18d-40ae-9511-2aeafbf68def,b7dc7851-5cc4-41d5-8174-f00ad916f76b
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+
+
+    get:
+      description: |
+        Search for payouts for a channel partner..        
+        Filters supplied in the query params must *all* be met.
+      operationId: getPayoutsForFirm
+      tags:
+        - Payouts
+      responses:
+        '200':
+          description: List of payouts for the firm
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayoutsResponse'
+              example:
+                pagination_metadata:
+                  current_page_end_index: 10
+                  current_page_start_index: 1
+                  requested_account_id_filter: [ ]
+                  requested_from_date: "2023-09-21T00:00:00Z"
+                  requested_page: 1
+                  requested_page_size: 10
+                  requested_sort_by: account_id
+                  requested_sort_order: desc
+                  requested_status_filter:
+                    - Paid
+                    - Failed
+                  requested_to_date: "2023-10-16T11:47:44.294633+11:00"
+                  total_pages: 1
+                  total_records: 2
+                payouts:
+                  - account:
+                      account_id: d986578d-fe03-4dc2-8fb7-28c579ee45ec
+                      account_number: "000123456789"
+                      account_type: Office
+                      alias: Office Account
+                      branch_code: "110000000"
+                      country_code: US
+                    date: "2023-10-13T04:24:33.187608Z"
+                    firm_id: facade00-0000-4000-a000-000000000000
+                    payout_reference: fw.65715ef8a
+                    payout_total: "2227.72"
+                    status: Paid
+                    transactions:
+                      - artifact_id: c6486563-0fd5-4133-bf56-cdead15a9669
+                        artifact_type: Invoice
+                        currency: USD
+                        date: "2023-10-13T04:23:57.709114Z"
+                        external_id: lovemi-668E5BFE-F502-471E-8D55-CFCAF0C6407E
+                        paid_out: "2227.72"
+                        payment_id: 4ff25d55-262d-4ab1-ab83-aeb09159ac9b
+                        payment_type: Card
+                        received: "2227.72"
+                        refunded: "0"
+                        transaction_id: 00000000-0000-0000-0000-000000000000
+                  - account:
+                      account_id: d986578d-fe03-4dc2-8fb7-28c579ee45ec
+                      account_number: "000123456789"
+                      account_type: Office
+                      alias: Office Account
+                      branch_code: "110000000"
+                      country_code: US
+                    date: "2023-10-13T04:26:04.002252Z"
+                    firm_id: facade00-0000-4000-a000-000000000000
+                    payout_reference: fw.01c433c3a
+                    payout_total: "5969.5"
+                    status: Paid
+                    transactions:
+                      - artifact_id: 64156c73-caab-47dc-92d9-9b6d18c6714f
+                        artifact_type: Charge
+                        currency: USD
+                        date: "2023-10-13T04:24:42.60469Z"
+                        external_id: lovemi-D57607FA-5F74-4CFF-B78C-D10C35ED15D6
+                        metadata:
+                          creator: lovemi
+                          firm_id: facade00-0000-4000-a000-000000000000
+                          my_external_id: lovemi-571BA434-BFDA-48FA-9E61-94207D611A0C
+                        paid_out: "5969.5"
+                        payment_id: 968842e4-7247-4d2a-9105-7ef0c5b773bb
+                        payment_type: Card
+                        received: "5969.5"
+                        refunded: "0"
+                        transaction_id: 00000000-0000-0000-0000-000000000000
+        '400':
+          description: Incompatible search parameters supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+
+
+
+
   /api/v3/partner/firms/{firm_id}/transactions:
     parameters:
       - in: path
@@ -236,7 +438,7 @@ paths:
         description: Field to sort by, from the transaction model
         schema:
           type: string
-          enum: [account_type, amount, matter_reference, payment_date, payment_method, scheme, status]
+          enum: [account_id, account_type, amount, matter_reference, payment_date, payment_method, reference, scheme, status]
           default: payment_date
 
       - name: order
@@ -1274,6 +1476,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+
   /api/v3/partner/payouts/firms/{firm_id}:
     parameters:
       - in: path
@@ -1300,7 +1503,10 @@ paths:
         example: '2022-07-29T15:33:00Z'
 
     get:
+      deprecated: true
       description: |
+        DEPRECATED - Use /api/v3/partner/firms/<firm_id>/payouts endpoint instead
+  
         Get list of payouts for the specified firm. 
         If the since parameter is not supplied, payouts for the last 24 hours are returned.
       summary: Get payouts for the specified firm
@@ -2604,31 +2810,26 @@ paths:
             schema:
               $ref: '#/components/schemas/Charge'
             example:
-              amount: '123.45'
+              amount: "123.45"
               settlement_account_type: Office
               description: Charge for case setup
-              debtor: {
-                external_id: case-client-1234,
-                first_name: Frank,
-                last_name: Smith,
-                email: frank@email.com,
-                contact_number: '1300234567'
-              }
-              notes: [
-                'Got to know client',
-                'Created initial case file'
-              ]
-              payment_methods_override: [
-                'Card',
-                'DirectDebit'
-              ]
-              store_payment_methods: [
-                'Card'
-              ]
-              metadata: {
-                "key1": value,
-                "key2": value2
-              }
+              debtor:
+                external_id: case-client-1234
+                first_name: Frank
+                last_name: Smith
+                email: frank@email.com
+                contact_number: "1300234567"
+              notes:
+                - Got to know client
+                - Created initial case file
+              payment_methods_override:
+                - Card
+                - DirectDebit
+              store_payment_methods:
+                - Card
+              metadata:
+                key1: value
+                key2: value2
       responses:
         '200':
           description: Created Charge
@@ -2640,27 +2841,23 @@ paths:
                 charge:
                   charge_id: bf311c82-a0d1-4e31-998b-f00de9250d4a
                   firm_id: facade00-0000-4000-a000-000000000000
-                  amount: '123.45'
+                  amount: "123.45"
                   settlement_account_type: Office
                   description: Charge for case setup
-                  debtor: {
-                    external_id: case-client-1234,
-                    first_name: Frank,
-                    last_name: Smith,
-                    email: frank@email.com,
-                    contact_number: '1300234567'
-                  }
-                  notes: [
-                    'Got to know client',
-                    'Created initial case file'
-                  ]
-                  payment_methods_override: [
-                    'Card',
-                    'DirectDebit'
-                  ]
-                  store_payment_methods: [
-                    'Card'
-                  ]
+                  debtor:
+                    external_id: case-client-1234
+                    first_name: Frank
+                    last_name: Smith
+                    email: frank@email.com
+                    contact_number: "1300234567"
+                  notes:
+                    - Got to know client
+                    - Created initial case file
+                  payment_methods_override:
+                    - Card
+                    - DirectDebit
+                  store_payment_methods:
+                    - Card
                   payment_uri: http://localhost:8080/pay/d3010d67-06d3-46bf-be6a-b894ec743c96
         '400':
           description: Bad request, do not include charge_id or payment_uri in the request.
@@ -2722,20 +2919,21 @@ paths:
             schema:
               $ref: '#/components/schemas/Charge'
             example:
-              amount: '543.21'
+              amount: "543.21"
               settlement_account_type: Office
               description: Charge for case setup
-              debtor: {
-                external_id: case-client-charge-4321,
-                first_name: John,
-                last_name: Smith,
-                email: john@email.com,
-                contact_number: '1300234567'
-              }
-              notes: [
-                'Got to know client',
-                'Created initial case file'
-              ]
+              debtor:
+                external_id: case-client-charge-4321
+                first_name: John
+                last_name: Smith
+                email: john@email.com
+                contact_number: "1300234567"
+              notes:
+                - Got to know client
+                - Created initial case file
+              metadata:
+                my-key: value
+                my-key2: value2
       responses:
         '200':
           description: Charge created and paid
@@ -2747,27 +2945,23 @@ paths:
                 charge:
                   charge_id: bf311c82-a0d1-4e31-998b-f00de9250d4a
                   firm_id: facade00-0000-4000-a000-000000000000
-                  amount: '123.45'
+                  amount: "123.45"
                   settlement_account_type: Office
                   description: Charge for case setup
-                  debtor: {
-                    external_id: case-client-1234,
-                    first_name: Frank,
-                    last_name: Smith,
-                    email: frank@email.com,
-                    contact_number: '1300234567'
-                  }
-                  notes: [
-                    'Got to know client',
-                    'Created initial case file'
-                  ]
-                  payment_methods_override: [
-                    'Card',
-                    'DirectDebit'
-                  ]
-                  store_payment_methods: [
-                    'Card'
-                  ]
+                  debtor:
+                    external_id: case-client-1234
+                    first_name: Frank
+                    last_name: Smith
+                    email: frank@email.com
+                    contact_number: "1300234567"
+                  notes:
+                    - Got to know client
+                    - Created initial case file
+                  payment_methods_override:
+                    - Card
+                    - DirectDebit
+                  store_payment_methods:
+                    - Card
                 payment_id: 74a30957-4f49-42f5-b037-9145fc2fbb19
         '400':
           description: Bad request, do not include charge_id or payment_uri in the request.
@@ -3025,57 +3219,47 @@ paths:
                     amount: '123.45'
                     settlement_account_type: Office
                     description: Charge for case setup
-                    debtor: {
-                      external_id: case-client-1234,
-                      first_name: Frank,
-                      last_name: Smith,
-                      email: frank@email.com,
-                      contact_number: '1300234567'
-                    }
-                    notes: [
-                      'Got to know client',
-                      'Created initial case file'
-                    ]
-                    payment_methods_override: [
-                      'Card',
-                      'DirectDebit'
-                    ]
-                    store_payment_methods: [
-                      'Card'
-                    ]
+                    debtor:
+                      external_id: case-client-1234
+                      first_name: Frank
+                      last_name: Smith
+                      email: frank@email.com
+                      contact_number: "1300234567"
+                    notes:
+                      - Got to know client
+                      - Created initial case file
+                    payment_methods_override:
+                      - Card
+                      - DirectDebit
+                    store_payment_methods:
+                      - Card
                     payment_uri: http://localhost:8080/pay/d3010d67-06d3-46bf-be6a-b894ec743c96
-                    metadata: {
-                      "external_id": 83aac8f5-f5da-4779-b852-bdafa1575e09,
-                    }
+                    metadata:
+                      external_id: 83aac8f5-f5da-4779-b852-bdafa1575e09
                 - charge:
                     charge_id: 86a195f4-e8f4-415c-90dd-95bfba686976
                     firm_id: facade00-0000-4000-a000-000000000000
                     amount: '2345.67'
                     settlement_account_type: Office
                     description: Charge for case setup
-                    debtor: {
-                      external_id: case-client-1234,
-                      first_name: Frank,
-                      last_name: Smith,
-                      email: frank@email.com,
-                      contact_number: '1300234567'
-                    }
-                    notes: [
-                      'Got to know client',
-                      'Created initial case file'
-                    ]
-                    payment_methods_override: [
-                      'Card',
-                      'DirectDebit'
-                    ]
-                    store_payment_methods: [
-                      'Card'
-                    ]
+                    debtor:
+                      external_id: case-client-1234
+                      first_name: Frank
+                      last_name: Smith
+                      email: frank@email.com
+                      contact_number: "1300234567"
+                    notes:
+                      - Got to know client
+                      - Created initial case file
+                    payment_methods_override:
+                      - Card
+                      - DirectDebit
+                    store_payment_methods:
+                      - Card
                     payment_uri: http://localhost:8080/pay/d3010d67-06d3-46bf-be6a-b894ec743c96
-                    metadata: {
-                      "external_id": 83aac8f5-f5da-4779-b852-bdafa1575e09,
-                    }
-        '500':
+                    metadata:
+                      external_id: 83aac8f5-f5da-4779-b852-bdafa1575e09
+        "500":
           description: Error processing
           content:
             application/json:
@@ -3995,6 +4179,13 @@ components:
           description: When the payment was made.
           type: string
           format: date-time
+        metadata:
+          additionalProperties:
+            maxLength: 500
+            type: string
+          description: >-
+            metadata that the partner has attached to the original artifact (charge, invoice, trust deposit, etc)
+          type: object
       required:
         - payment_id
         - transaction_id
@@ -4047,11 +4238,20 @@ components:
           x-go-type-import:
             path: github.com/shopspring/decimal
           example: "1000.00"
+
         account:
           type: object
           properties:
             account_type:
               $ref: '#/components/schemas/AccountType'
+            account_id:
+              description: FW ID of the settlement account
+              type: string
+              format: uuid
+              x-go-type: uuid.UUID
+              x-go-type-import:
+                path: github.com/gofrs/uuid
+                name: uuid
             branch_code:
               type: string
             account_number:
@@ -4855,6 +5055,16 @@ components:
           type: string
 
 
+    PayoutsResponse:
+      type: object
+      properties:
+        payouts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payout'
+        pagination_metadata:
+          $ref: '#/components/schemas/PaginationMetadata'
+
     TransactionsResponse:
       type: object
       properties:
@@ -4930,6 +5140,13 @@ components:
         client_reference:
           type: string
           description: Only present if the artifact is of type payment link
+        metadata:
+          additionalProperties:
+            maxLength: 500
+            type: string
+          description: >-
+            metadata that the partner has attached to the original artifact (charge, invoice, trust deposit, etc)
+          type: object
       required:
         - payment_reference
         - payment_date
@@ -4942,6 +5159,7 @@ components:
     TransactionStatus:
       type: string
       enum:
+        - Initialised   # Payment incomplete
         - Processing    # Payment complete but not available
         - Clearing      # Payment marked as complete which has been included in a payout that is not finished
         - Paid          # In a payout marked as paid
