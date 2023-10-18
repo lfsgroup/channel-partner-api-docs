@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.100
+  version: 0.0.101
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -259,7 +259,7 @@ paths:
           type: array
           items:
             type: string
-            enum: [Initialised, ReadyToSubmit, Submitted, Paid, Failed, Cancelled, Error]
+            enum: [Submitted, Paid, Failed, Cancelled]
 
       - name: account_id_filter
         in: query
@@ -333,7 +333,7 @@ paths:
                         payment_type: Card
                         received: "2227.72"
                         refunded: "0"
-                        transaction_id: 00000000-0000-0000-0000-000000000000
+                        transaction_id: c624e88c-f5be-4e16-b6ab-044018377261
                   - account:
                       account_id: d986578d-fe03-4dc2-8fb7-28c579ee45ec
                       account_number: "000123456789"
@@ -361,7 +361,7 @@ paths:
                         payment_type: Card
                         received: "5969.5"
                         refunded: "0"
-                        transaction_id: 00000000-0000-0000-0000-000000000000
+                        transaction_id: 98359c67-cc3a-4e73-898b-b00565e52666
         '400':
           description: Incompatible search parameters supplied
           content:
@@ -2136,6 +2136,52 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Create an account
+      description: Create an Office or Trust account for a Firm
+      operationId: createFirmBankAccount
+      tags:
+        - Accounts
+
+      requestBody:
+        description: New account details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BankAccount'
+            example:
+              account_type: Office
+              country_code: US
+              account_name: Ted Healy
+              account_holder_type: Company
+              branch_code: 123-123
+              account_number: '123456789'
+              address: 123 Future St, New New York
+              alias: Stooges Office Account
+              bank: Rapid Bank of America
+      responses:
+        '201':
+          description: Account created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankAccount'
+              example:
+                account_id: b6fb6bd2-1ae1-4784-896f-1d00a9457c44
+                account_type: Office
+                country_code: US
+                account_name: Ted Healy
+                account_holder_type: Company
+                branch_code: 123-123
+                account_number: '12345678'
+                address: 123 Future St, New New York
+                alias: Stooges Office Account
+                bank: Rapid Bank of America
+        '404':
+          description: Firm not Found
+        '500':
+          description: Internal Server Error
 
   /api/v3/partner/firms/{firm_id}/accounts/{account_id}/default:
     parameters:
@@ -4061,6 +4107,8 @@ components:
           type: string
         branch_code:
           type: string
+        address:
+          type: string
         alias:
           type: string
         bank:
@@ -4068,7 +4116,17 @@ components:
         country_code:
           type: string
         is_default:
+          description: Will be set to true, if the account is the default for this type (e.g. Office, Trust)
           type: boolean
+
+        default_accounts:
+          type: array
+          items:
+            type: string
+            enum:
+              - Billing
+              - Office
+              - Trust
       required:
         - account_type
         - account_number
