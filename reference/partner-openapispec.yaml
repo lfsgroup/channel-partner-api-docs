@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.102
+  version: 0.0.103
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -2214,6 +2214,67 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v3/partner/firms/{firm_id}/accounts/{account_id}:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+      - in: path
+        name: account_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+
+    get:
+      summary: Get a bank account by ID.
+      description: Get a bank account by ID.
+      operationId: getFirmBankAccountByID
+      tags:
+        - Firm
+        - Bank Account
+      responses:
+        '200':
+          description: Return bank account.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankAccount'
+              example:
+                  account_id: 9ba5022f-9a5c-4dcb-bfe4-655764837543
+                  account_name: Main Business
+                  account_type: Office
+                  account_number: '1234567'
+                  branch_code: '999999'
+                  country_code: US
+                  alias: Office account
+                  account_holder_type: Company
+                  bank: Rapid Bank
+                  is_default: true
+        '404':
+          description: Firm not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /api/v3/partner/firms/{firm_id}/accounts/{account_id}/default:
     parameters:
