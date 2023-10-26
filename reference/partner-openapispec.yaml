@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.101
+  version: 0.0.102
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -2110,12 +2110,16 @@ paths:
                     account_type: Office
                     account_number: '1234567'
                     branch_code: '999999'
+                    country_code: US
+                    account_holder_type: Company
                     is_default: true
                   - account_id: ac71b83e-d629-4d8e-a624-0bab270a0f42
                     account_name: Operations
                     account_type: Office
                     account_number: '5556677'
                     branch_code: '999999'
+                    country_code: US
+                    account_holder_type: Company
                     is_default: false
                 trust_accounts:
                   - account_id: d98dfe65-def3-481c-bb5c-b460f6f924e3
@@ -2123,6 +2127,8 @@ paths:
                     account_type: Trust
                     account_number: '222233344'
                     branch_code: '999999'
+                    country_code: US
+                    account_holder_type: Company
                     is_default: true
         '404':
           description: Firm not found
@@ -2178,10 +2184,36 @@ paths:
                 address: 123 Future St, New New York
                 alias: Stooges Office Account
                 bank: Rapid Bank of America
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '403':
+          description: Forbidden request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '404':
-          description: Firm not Found
+          description: Firm not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '409':
+          description: Firm bank account already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         '500':
-          description: Internal Server Error
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /api/v3/partner/firms/{firm_id}/accounts/{account_id}/default:
     parameters:
@@ -2228,6 +2260,8 @@ paths:
                   account_type: Office
                   account_number: '1234567'
                   branch_code: '999999'
+                  country_code: US
+                  account_holder_type: Company
                   is_default: true
         '404':
           description: Bank Account not found
@@ -4128,7 +4162,10 @@ components:
               - Office
               - Trust
       required:
+        - country_code
+        - account_name
         - account_type
+        - account_holder_type
         - account_number
         - branch_code
 
