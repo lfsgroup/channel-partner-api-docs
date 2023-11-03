@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.104
+  version: 0.0.105
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -145,6 +145,16 @@ paths:
                   ]
                   payment_uri: http://localhost:8080/pay/d3010d67-06d3-46bf-be6a-b894ec743c96
                   status: Submitted
+        '409':
+          description: Invalid settlement account.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: settlement account is invalid.
+                title: Conflict
+                type: invalid_settlement_account
 
   /api/v3/partner/invoices/{invoice_id}:
     parameters:
@@ -897,6 +907,16 @@ paths:
                   ]
                   payment_uri: http://localhost:8080/pay/96ccd810-d21a-4d56-8ad9-956328e2b802
                   status: Submitted
+        '409':
+          description: Invalid settlement account.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: settlement account is invalid.
+                title: Conflict
+                type: invalid_settlement_account
 
   /api/v3/partner/trust-deposits/{trust_deposit_id}:
     parameters:
@@ -2802,6 +2822,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MatterResponse'
+        '409':
+          description: Invalid settlement account.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: settlement account is invalid.
+                title: Conflict
+                type: invalid_settlement_account
         '500':
           description: Error processing
           content:
@@ -3012,6 +3042,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Invalid settlement account.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: settlement account is invalid.
+                title: Conflict
+                type: invalid_settlement_account
         '500':
           description: Error processing
           content:
