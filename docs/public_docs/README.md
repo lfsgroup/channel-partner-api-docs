@@ -15,6 +15,7 @@ The API is used to initiate a workflow.
 * [Making Requests](./MAKING_REQUESTS.md)
 * [Create an Invoice](./CREATE_AN_INVOICE.md)
 * [Create a Trust Deposit](./CREATE_A_TRUST_DEPOSIT.md)
+* [Create a Charge](./CREATE_A_CHARGE.md)
 
 ## Receiving events
 The events are used to receive updates without polling an API.
