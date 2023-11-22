@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.105
+  version: 0.0.106
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -4658,6 +4658,14 @@ components:
             name: uuid
           description: The receipt ID
           example: "7cf0f73e-4bf4-4f51-8cb4-8db2fcb91b55"
+        matter_external_id:
+          type: string
+          description: The external matter ID of the attached matter
+          example: "7cf0f73e-4bf4-4f51-8cb4-8db2fcb91b55"
+        matter_external_reference:
+          type: string
+          description: The external matter reference of the attached matter
+          example: "matter123"
         artifact_id:
           type: string
           format: uuid
