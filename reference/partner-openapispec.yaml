@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.106
+  version: 0.0.107
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -3738,6 +3738,20 @@ components:
         type:
           type: string
           description: Free form type of the matter.
+        suggested_office_replenishment:
+          description: Suggested amount to show to a customer during payments, for an Office Replenishment        
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+        suggested_trust_replenishment:
+          description: Suggested amount to show to a customer during payments, for a Trust Replenishment        
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
       required:
         - "external_id"
 
