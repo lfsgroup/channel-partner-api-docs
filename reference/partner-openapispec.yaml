@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.109
+  version: 0.0.110
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -4111,6 +4111,7 @@ components:
         - OfficeReplenishment
         - TrustReplenishment
         - Charge
+        - PaymentLink
 
     PaymentMethod:
       type: string
