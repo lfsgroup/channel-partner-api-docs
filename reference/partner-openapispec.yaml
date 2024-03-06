@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.110
+  version: 0.0.111
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -4445,6 +4445,9 @@ components:
           x-go-type-import:
             path: github.com/gofrs/uuid
             name: uuid
+        reference:
+          description: The artifact reference.
+          type: string
         artifact_type:
           $ref: '#/components/schemas/ArtifactType'
         external_id:
@@ -5490,6 +5493,10 @@ components:
           x-go-type-import:
             path: github.com/gofrs/uuid
             name: uuid
+        payout_date:
+          description: Timestamp when the associated payout was made to the firm from FeeWise.
+          type: string
+          format: date-time
         reference:
           description: The artifact reference.
           type: string
