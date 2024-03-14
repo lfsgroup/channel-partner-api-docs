@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.111
+  version: 0.0.112
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -3455,6 +3455,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Payment token in use.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: payment token is being used by payment plans.
+                title: Conflict
+                type: payment_token_in_use
         '500':
           description: Error processing
           content:
