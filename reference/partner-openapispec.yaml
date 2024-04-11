@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.112
+  version: 0.0.113
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -5296,9 +5296,6 @@ components:
           format: uri
         support_email:
           type: string
-          oneOf:
-          - enum: [""]
-          - format: email
         support_number:
           type: string
         contact_email:
