@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.115
+  version: 0.0.116
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -5385,6 +5385,9 @@ components:
         is_representative:
           type: boolean
           description: Representative refers to the designated primary representative of the account, authorized by the business to provide both personal information about themselves and general details about the account. It is essential to note that there can only be one representative assigned to the account at any given time, and during the account creation, this role is typically assigned to the individual responsible for opening the account.
+        is_director:
+          type: boolean
+          description: Indicates if the individual is a director of the organization. Directors are typically members of the governing board of the company.
         ownership_percentage:
           type: string
           format: decimal
