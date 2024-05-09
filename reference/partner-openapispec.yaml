@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.114
+  version: 0.0.115
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -4657,6 +4657,7 @@ components:
             - $ref: '#/components/schemas/PaymentAuthorisedEvent'
             - $ref: '#/components/schemas/FirmStatusUpdatedEvent'
             - $ref: '#/components/schemas/PaymentNotificationEvent'
+            - $ref: '#/components/schemas/FirmBankAccountUpdatedEvent'
 
     ApiKeyRotation:
       type: object
@@ -5439,6 +5440,65 @@ components:
           description: >-
             Set of key value pairs attached to the firm object when it was created.
           type: object
+
+    FirmBankAccountUpdatedEvent:
+      type: object
+      properties:
+        firm_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        account_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        account_type:
+          $ref: "#/components/schemas/AccountType"
+        account_name:
+          type: string
+        account_holder_type:
+          type: string
+          enum:
+            - Company
+            - Individual
+        account_number:
+          type: string
+        branch_code:
+          type: string
+        address:
+          type: string
+        alias:
+          type: string
+        bank:
+          type: string
+        country_code:
+          type: string
+        last_updated_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+          description: The status of the bank account. 
+            Pending - awaiting validation,
+            Valid - successfully validated,
+            Invalid - bank account number validation failed.
+          enum:
+            - Pending
+            - Valid
+            - Invalid
+      required:
+        - country_code
+        - account_name
+        - account_type
+        - account_holder_type
+        - account_number
+        - branch_code
 
     PartyBranding:
       description: Branding for a party (firm or channel partner)
