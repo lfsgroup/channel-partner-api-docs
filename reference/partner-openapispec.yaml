@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.116
+  version: 0.0.117
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -4657,7 +4657,7 @@ components:
             - $ref: '#/components/schemas/PaymentAuthorisedEvent'
             - $ref: '#/components/schemas/FirmStatusUpdatedEvent'
             - $ref: '#/components/schemas/PaymentNotificationEvent'
-            - $ref: '#/components/schemas/FirmBankAccountUpdatedEvent'
+            - $ref: '#/components/schemas/FirmBankAccountEvent'
 
     ApiKeyRotation:
       type: object
@@ -5444,7 +5444,7 @@ components:
             Set of key value pairs attached to the firm object when it was created.
           type: object
 
-    FirmBankAccountUpdatedEvent:
+    FirmBankAccountEvent:
       type: object
       properties:
         firm_id:
