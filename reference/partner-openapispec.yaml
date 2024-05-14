@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.117
+  version: 0.0.118
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -2295,6 +2295,40 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+    delete:
+          summary: Delete a bank account
+          description: |
+              Delete a bank account for a Firm
+              nb: If a bank account is related to an inflight transaction, payout or similar
+              the bank account deletion will fail. Contact FeeWise support to resolve the issue.
+          operationId: deleteFirmBankAccount
+          responses:
+            '204':
+              description: Account deleted
+            '400':
+              description: Bad request
+              content:
+                application/json:
+                  schema:
+                    $ref: "#/components/schemas/ErrorResponse"
+            '404':
+              description: Firm or account not found
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/ErrorResponse'
+            '409':
+              description: Account has ongoing artifacts, transactions, etc.
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/ErrorResponse'
+            '500':
+              description: Error processing
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/ErrorResponse'
 
   /api/v3/partner/firms/{firm_id}/accounts/{account_id}/default:
     parameters:
