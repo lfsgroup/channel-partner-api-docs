@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.118
+  version: 0.0.119
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -384,6 +384,80 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+
+  /api/v3/partner/transactions/{transaction_id}:
+    parameters:
+      - in: path
+        name: transaction_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+    get:
+      description: Retrieve a transaction by id.
+      operationId: getTransactionById
+      tags:
+        - Transactions
+      responses:
+        '200':
+          description: Firm transaction with the given ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionResponse'
+              example:
+                firm_id: facade00-0000-4000-a000-000000000000
+                transaction:
+                  account_alias: Office Account
+                  account_id: d986578d-fe03-4dc2-8fb7-28c579ee45ec
+                  account_type: Office
+                  amount: "999.68"
+                  customer_payment_method:
+                    card:
+                      scheme: visa
+                      scheme_partial_number: "0077"
+                    payment_method: Card
+                  debtor:
+                    external_id: ""
+                    first_name: Joe
+                    last_name: Bloggs
+                  matter_description: 'The matter of Joe vs Bloggs '
+                  matter_reference: Joes-inv
+                  payer_details:
+                    address: 25 Smith St, Sydney, New South Wales, 2000, AU
+                    email: devops+example@rapidpaylegal.com
+                    name: Jimmy Generous
+                  payment_date: "2023-10-09T03:40:22.477921Z"
+                  payment_reference: 0257f4c3-0ec0-4ff3-bc0f-16581b095f77
+                  payout_id: 13bf5ee1-47ec-41e2-b292-3b3be50fca58
+                  reference: Joes-inv
+                  status: Paid
+        '400':
+          description: Transaction search parameter invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Transaction not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+
 
 
 
@@ -5558,6 +5632,24 @@ components:
             $ref: '#/components/schemas/Payout'
         pagination_metadata:
           $ref: '#/components/schemas/PaginationMetadata'
+
+    TransactionResponse:
+      type: object
+      properties:
+        transaction:
+          $ref: '#/components/schemas/Transaction'
+        firm_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+          description: ID of the firm that the transaction is associated with.
+          example: "8b14c470-f6df-4522-9dc6-8fc2bb59fc6f"
+      required:
+        - transaction
+        - firm_id
 
     TransactionsResponse:
       type: object
