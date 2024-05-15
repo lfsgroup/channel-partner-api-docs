@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.119
+  version: 0.0.120
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -4489,6 +4489,7 @@ components:
         bank:
           type: string
         country_code:
+          description: Two-letter ISO code representing the country the bank account is located in.
           type: string
         is_default:
           description: Will be set to true, if the account is the default for this type (e.g. Office, Trust)
@@ -4700,7 +4701,7 @@ components:
               description: The name of the account for the PMS
             country_code:
               type: string
-              description: The country the account is in
+              description: Two-letter ISO code representing the country the bank account is located in.
           description: Details of the account the payout is for.
         firm_id:
           type: string
@@ -5384,8 +5385,10 @@ components:
         legal_name:
           type: string
         legal_identifier:
+          description: The identification number given to a company when it is registered or incorporated, if distinct from the identification number used for filing taxes.
           type: string
         legal_structure:
+          description: This is a US specific required field.
           type: string
           enum:
             - MultiMemberLLC
@@ -5398,6 +5401,8 @@ components:
             - UnincorporatedAssociation
             - Individual
         tax_id:
+          description: The business ID number of the company, as appropriate for the company’s country.
+            Employer ID Number in US, Business Number in CA, Company House Registration Number in UK and Australian Business Number in AU.
           type: string
         trading_name:
           type: string
@@ -5446,6 +5451,7 @@ components:
           type: string
         country_code:
           type: string
+          description: Two-letter ISO code representing the country.
       required:
         - address1
         - city
@@ -5479,6 +5485,8 @@ components:
             This field may be required to be populated, depending on the region. 
             For the US , this is the social security number, and is required.
             For CA, this is the social insurance number.
+            For AU, this is the tax file number or driving licence number.
+            For UK, this is the national insurance number.
         email:
           type: string
           format: email
@@ -5590,6 +5598,7 @@ components:
           type: string
         country_code:
           type: string
+          description: Two-letter ISO code representing the country the bank account is located in.
         last_updated_at:
           type: string
           format: date-time
