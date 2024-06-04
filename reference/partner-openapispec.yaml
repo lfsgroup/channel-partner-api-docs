@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.120
+  version: 0.0.121
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -2739,6 +2739,51 @@ paths:
                     type: integer
                     description: Size of the uploaded file, in bytes.
 
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '401':
+          description: Unauthorized request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '500':
+          description: Generic Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v3/partner/branding/colour:
+    post:
+      operationId: postPartnerBrandingColour
+      tags:
+        - Partner
+      summary: Set partner colour
+      description: Sets a partner colour. This colour will be used as default colour in FeeWise dashboard and can be overwritten by firm's branding colour.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                colour:
+                  type: string
+                  pattern: '^#([a-fA-F0-9]{6})$'
+                  description: |
+                    RGB hex colour code. Alpha channel not supported
+                    The branding colour will be used in the FeeWise dashboard as firm's default colour
+              required:
+                - colour
+            example:
+              colour: "#ffffff"
+      responses:
+        '204':
+          description: Successful Response
         '400':
           description: Bad request
           content:
