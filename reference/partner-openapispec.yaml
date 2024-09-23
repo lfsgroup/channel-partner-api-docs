@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.123
+  version: 0.0.124
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -3133,6 +3133,12 @@ paths:
                 $ref: '#/components/schemas/DebtorStatement'
         '400':
           description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden request.
           content:
             application/json:
               schema:
