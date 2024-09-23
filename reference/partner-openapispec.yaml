@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.122
+  version: 0.0.123
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -3105,6 +3105,51 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v3/partner/statements/debtors/{debtor_id}:
+    get:
+      parameters:
+        - in: path
+          name: debtor_id
+          schema:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+          required: true
+      summary: Get a debtor statement
+      description: |
+        Get a debtor statement that is payable by the client via the returned URL. 
+      operationId: getDebtorStatement
+      tags:
+        - Payments
+      responses:
+        '200':
+          description: Debtor Statement was returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DebtorStatement'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Debtor not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /api/v3/partner/statements/external/debtors/{external_debtor_id}/matters/{external_matter_id}:
     get:
       deprecated: true
@@ -4942,6 +4987,30 @@ components:
         - matter
         - payment_url
         - artifacts
+        - debtor
+
+    DebtorStatement:
+      type: object
+      properties:
+        firm_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+          description: The firm the artifact (invoice, trust deposit etc...) is raised for.
+        debtor:
+          $ref: "#/components/schemas/Debtor"
+        artifacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Artifact'
+        payment_url:
+          type: string
+          description: The URI to get the client payment instructions for this debtor statement
+      required:
+        - firm_id
         - debtor
 
     CardPayment:
