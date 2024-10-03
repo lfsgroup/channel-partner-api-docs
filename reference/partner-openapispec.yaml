@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.124
+  version: 0.0.125
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -3120,7 +3120,7 @@ paths:
           required: true
       summary: Get a debtor statement
       description: |
-        Get a debtor statement that is payable by the client via the returned URL. 
+        Get a debtor statement that is payable by the client via the returned URL.
       operationId: getDebtorStatement
       tags:
         - Payments
@@ -4127,6 +4127,37 @@ components:
       required:
         - "external_id"
 
+
+
+
+    MatterSummary:
+      type: object
+      description: Contains summarised matter details and any associated artifacts.
+      properties:
+        matter_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        external_id:
+          type: string
+          description: The id of the matter in the PMS.
+        external_reference:
+          type: string
+          description: Freeform reference (normally for the PMS)
+        artifacts:
+          type: array
+          description: List of artifacts associated with the matter, sorted by date asc
+          items:
+            $ref: '#/components/schemas/Artifact'
+      required:
+        - "matter_id"
+        - "external_id"
+
+
+
     MatterRequest:
       type: object
       description: The matter request object contains all matter information, debtor details and artifacts, invoices or trust deposits, to be created for the matter.
@@ -5008,10 +5039,10 @@ components:
           description: The firm the artifact (invoice, trust deposit etc...) is raised for.
         debtor:
           $ref: "#/components/schemas/Debtor"
-        artifacts:
+        matters:
           type: array
           items:
-            $ref: '#/components/schemas/Artifact'
+            $ref: '#/components/schemas/MatterSummary'
         payment_url:
           type: string
           description: The URI to get the client payment instructions for this debtor statement
