@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.125
+  version: 0.0.126
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -2473,6 +2473,59 @@ paths:
       description: Get partner branding. Nb if branding is not set, an empty model will be returned
       tags:
         - Partner
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                properties:
+                  branding:
+                    $ref: "#/components/schemas/PartyBranding"
+              example:
+                branding:
+                  colour: "#rrggbb"
+                  icon: http://somehost/firm/branding/58919984-29d4-4d6a-8469-84a97eb298df-icon-b5073bc0-3ea9-44bb-bbf3-d875549cd8fb.jpg
+                  logo: http://somehost/firm/branding/58919984-29d4-4d6a-8469-84a97eb298df-logo-88425486-205a-4610-ab26-ab2a14cf5d14.png
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '401':
+          description: Unauthorized request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+        '500':
+          description: Generic Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v3/partner/firms/{firm_id}/branding:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+
+    get:
+      operationId: getFirmBranding
+      summary: Get firm branding
+      description: Get firm branding. Nb if branding is not set, an empty model will be returned. nb To avoid overwriting the Firms existing brand settings by mistake, this GET endpoint should be used to retrieve the firms current branding PRIOR to using the POST endpoint.
+      tags:
+        - Firm
       responses:
         '200':
           description: Successful Response
