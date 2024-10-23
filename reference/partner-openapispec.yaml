@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.126
+  version: 0.0.127
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -3872,6 +3872,81 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v3/partner/firms/{firm_id}/pricing:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+    get:
+      summary: List the pricing products for a firm and their constraints.
+      description: Returns an array of pricing products for a specific firm
+      operationId: getFirmPricing
+      tags:
+        - Firm
+      responses:
+        '200':
+          description: successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  products:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Product"
+              example:
+                products:
+                  - brands:
+                      - ach
+                    payment_method: DirectDebit
+                    upper_bound: '100000.00'
+                    lower_bound: '1.00'
+                    type: ACH
+                  - brands:
+                      - amex
+                      - diners
+                      - jcb
+                    payment_method: Card
+                    upper_bound: '120000.00'
+                    lower_bound: '1.00'
+                    type: CardPremiumCredit
+                  - brands:
+                      - unionpay
+                    payment_method: Card
+                    upper_bound: '100000.00'
+                    lower_bound: '1.00'
+                    type: CardSpecialtyCredit
+                  - brands:
+                      - discover
+                      - visa
+                      - mastercard
+                    payment_method: Card
+                    upper_bound: '100000.00'
+                    lower_bound: '1.00'
+                    type: CardStandardCredit
+        '404':
+          description: Firm not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+
 components:
   securitySchemes:
     PartnerAuth:
@@ -6182,3 +6257,52 @@ components:
         - firm_id
         - payment_method
         - payment_status
+
+    ProductType:
+      type: string
+      enum:
+        - CardStandardCredit
+        - CardStandardDebit
+        - CardSpecialtyCredit
+        - CardSpecialtyDebit
+        - CardPremiumCredit
+        - CardPremiumDebit
+        - ACH
+        - PAD
+        - BACS
+
+    Product:
+      description: Payment Products, used in the partner api
+      type: object
+      required:
+        - type
+        - payment_method
+        - brands
+        - upper_bound
+        - lower_bound
+      properties:
+        type:
+          $ref: "#/components/schemas/ProductType"
+        payment_method:
+          $ref: "#/components/schemas/PaymentMethod"
+        brands:
+          type: array
+          items:
+            type: string
+          example: [ "visa", "mastercard" ]
+        lower_bound:
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+          description: The minimum pricing amount.
+          example: "0.00"
+        upper_bound:
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+          description: The maximum pricing amount.
+          example: "5000.00"
