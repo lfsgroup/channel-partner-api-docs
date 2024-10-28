@@ -17,6 +17,12 @@ channel-partner and firm_id. This means that a channel partner needs to keep the
 invoice is created for. Invoices may be [retrieved using this ID](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1invoices~1firm~1{firm_id}~1{external_id}/get) 
 instead of the FeeWise generated ID 
 
+### Pre-requisites
+To create an invoice, on behalf of a Firm, using the partner api, the Firm must be active in FeeWise. 
+If a Firm has not completed the onboarding process, creation of the invoice will fail with an error. 
+Details of the Firm onboarding process can be found in the [FAQ](https://www.getfeewise.com/faq)
+
+Details on the firm's status can be found in the [Firm Status Events](./ONBOARDING.md) documentation.
 
 ## Call endpoint to create the invoice
 

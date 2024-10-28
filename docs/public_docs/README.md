@@ -23,7 +23,7 @@ The events are used to receive updates without polling an API.
 * [Webhooks](./WEBHOOKS.md)
 * [Payment Events](./PAYMENT_EVENTS.md)
 * [Payout Events](./PAYOUT_EVENTS.md)
-
+* [Firm Status Events](./ONBOARDING.md)
 
 ## Miscellaneous
 
