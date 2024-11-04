@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.127
+  version: 0.0.128
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -3198,58 +3198,6 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Debtor not found.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '500':
-          description: Error processing
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-
-  /api/v3/partner/statements/external/debtors/{external_debtor_id}/matters/{external_matter_id}:
-    get:
-      deprecated: true
-      parameters:
-        - in: path
-          name: external_debtor_id
-          schema:
-            type: string
-          required: true
-        - in: path
-          name: external_matter_id
-          schema:
-            type: string
-          required: true
-      summary: Get a matter debtor statement
-      description: |
-        Get a matter statement that is payable by the client via the returned URL. 
-        External IDs (Provided by the channel partner at invoice creation are used for the retrieval.)
-        Deprecated
-        The preferred approach is to use /api/v3/partner/statements/debtors/{debtor_id}/matters/{matter_id}.
-        The preferred approach guarantees uniqueness in debtor and matter ID, as they are created by FeeWise.
-        nb: Since external IDs are created outside of FeeWise, there's no way for FeeWise to guarantee that an external ID 
-        is unique within FeeWise, therefore, this endpoint response will return an array of items. If the calling partner is 
-        confident that the external ID used is unique, there should only be a single item in the array.
-      operationId: getExternalDebtorMatterStatement
-      tags:
-        - Payments
-      responses:
-        '200':
-          description: Matter Statement was returned
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  statements:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/MatterStatement'
-        '400':
-          description: Incompatible filters provided. Must at least provide an external_matter_id and external_debtor_id.
           content:
             application/json:
               schema:
