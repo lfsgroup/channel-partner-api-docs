@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.128
+  version: 0.0.129
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -2403,6 +2403,71 @@ paths:
                 application/json:
                   schema:
                     $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v3/partner/firms/{firm_id}/artifacts/settlement-account/{settlement_account_id}/replace:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid                
+      - in: path
+        name: settlement_account_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid                
+
+    post:
+      summary: Update the settlement account for unpaid artifacts.
+      description: Swaps the settlement account id on all artifacts with the given artifact type.
+      tags:
+        - Payments
+      operationId: updateArtifactAccount
+      requestBody:
+        description: Contains the type of the artifact and the ID of the account the artifacts should be paid to.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                new_account_id:
+                  description: The new settlement account ID
+                  type: string
+                  format: uuid
+                  x-go-type: uuid.UUID
+                  x-go-type-import:
+                    path: github.com/gofrs/uuid
+                    name: uuid                
+                artifact_type:
+                  $ref: '#/components/schemas/ArtifactType'
+              required:
+                - new_account_id              
+                - artifact_type
+      responses:
+        '200':
+          description: Successfully updated the artifacts.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdatedCount'
+        '400':
+          description: Bad request
+        '404':
+          description: Firm not found
+        '500':
+          description: Error processing
+
 
   /api/v3/partner/firms/{firm_id}/accounts/{account_id}/default:
     parameters:
@@ -6254,3 +6319,11 @@ components:
             path: github.com/shopspring/decimal
           description: The maximum pricing amount.
           example: "5000.00"
+
+    UpdatedCount:
+      type: object
+      properties:
+        updated:
+          type: integer
+      required: 
+        - updated
