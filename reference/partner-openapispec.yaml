@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.130
+  version: 0.0.131
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -2190,6 +2190,8 @@ paths:
       tags:
         - Firm
         - Bank Account
+        - Accounts
+
       responses:
         '200':
           description: Return the list of bank accounts.
@@ -2241,6 +2243,8 @@ paths:
       description: Create an Office or Trust account for a Firm
       operationId: createFirmBankAccount
       tags:
+        - Firm
+        - Bank Account
         - Accounts
 
       requestBody:
@@ -2339,6 +2343,7 @@ paths:
       tags:
         - Firm
         - Bank Account
+        - Accounts
       responses:
         '200':
           description: Return bank account.
@@ -2376,6 +2381,10 @@ paths:
               nb: If a bank account is related to an inflight transaction, payout or similar
               the bank account deletion will fail. Contact FeeWise support to resolve the issue.
           operationId: deleteFirmBankAccount
+          tags:
+            - Firm
+            - Bank Account
+            - Accounts
           responses:
             '204':
               description: Account deleted
@@ -2415,7 +2424,7 @@ paths:
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
-            name: uuid                
+            name: uuid
       - in: path
         name: settlement_account_id
         required: true
@@ -2425,7 +2434,7 @@ paths:
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
-            name: uuid                
+            name: uuid
 
     post:
       summary: Update the settlement account for unpaid artifacts.
@@ -2448,11 +2457,11 @@ paths:
                   x-go-type: uuid.UUID
                   x-go-type-import:
                     path: github.com/gofrs/uuid
-                    name: uuid                
+                    name: uuid
                 artifact_type:
                   $ref: '#/components/schemas/ArtifactType'
               required:
-                - new_account_id              
+                - new_account_id
                 - artifact_type
       responses:
         '200':
@@ -2500,6 +2509,7 @@ paths:
       tags:
         - Firm
         - Bank Account
+        - Accounts
       responses:
         '200':
           description: The default bank account was successfully set.  The bank account object is returned.
@@ -4551,7 +4561,7 @@ components:
         - TrustReplenishment
         - Charge
         - ChargeCardSafe
-        - ChargePaymentPlan        
+        - ChargePaymentPlan
         - PaymentLink
 
     PaymentMethod:
@@ -6327,5 +6337,5 @@ components:
       properties:
         updated:
           type: integer
-      required: 
+      required:
         - updated
