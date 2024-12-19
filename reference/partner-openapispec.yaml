@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.131
+  version: 0.0.132
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -4544,6 +4544,7 @@ components:
         - CAD
         - USD
         - GBP
+        - NZD
 
     AccountType:
       type: string
@@ -5308,6 +5309,14 @@ components:
               type: string
             account_number:
               type: string
+            account_id:
+              description: FW ID of the settlement account
+              type: string
+              format: uuid
+              x-go-type: uuid.UUID
+              x-go-type-import:
+                path: github.com/gofrs/uuid
+                name: uuid
             alias:
               type: string
               description: The name of the account for the Firm
