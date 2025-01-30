@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.132
+  version: 0.0.133
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -3528,6 +3528,7 @@ paths:
         NB the fields `charge_id`, and `payment_uri` must NOT be supplied. If supplied, BadResponse will be returned.  
         These are populated once the charge has been created and will be available in the response.
       operationId: createChargeAndPayWithCustomerPaymentToken
+      deprecated: true
       tags:
         - Payments
       requestBody:
@@ -3613,6 +3614,190 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+
+  /api/v4/partner/firms/{firm_id}/charges/payment-token/{payment_token}:
+    parameters:
+      - in: path
+        name: payment_token
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+    post:
+      summary: Create Charge, and pay directly.
+      description: |
+        Create a charge (and pay for it) for a firm, using an existing customer payment token. 
+        A list of customer payment tokens can be retrieved from the `/customers` endpoint.
+        
+        NB the fields `charge_id`, and `payment_uri` must NOT be supplied. If supplied, BadResponse will be returned.  
+        These are populated once the charge has been created and will be available in the response.
+      operationId: createChargePayment
+      tags:
+        - Payments
+      requestBody:
+        description: Charge details, using an existing customer payment token
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Charge'
+            example:
+              amount: "543.21"
+              settlement_account_type: Office
+              description: Charge for case setup
+              debtor:
+                external_id: case-client-charge-4321
+                first_name: John
+                last_name: Smith
+                email: john@email.com
+                contact_number: "1300234567"
+              notes:
+                - Got to know client
+                - Created initial case file
+              metadata:
+                my-key: value
+                my-key2: value2
+      responses:
+        '200':
+          description: Charge created and paid
+          content:
+            application/json:
+              schema:
+                properties:
+                  charge_payment_details:
+                    $ref: '#/components/schemas/ChargePaymentDetails'
+              example:
+                charge_payment_details:
+                  charge:
+                    charge_id: bf311c82-a0d1-4e31-998b-f00de9250d4a
+                    firm_id: facade00-0000-4000-a000-000000000000
+                    amount: "123.45"
+                    settlement_account_id: 8a585dfb-c6a9-48f7-b8c0-93ce2b2a30b1
+                    description: Charge for case setup
+                    debtor:
+                      external_id: case-client-1234
+                      first_name: Frank
+                      last_name: Smith
+                      email: frank@email.com
+                      contact_number: "1300234567"
+                    notes:
+                      - Got to know client
+                      - Created initial case file
+                  payment_details:
+                    artifact_id: bf311c82-a0d1-4e31-998b-f00de9250d4a
+                    payment_id: 398b17b7-819d-4110-abf3-8673bc539d4e
+                    session_id: 60221a36-7bef-4d5e-a70d-73ce11003ea5
+                    amount: "124.68"
+                    subtotal: "123.45"
+                    customer_fee_amount: "1.23"
+                    payer_details:
+                      name: "Kier Eagan"
+                      address: "1 Pitt St Sydney New South Wales 2000"
+                      email: "m@m.com"
+                    payment_method: Card
+                    card_details:
+                      scheme: "VISA"
+                      scheme_partial_number: "5509"
+                      funding_type: "Credit"
+                    date: "2022-07-29T01:26:04.729Z"
+        '400':
+          description: Bad request, do not include charge_id or payment_uri in the request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '402':
+          description: Payment requires a review
+          content:
+            application/json:
+              schema:
+                properties:
+                  title:
+                    type: string
+                  detail:
+                    type: string
+                  type:
+                    type: string
+                  payment_review:
+                    $ref: '#/components/schemas/ChargePaymentDetails'
+              example:
+                title: "Payment Required"
+                type: "payment_review_required"
+                detail: "payment review required"
+                payment_review:
+                  charge:
+                    charge_id: bf311c82-a0d1-4e31-998b-f00de9250d4a
+                    firm_id: facade00-0000-4000-a000-000000000000
+                    amount: "123.45"
+                    settlement_account_id: 8a585dfb-c6a9-48f7-b8c0-93ce2b2a30b1
+                    description: Charge for case setup
+                    debtor:
+                      external_id: case-client-1234
+                      first_name: Frank
+                      last_name: Smith
+                      email: frank@email.com
+                      contact_number: "1300234567"
+                    notes:
+                      - Got to know client
+                      - Created initial case file
+                  payment_details:
+                    artifact_id: bf311c82-a0d1-4e31-998b-f00de9250d4a
+                    payment_id: 398b17b7-819d-4110-abf3-8673bc539d4e
+                    session_id: 60221a36-7bef-4d5e-a70d-73ce11003ea5
+                    amount: "124.68"
+                    subtotal: "123.45"
+                    customer_fee_amount: "1.23"
+                    customer_fee_pricing: "1%"
+                    payer_details:
+                      name: "Kier Eagan"
+                      address: "1 Pitt St Sydney New South Wales 2000"
+                      email: "m@m.com"
+                    payment_method: Card
+                    card_details:
+                      scheme: "VISA"
+                      scheme_partial_number: "5509"
+                      funding_type: "Credit"
+                    date: "2022-07-29T01:26:04.729Z"
+        '404':
+          description: Firm or Settlement Account could not be found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Charge was unsuccessful and the payment failed to process.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: Your card was declined.
+                title: Conflict
+                type: card_error
+                error_context:
+                  code: card_declined
+                  decline_code: generic_decline
+        '500':
+          description: Error processing charge
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'                
 
   /api/v3/partner/firms/{firm_id}/customers:
     parameters:
@@ -6348,3 +6533,69 @@ components:
           type: integer
       required:
         - updated
+
+
+    PaymentDetails:
+      type: object
+      properties:
+        payment_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        artifact_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        session_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid            
+        amount:
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+        subtotal:
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+        date:
+          type: string
+          format: date-time
+        customer_fee_amount:
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+        customer_fee_pricing:
+          type: string
+          description: the pricing of the customer fee e.g. 2.9% + $0.2
+        payment_method:
+          $ref: "#/components/schemas/PaymentMethod"
+        payer_details:
+          $ref: '#/components/schemas/Payer'
+        card_details:
+          $ref: '#/components/schemas/CardPayment'
+        direct_debit_details:
+          $ref: '#/components/schemas/DebitPayment'
+
+    ChargePaymentDetails:
+      type: object
+      properties:
+        charge:
+          $ref: "#/components/schemas/Charge"
+        payment_details:
+          $ref: "#/components/schemas/PaymentDetails"
