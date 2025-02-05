@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.133
+  version: 0.0.134
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -4154,6 +4154,114 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
 
+  /api/v3/partner/firms/{firm_id}/charges/{charge_id}/payments/{payment_id}/confirm:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+      - in: path
+        name: charge_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+      - in: path
+        name: payment_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid    
+
+    post:
+      description: confirm the payment of a pending charge using the provided charge_id and payment_id
+      tags:
+        - Payments
+      operationId: postConfirmChargePayment
+      responses:
+        '200':
+          description: successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChargePaymentDetails"
+              example:
+                charge:
+                  charge_id: bf311c82-a0d1-4e31-998b-f00de9250d4a
+                  firm_id: facade00-0000-4000-a000-000000000000
+                  amount: "123.45"
+                  settlement_account_type: Office
+                  description: Cleanup Fees
+                  debtor:
+                    external_id: case-client-1234
+                    first_name: Vincent
+                    last_name: Vega
+                    email: vincent@email.com
+                    contact_number: "1300234567"
+                  payment_uri: http://localhost:8080/pay/d3010d67-06d3-46bf-be6a-b894ec743c96
+                payment_details:
+                  payment_id: 4ff25d55-262d-4ab1-ab83-aeb09159ac9b
+                  artifact_id: bf311c82-a0d1-4e31-998b-f00de9250d4a
+                  session_id: d3010d67-06d3-46bf-be6a-b894ec743c96
+                  amount: "123.45"
+                  subtotal: "120.00"
+                  date: 2023-10-13T04:23:57.709114Z
+                  customer_fee_amount: "3.45"
+                  customer_fee_pricing: 2.9% + $0.30
+                  payment_method: Card
+                  payer_details:
+                    name: Vincent Vega
+                    email: vince@email.com
+                    address: 123 Main St
+                  card_details:
+                    scheme: visa
+                    scheme_partial_number: "4242"
+                    funding_type: credit
+                    country: US
+                    expiration_date: 2025-12-31T00:00:00Z
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '404':
+          description: Firm, charge or payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Charge has already been paid or payment is out of sync
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: charge has already been paid
+                title: Conflict
+                type: charge paid
+        '500':
+          description: generic server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 
 components:
   securitySchemes:
@@ -6533,7 +6641,6 @@ components:
           type: integer
       required:
         - updated
-
 
     PaymentDetails:
       type: object
