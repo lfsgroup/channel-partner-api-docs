@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.134
+  version: 0.0.135
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -4185,7 +4185,7 @@ paths:
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
-            name: uuid    
+            name: uuid
 
     post:
       description: confirm the payment of a pending charge using the provided charge_id and payment_id
@@ -4239,6 +4239,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+        '403':
+          description: Firm is unable to transact
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Firm, charge or payment not found
           content:
