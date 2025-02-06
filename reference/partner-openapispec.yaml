@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.135
+  version: 0.0.136
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -4857,6 +4857,7 @@ components:
         - Invoice
         - TrustDeposit
         - Matter
+        - Debtor
         - OfficeReplenishment
         - TrustReplenishment
         - Charge
@@ -4958,6 +4959,12 @@ components:
       type: string
       enum:
         - Unknown
+        - Enabled
+        - Disabled
+
+    SurchargingStatus:
+      type: string
+      enum:
         - Enabled
         - Disabled
 
@@ -5399,6 +5406,7 @@ components:
             - $ref: '#/components/schemas/FirmStatusUpdatedEvent'
             - $ref: '#/components/schemas/PaymentNotificationEvent'
             - $ref: '#/components/schemas/FirmBankAccountEvent'
+            - $ref: '#/components/schemas/FirmSurchargeSettingsEvent'
 
     ApiKeyRotation:
       type: object
@@ -6283,6 +6291,41 @@ components:
         - account_holder_type
         - account_number
         - branch_code
+
+    FirmSurchargeSettingsEvent:
+      type: object
+      description: A webhook event that's emitted whenever a firm's surcharge settings are updated.
+      properties:
+        firm_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        surcharge_settings:
+          $ref:  "#/components/schemas/SurchargeSettings"
+
+    SurchargeSettings:
+      type: object
+      description: The firm-level settings determining surcharging behaviour, including which types of artifact are surcharged and whether Trust payments are surcharged.
+      properties:
+        surcharged_artifacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArtifactType"
+        surcharge_trust_payments:
+          type: boolean
+        start_date:
+          type: string
+          format: date-time
+        status:
+          $ref: "#/components/schemas/SurchargingStatus"
+
+      required:
+      - surcharged_artifacts
+      - surcharge_trust_payments
+      - status
 
     PartyBranding:
       description: Branding for a party (firm or channel partner)
