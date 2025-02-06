@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.136
+  version: 0.0.137
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -3678,43 +3678,40 @@ paths:
           content:
             application/json:
               schema:
-                properties:
-                  charge_payment_details:
-                    $ref: '#/components/schemas/ChargePaymentDetails'
+                $ref: '#/components/schemas/ChargePaymentDetails'
               example:
-                charge_payment_details:
-                  charge:
-                    charge_id: bf311c82-a0d1-4e31-998b-f00de9250d4a
-                    firm_id: facade00-0000-4000-a000-000000000000
-                    amount: "123.45"
-                    settlement_account_id: 8a585dfb-c6a9-48f7-b8c0-93ce2b2a30b1
-                    description: Charge for case setup
-                    debtor:
-                      external_id: case-client-1234
-                      first_name: Frank
-                      last_name: Smith
-                      email: frank@email.com
-                      contact_number: "1300234567"
-                    notes:
-                      - Got to know client
-                      - Created initial case file
-                  payment_details:
-                    artifact_id: bf311c82-a0d1-4e31-998b-f00de9250d4a
-                    payment_id: 398b17b7-819d-4110-abf3-8673bc539d4e
-                    session_id: 60221a36-7bef-4d5e-a70d-73ce11003ea5
-                    amount: "124.68"
-                    subtotal: "123.45"
-                    customer_fee_amount: "1.23"
-                    payer_details:
-                      name: "Kier Eagan"
-                      address: "1 Pitt St Sydney New South Wales 2000"
-                      email: "m@m.com"
-                    payment_method: Card
-                    card_details:
-                      scheme: "VISA"
-                      scheme_partial_number: "5509"
-                      funding_type: "Credit"
-                    date: "2022-07-29T01:26:04.729Z"
+                charge:
+                  charge_id: bf311c82-a0d1-4e31-998b-f00de9250d4a
+                  firm_id: facade00-0000-4000-a000-000000000000
+                  amount: "123.45"
+                  settlement_account_id: 8a585dfb-c6a9-48f7-b8c0-93ce2b2a30b1
+                  description: Charge for case setup
+                  debtor:
+                    external_id: case-client-1234
+                    first_name: Frank
+                    last_name: Smith
+                    email: frank@email.com
+                    contact_number: "1300234567"
+                  notes:
+                    - Got to know client
+                    - Created initial case file
+                payment_details:
+                  artifact_id: bf311c82-a0d1-4e31-998b-f00de9250d4a
+                  payment_id: 398b17b7-819d-4110-abf3-8673bc539d4e
+                  session_id: 60221a36-7bef-4d5e-a70d-73ce11003ea5
+                  amount: "124.68"
+                  subtotal: "123.45"
+                  customer_fee_amount: "1.23"
+                  payer_details:
+                    name: "Kier Eagan"
+                    address: "1 Pitt St Sydney New South Wales 2000"
+                    email: "m@m.com"
+                  payment_method: Card
+                  card_details:
+                    scheme: "VISA"
+                    scheme_partial_number: "5509"
+                    funding_type: "Credit"
+                  date: "2022-07-29T01:26:04.729Z"
         '400':
           description: Bad request, do not include charge_id or payment_uri in the request.
           content:
