@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.137
+  version: 0.0.138
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -3870,7 +3870,7 @@ paths:
             name: uuid
     post:
       summary: Create a payment token for a customer.
-      description: Create a payment token for a customer to capture their payment method details and later use to charge them via the charge and pay endpoint /api/v3/partner/charges/pay/payment_token/{payment_token}.
+      description: Create a payment token for a customer to capture their payment method details and later use to charge them via the charge and pay endpoint /api/v4/partner/firms/{firm_id}/charges/payment-token/{payment_token}.
       operationId: createPaymentToken
       tags:
         - Firm
