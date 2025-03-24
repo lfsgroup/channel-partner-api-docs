@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.138
+  version: 0.0.139
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -2050,8 +2050,10 @@ paths:
       description: |
            Get firm details by Firm ID (UUID) - This is the FeeWise unique ID for a firm OR
            by External ID (string), the partner's own unique id for a firm. Both will return the same model
+           Firm surcharge settings is defined here. Surcharge price rates can be found as customer variable fee and customer fixed fee per product here: '/api/v3/partner/firms/{firm_id}/pricing'. 
       operationId: getFirmDetails
       tags:
+      
         - Firm
       responses:
         '200':
@@ -2118,6 +2120,11 @@ paths:
                     phone: '(201) 555-0123'
                     ssn_last_4: '9595'
                     title: Director
+                surcharge_settings:
+                  surcharged_artifacts:
+                    ['PaymentLink','Charge','ChargePaymentPlan','ChargeCardSafe','Invoice','Matter','TrustDeposit','Debtor']
+                  surcharge_trust_payments: true
+                  status: Enabled
         '400':
           description: Bad request
         '404':
@@ -4091,7 +4098,7 @@ paths:
             name: uuid
     get:
       summary: List the pricing products for a firm and their constraints.
-      description: Returns an array of pricing products for a specific firm
+      description: Returns an array of pricing products for a specific firm. Surcharge price rates are customer variable fee and customer fixed fee. 
       operationId: getFirmPricing
       tags:
         - Firm
@@ -4111,6 +4118,8 @@ paths:
                 products:
                   - brands:
                       - ach
+                    customer_fixed_fee: "0.2"
+                    customer_variable_fee: "2.9"
                     payment_method: DirectDebit
                     upper_bound: '100000.00'
                     lower_bound: '1.00'
@@ -4119,12 +4128,16 @@ paths:
                       - amex
                       - diners
                       - jcb
+                    customer_fixed_fee: "0.2"
+                    customer_variable_fee: "2.9"
                     payment_method: Card
                     upper_bound: '120000.00'
                     lower_bound: '1.00'
                     type: CardPremiumCredit
                   - brands:
                       - unionpay
+                    customer_fixed_fee: "0.2"
+                    customer_variable_fee: "2.9"
                     payment_method: Card
                     upper_bound: '100000.00'
                     lower_bound: '1.00'
@@ -4133,6 +4146,8 @@ paths:
                       - discover
                       - visa
                       - mastercard
+                    customer_fixed_fee: "0.2"
+                    customer_variable_fee: "2.9"
                     payment_method: Card
                     upper_bound: '100000.00'
                     lower_bound: '1.00'
@@ -6027,6 +6042,8 @@ components:
           description: >-
             Set of key value pairs attached to the firm object when it was created.
           type: object
+        surcharge_settings:
+          $ref: "#/components/schemas/SurchargeSettings"
 
       required:
         - company
@@ -6653,6 +6670,8 @@ components:
         - brands
         - upper_bound
         - lower_bound
+        - customer_variable_fee
+        - customer_fixed_fee
       properties:
         type:
           $ref: "#/components/schemas/ProductType"
@@ -6679,6 +6698,18 @@ components:
             path: github.com/shopspring/decimal
           description: The maximum pricing amount.
           example: "5000.00"
+        customer_variable_fee:
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+        customer_fixed_fee:
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
 
     UpdatedCount:
       type: object
