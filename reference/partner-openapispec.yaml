@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.139
+  version: 0.0.140
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -4975,6 +4975,7 @@ components:
         - Disabled
 
     SurchargingStatus:
+      description: Controls whether surcharging is enabled or disabled for a firm.
       type: string
       enum:
         - Enabled
@@ -6322,15 +6323,35 @@ components:
 
     SurchargeSettings:
       type: object
-      description: The firm-level settings determining surcharging behaviour, including which types of artifact are surcharged and whether Trust payments are surcharged.
+      description: |
+        Controls surcharging configuration and availability for a firm
+
+        ## Surcharging availability
+
+        `SurchargingStatus` `Enabled`: 
+         * `start_date` is in the future, Surcharging will become available on the specified date
+         * `start_date` is in the past,   Surcharging is immediately available
+        
+        `SurchargingStatus` `Disabled`, Surcharging is not available (regardless of the `start_date`) 
+
+        ## Access
+        Information is available in both:
+          * `FirmSurchargeSettingsEvent` webhooks
+          * The firm details endpoint (in the `surcharge_settings` field)
+
+        ## Webhooks 
+        Any change to the `SurchargingStatus` field will trigger a `FirmSurchargeSettingsEvent` webhook to all subscribers.
       properties:
         surcharged_artifacts:
+          description: Specifies which types of artifacts can have surcharges applied
           type: array
           items:
             $ref: "#/components/schemas/ArtifactType"
         surcharge_trust_payments:
+          description: Determines whether Trust payments are subject to surcharging.
           type: boolean
         start_date:
+          description: The date and time when surcharging becomes active (when status is Enabled).
           type: string
           format: date-time
         status:
