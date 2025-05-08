@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.140
+  version: 0.0.141
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -3527,7 +3527,7 @@ paths:
             path: github.com/gofrs/uuid
             name: uuid
     post:
-      summary: Create Charge, and pay directly.
+      summary: DEPRECATED - Use /api/v4/partner/firms/{firm_id}/charges/payment-token/{payment_token} endpoint instead
       description: |
         Create a charge (and pay for it) for a firm, using an existing customer payment token. 
         A list of customer payment tokens can be retrieved from the `/customers` endpoint.
@@ -3662,23 +3662,43 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Charge'
+              type: object
+              properties:
+                charge:
+                  $ref: '#/components/schemas/Charge'
+                review_payment:
+                  description: When set to true, the endpoint will always return a '402 - Payment requires a review' error response,
+                    this can be used to enforce a 2-step payment. When set to false or not present, the '402' will only be returned
+                    if there is a surcharge greater than $0 for the payment.
+                  type: boolean
+                session_id:
+                  type: string
+                  format: uuid
+                  x-go-type: uuid.UUID
+                  x-go-type-import:
+                    path: github.com/gofrs/uuid
+                    name: uuid
+              required:
+              - charge                    
             example:
-              amount: "543.21"
-              settlement_account_type: Office
-              description: Charge for case setup
-              debtor:
-                external_id: case-client-charge-4321
-                first_name: John
-                last_name: Smith
-                email: john@email.com
-                contact_number: "1300234567"
-              notes:
-                - Got to know client
-                - Created initial case file
-              metadata:
-                my-key: value
-                my-key2: value2
+              charge:
+                amount: "543.21"
+                settlement_account_type: Office
+                description: Charge for case setup
+                debtor:
+                  external_id: case-client-charge-4321
+                  first_name: John
+                  last_name: Smith
+                  email: john@email.com
+                  contact_number: "1300234567"
+                notes:
+                  - Got to know client
+                  - Created initial case file
+                metadata:
+                  my-key: value
+                  my-key2: value2
+              review_payment: true
+              session_id: d3416309-39f9-4adb-9217-c770cf680150                  
       responses:
         '200':
           description: Charge created and paid
