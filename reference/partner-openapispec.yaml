@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.142
+  version: 0.0.143
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -2125,6 +2125,8 @@ paths:
                     ['PaymentLink','Charge','ChargePaymentPlan','ChargeCardSafe','Invoice','Matter','TrustDeposit','Debtor']
                   surcharge_trust_payments: true
                   status: Enabled
+                  start_date: '2023-09-18T14:30:00Z'
+
         '400':
           description: Bad request
         '404':
@@ -2139,6 +2141,78 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v3/partner/firms/{firm_id}/surcharging/status/{status}:
+    parameters:
+      - name: firm_id
+        in: path
+        description: Firm ID (UUID)
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        required: true
+      - name: status
+        in: path
+        description: |
+          enable: The firm would like to enable surcharging
+          disable: The firm would like to disable surcharging
+          ### Region specific rules
+          US environment, there is a 30 day waiting period, for surcharging to be enabled
+          AU environment, surcharging is enabled immediately.
+          * nb: Once surcharging has been enabled a FirmSurchargeStatusChanged webhook will be triggered
+        schema:
+          type: string
+          enum: [enable, disable]
+        required: true
+
+    put:
+      summary: Toggle surcharging status
+      description: |
+        Allows partners to toggle surcharging on or off for a firm.
+        Surcharge pricing values can be found using the endpoint, firms/{firm_id}/pricing
+      operationId: putSurchargingStatus
+      tags:
+        - Firm
+      responses:
+        '200':
+          description: Toggle success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SurchargeSettingsResponse'
+              example:
+                surcharge_settings:
+                  surcharged_artifacts:
+                    ['PaymentLink','Charge','ChargePaymentPlan','ChargeCardSafe','Invoice','Matter','TrustDeposit','Debtor']
+                  surcharge_trust_payments: true
+                  status: Enabled
+                  start_date: '2023-09-18T14:30:00Z'
+
+        '400':
+          description: Bad request
+        '404':
+          description: Firm not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Current surcharging state does not allow disable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /api/v3/partner/firms/sync/{connect_id}:
     parameters:
       - in: path
@@ -3679,7 +3753,7 @@ paths:
                     path: github.com/gofrs/uuid
                     name: uuid
               required:
-              - charge                    
+              - charge
             example:
               charge:
                 amount: "543.21"
@@ -3698,7 +3772,7 @@ paths:
                   my-key: value
                   my-key2: value2
               review_payment: true
-              session_id: d3416309-39f9-4adb-9217-c770cf680150                  
+              session_id: d3416309-39f9-4adb-9217-c770cf680150
       responses:
         '200':
           description: Charge created and paid
@@ -6019,7 +6093,6 @@ components:
         - accepted
         - accepted_ip
 
-
     FirmsResponse:
       type: object
       properties:
@@ -6029,6 +6102,7 @@ components:
             $ref: '#/components/schemas/FirmDetails'
       required:
         - firms
+
     FirmOnboardingStatus:
           type: string
           description: Firm's status.
@@ -6037,6 +6111,7 @@ components:
             - Awaiting
             - Active
             - Closed
+
     FirmDetails:
       type: object
       properties:
@@ -6351,7 +6426,7 @@ components:
             name: uuid
         surcharge_settings:
           $ref:  "#/components/schemas/SurchargeSettings"
-          
+
     FirmPricingUpdatedEvent:
       type: object
       description: A webhook event that's emitted whenever a firm's pricing settings are changed.
@@ -6413,6 +6488,12 @@ components:
       - surcharged_artifacts
       - surcharge_trust_payments
       - status
+
+    SurchargeSettingsResponse:
+      type: object
+      properties:
+        surcharge_settings:
+          $ref: '#/components/schemas/SurchargeSettings'
 
     PartyBranding:
       description: Branding for a party (firm or channel partner)
