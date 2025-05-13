@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.143
+  version: 0.0.144
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -4196,6 +4196,16 @@ paths:
       operationId: getFirmPricing
       tags:
         - Firm
+      parameters:
+        - in: query
+          name: amount
+          description: |
+            An example amount.
+
+            When supplied, each payment method in the response will contain an `example_amount`, representing the full amount that would be charged including fees, given the amount passed in.
+          schema:
+            type: string
+            format: decimal
       responses:
         '200':
           description: successful response
@@ -4218,6 +4228,9 @@ paths:
                     upper_bound: '100000.00'
                     lower_bound: '1.00'
                     type: ACH
+                    example_price:
+                      amount: "100.00"
+                      total: "103.10"
                   - brands:
                       - amex
                       - diners
@@ -4228,6 +4241,9 @@ paths:
                     upper_bound: '120000.00'
                     lower_bound: '1.00'
                     type: CardPremiumCredit
+                    example_price:
+                      amount: "100.00"
+                      total: "103.10"
                   - brands:
                       - unionpay
                     customer_fixed_fee: "0.2"
@@ -4236,6 +4252,9 @@ paths:
                     upper_bound: '100000.00'
                     lower_bound: '1.00'
                     type: CardSpecialtyCredit
+                    example_price:
+                      amount: "100.00"
+                      total: "103.10"
                   - brands:
                       - discover
                       - visa
@@ -4246,6 +4265,9 @@ paths:
                     upper_bound: '100000.00'
                     lower_bound: '1.00'
                     type: CardStandardCredit
+                    example_price:
+                      amount: "100.00"
+                      total: "103.10"
         '404':
           description: Firm not found
           content:
@@ -6093,6 +6115,7 @@ components:
         - accepted
         - accepted_ip
 
+
     FirmsResponse:
       type: object
       properties:
@@ -6864,6 +6887,8 @@ components:
           x-go-type: decimal.Decimal
           x-go-type-import:
             path: github.com/shopspring/decimal
+        example_price:
+          $ref: "#/components/schemas/ExamplePrice"
 
     UpdatedCount:
       type: object
@@ -6937,3 +6962,29 @@ components:
           $ref: "#/components/schemas/Charge"
         payment_details:
           $ref: "#/components/schemas/PaymentDetails"
+
+    ExamplePrice:
+      type: object
+      description: |
+        When calling an endpoint that returns example prices, this object is returned containing the amount that was passed in and the resulting price.
+      required:
+        - amount
+        - total
+      properties:
+        amount:
+          description: The amount the example price is based on - the amount that was passed in with the original request.
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+        total:
+          description: The total amount charged to be charged to the customer, including all fees.
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+      example:
+        amount: "100.00"
+        total: "103.10"
