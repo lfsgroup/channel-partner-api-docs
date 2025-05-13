@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.144
+  version: 0.0.145
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -2271,7 +2271,6 @@ paths:
       tags:
         - Firm
         - Bank Account
-        - Accounts
 
       responses:
         '200':
@@ -2326,7 +2325,6 @@ paths:
       tags:
         - Firm
         - Bank Account
-        - Accounts
 
       requestBody:
         description: New account details
@@ -2424,7 +2422,6 @@ paths:
       tags:
         - Firm
         - Bank Account
-        - Accounts
       responses:
         '200':
           description: Return bank account.
@@ -2465,7 +2462,6 @@ paths:
           tags:
             - Firm
             - Bank Account
-            - Accounts
           responses:
             '204':
               description: Account deleted
@@ -2590,7 +2586,6 @@ paths:
       tags:
         - Firm
         - Bank Account
-        - Accounts
       responses:
         '200':
           description: The default bank account was successfully set.  The bank account object is returned.
@@ -6661,12 +6656,6 @@ components:
         - Clearing      # Payment marked as complete which has been included in a payout that is not finished
         - Paid          # In a payout marked as paid
         - Failed        # In a failed payout
-
-    PaginatedTransaction:
-      allOf:
-        - $ref: '#/components/schemas/Transaction'
-        - type: integer
-          description: Index of the transaction in the paginated list
 
     PaginationMetadata:
       description: |
