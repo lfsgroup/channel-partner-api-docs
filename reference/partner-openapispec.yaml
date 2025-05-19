@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.145
+  version: 0.0.146
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -463,7 +463,178 @@ paths:
 
 
 
+# Paginated transactions V4 endpoint
+  /api/v4/partner/firms/{firm_id}/transactions:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
 
+      - name: from
+        in: query
+        description: |
+          Return transactions since this timestamp. If not supplied, "from" defaults to the last 7 days".
+        schema:
+          type: string
+          format: date-time
+        required: false
+        example: '2023-09-20T00:00:00.000Z'
+
+      - name: to
+        in: query
+        description: |
+          Return payments created before timestamp. If not supplied, "to" defaults to now.
+        schema:
+          type: string
+          format: date-time
+        required: false
+        example: '2023-09-20T00:00:00.000Z'
+
+      - name: page
+        in: query
+        description: |
+          Pagination - Page number to return
+        schema:
+          type: integer
+          default: 1
+          maximum: 10000
+          minimum: 1
+
+      - name: page_size
+        in: query
+        description: |
+          Pagination - Transactions per page
+        schema:
+          type: integer
+          default: 20
+          maximum: 100
+          minimum: 5
+
+      - name: sort_by
+        in: query
+        description: Field to sort by, from the transaction model
+        schema:
+          type: string
+          enum: [account_id, account_type, amount, matter_reference, payment_date, payment_method, reference, scheme, status]
+          default: payment_date
+
+      - name: order
+        in: query
+        description: |
+          Sorting order (asc or desc). Default is desc
+        schema:
+          type: string
+          enum: [asc, desc]
+          default: desc
+
+      - name: status_filter
+        in: query
+        explode: false
+        style: form
+        description: |
+          Filter by status
+          nb: Example usage, comma separated, in query... /transactions?status_filter=Paid,Initialised
+        schema:
+          type: array
+          items:
+            type: string
+            enum: [Clearing,Failed,Initialised,Paid,Processing]
+
+      - name: account_id_filter
+        in: query
+        explode: false
+        style: form
+        description: |
+          Filter by account id
+          nb: Example usage, comma separated, in query... /transactions?account_id=57d43c4e-f18d-40ae-9511-2aeafbf68def,b7dc7851-5cc4-41d5-8174-f00ad916f76b
+        schema:
+          type: array
+          items:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+
+
+    get:
+      description: |
+        Search for transactions for a channel partner..        
+        Filters supplied in the query params must *all* be met.
+      operationId: getFirmTransactionsV4
+      tags:
+        - Transactions
+      responses:
+        '200':
+          description: List of transactions for the firm
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionsResponseV2'
+              example:
+                pagination_metadata:
+                  current_page_end_index: 10
+                  current_page_start_index: 1
+                  requested_from_date: "2023-09-05T00:00:00Z"
+                  requested_page: 1
+                  requested_page_size: 10
+                  requested_sort_by: payment_date
+                  requested_sort_order: desc
+                  requested_status_filter:
+                    - Processing
+                    - Paid
+                  requested_to_date: "2023-10-09T16:48:12.131776+11:00"
+                  total_pages: 1
+                  total_records: 1
+                transactions:
+                  - account_alias: Office Account
+                    account_id: d986578d-fe03-4dc2-8fb7-28c579ee45ec
+                    account_type: Office
+                    amount: "999.68"
+                    customer_payment_method:
+                      card:
+                        scheme: visa
+                        scheme_partial_number: "0077"
+                      payment_method: Card
+                    debtor:
+                      external_id: ""
+                      first_name: Joe
+                      last_name: Bloggs
+                    matter_description: 'The matter of Joe vs Bloggs '
+                    matter_reference: Joes-inv
+                    payer_details:
+                      address: 25 Smith St, Sydney, New South Wales, 2000, AU
+                      email: devops+example@rapidpaylegal.com
+                      name: Jimmy Generous
+                    payment_date: "2023-10-09T03:40:22.477921Z"
+                    payment_reference: 0257f4c3-0ec0-4ff3-bc0f-16581b095f77
+                    payout_id: 13bf5ee1-47ec-41e2-b292-3b3be50fca58
+                    reference: Joes-inv
+                    status: Paid
+
+        '400':
+          description: Incompatible search parameters supplied
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+    # Deprecated endpoint - to be removed in future, see v4 endpoint
   /api/v3/partner/firms/{firm_id}/transactions:
     parameters:
       - in: path
@@ -569,6 +740,8 @@ paths:
       description: |
         Search for transactions for a channel partner..        
         Filters supplied in the query params must *all* be met.
+        NB: This endpoint is deprecated and will be removed in future. Please use the v4 endpoint instead.
+      deprecated: true
       operationId: getFirmTransactions
       tags:
         - Transactions
@@ -6555,6 +6728,8 @@ components:
 
     TransactionsResponse:
       type: object
+      deprecated: true
+      description: Prefer TransactionsResponseV2, used in the v4 /transactions endpoint
       properties:
         transactions:
           type: array
@@ -6565,8 +6740,22 @@ components:
       required:
         - transactions
 
+    TransactionsResponseV2:
+      type: object
+      properties:
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionV2'
+        pagination_metadata:
+          $ref: '#/components/schemas/PaginationMetadata'
+      required:
+        - transactions
+
     Transaction:
       type: object
+      deprecated: true
+      description: Paginated transaction - prefer TransactionV2, used in the v4 /transactions endpoint
       properties:
         payment_reference:
           description: UUID of the payment intent (in FeeWise). This is the Payment id shown in the payment receipt.
@@ -6647,6 +6836,23 @@ components:
         - account_type
         - amount
         - status
+
+    TransactionV2:
+      description: Inherits all properties of transaction and adds the transaction_uri field
+      allOf:
+        - $ref: "#/components/schemas/Transaction"
+        - type: object
+          properties:
+            transaction_uri:
+              description: |
+                A direct URL to view this transaction in the FeeWise dashboard.
+                
+                Integration note: When embedding this link in your Practice Management System (PMS),
+                  prefix it with your magic link URL to maintain authentication context.
+                Refer to the "Magic Links" documentation section for implementation details.
+              type: string
+              format: uri
+
 
     TransactionStatus:
       type: string
