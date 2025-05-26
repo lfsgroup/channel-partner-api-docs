@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.147
+  version: 0.0.148
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -6595,6 +6595,8 @@ components:
             - Pending
             - Valid
             - Invalid
+        metadata:
+          $ref: '#/components/schemas/FirmChannelPartnerMetadata'
       required:
         - country_code
         - account_name
@@ -6602,11 +6604,15 @@ components:
         - account_holder_type
         - account_number
         - branch_code
+        - metadata
 
     FirmSurchargeSettingsEvent:
       type: object
       description: A webhook event that's emitted whenever a firm's surcharge settings are updated.
-      # TODO: fields should be required, but may not want to change if consumers are relying on the old behaviour
+      required:
+        - firm_id
+        - surcharge_settings
+        - metadata
       properties:
         firm_id:
           type: string
@@ -6617,7 +6623,9 @@ components:
             name: uuid
         surcharge_settings:
           $ref:  "#/components/schemas/SurchargeSettings"
-
+        metadata:
+          $ref: '#/components/schemas/FirmChannelPartnerMetadata'
+          
     FirmPricingUpdatedEvent:
       type: object
       description: A webhook event that's emitted whenever a firm's pricing settings are changed.
