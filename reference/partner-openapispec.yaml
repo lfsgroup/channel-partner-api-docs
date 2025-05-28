@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.148
+  version: 0.0.149
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -6889,27 +6889,6 @@ components:
           x-go-type-import:
             path: github.com/gofrs/uuid
             name: uuid
-        payment_id:
-          type: string
-          format: uuid
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/gofrs/uuid
-            name: uuid
-        artifact_id:
-          type: string
-          format: uuid
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/gofrs/uuid
-            name: uuid
-        debit_account_id:
-          type: string
-          format: uuid
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/gofrs/uuid
-            name: uuid
         created_at:
           type: string
           format: date-time
@@ -6927,12 +6906,6 @@ components:
           x-go-type: decimal.Decimal
           x-go-type-import:
             path: github.com/shopspring/decimal
-        refund_reason:
-          type: string
-          description: The reason for the refund being requested
-        firm_notes:
-          type: string
-          description: Additional notes about this refund request from the firm
       example:
         refund_id: 550e8400-e29b-41d4-a716-446655440000
         payment_id: 71a54300-84b7-4f4d-a1a3-278ea450ba59
