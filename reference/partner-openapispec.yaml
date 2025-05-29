@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.149
+  version: 0.0.150
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -6703,6 +6703,14 @@ components:
         icon:
           type: string
         colour:
+          type: string
+        brand_primary_colour:
+          type: string
+        main_text_colour:
+          type: string
+        table_header_background_colour:
+          type: string
+        table_header_text_colour:
           type: string
 
 
