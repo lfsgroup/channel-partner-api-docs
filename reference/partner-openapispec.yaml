@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.150
+  version: 0.0.151
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -4484,9 +4484,25 @@ paths:
             name: uuid
 
     post:
+      summary: Confirm a pending charge payment.
       description: confirm the payment of a pending charge using the provided charge_id and payment_id
       tags:
         - Payments
+      requestBody:
+        description:
+          POST Body contains Metadata to apply to the charge. 
+          Warning, will replace the charge's existing metadata.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                metadata:
+                  $ref: '#/components/schemas/ChannelPartnerMetadata'
+            example:
+                metadata:
+                    key1: value1
+                    key2: value2
       operationId: postConfirmChargePayment
       responses:
         '200':
@@ -6527,7 +6543,7 @@ components:
         status:
           $ref: '#/components/schemas/FirmOnboardingStatus'
         metadata:
-          # TODO: refactor to use FirmChannelPartnerMetadata
+          # TODO: refactor to use ChannelPartnerMetadata
           additionalProperties:
             maxLength: 500
             type: string
@@ -6535,10 +6551,10 @@ components:
             Set of key value pairs attached to the firm object when it was created.
           type: object
 
-    FirmChannelPartnerMetadata:
+    ChannelPartnerMetadata:
       type: object
       description: >-
-        Set of key value pairs attached to the firm object when it was created.
+        Set of key value pairs attached to the object when it was created.
       additionalProperties:
         maxLength: 500
         type: string
@@ -6596,7 +6612,7 @@ components:
             - Valid
             - Invalid
         metadata:
-          $ref: '#/components/schemas/FirmChannelPartnerMetadata'
+          $ref: '#/components/schemas/ChannelPartnerMetadata'
       required:
         - country_code
         - account_name
@@ -6624,7 +6640,7 @@ components:
         surcharge_settings:
           $ref:  "#/components/schemas/SurchargeSettings"
         metadata:
-          $ref: '#/components/schemas/FirmChannelPartnerMetadata'
+          $ref: '#/components/schemas/ChannelPartnerMetadata'
           
     FirmPricingUpdatedEvent:
       type: object
@@ -6641,7 +6657,7 @@ components:
             path: github.com/gofrs/uuid
             name: uuid
         metadata:
-          $ref: '#/components/schemas/FirmChannelPartnerMetadata'
+          $ref: '#/components/schemas/ChannelPartnerMetadata'
         products:
           type: array
           items:
