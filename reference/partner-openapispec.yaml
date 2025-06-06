@@ -2493,6 +2493,7 @@ paths:
         Create an Office or Trust account for a Firm.
 
         If the account doesn't already exit, the new account will be created in `Pending` state. You need to listen for the `firm.bank-account.updated` webhook to know when the account is `Valid` or `Invalid`.
+        
         New account validation is subject to [Stripe's validation rules](https://docs.stripe.com/connect/payouts-bank-accounts?bank-account-collection-integration=direct-api&bank-account-collection-method=manual-entry&account-country=US#collecting-external-accounts), which vary by region. Please refer to these rules if the `firm.bank-account.updated` webhook says your account is `Invalid`.
       operationId: createFirmBankAccount
       tags:
@@ -5459,6 +5460,7 @@ components:
 
         default_accounts:
           type: array
+          description: Account types that this account is the default for (ie, could be the default 'Office' and 'Billing' account)
           items:
             type: string
             enum:
