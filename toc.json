@@ -73,6 +73,11 @@
     },
     {
       "type": "item",
+      "title": "Managing Firm Bank Accounts",
+      "uri": "/docs/public_docs/BANK_ACCOUNTS.md"
+    },
+    {
+      "type": "item",
       "title": "Changelog",
       "uri": "/docs/public_docs/CHANGELOG.md"
     },
