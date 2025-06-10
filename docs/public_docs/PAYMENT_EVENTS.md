@@ -5,7 +5,7 @@
 
 # Payment Events
 
-As payments flow into the system, events may be sent to any registered webhooks
+As payments flow into the system, events may be sent to any registered webhooks.
 
 
 ## Webhooks Subscription
