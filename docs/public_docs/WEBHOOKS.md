@@ -16,16 +16,8 @@ Subscriptions can be managed using the webhook endpoints (below).
 * [delete webhook](reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1webhooks/delete)
 * [list webhooks](reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1webhooks/get)
 
-A GET request to [webhooks endpoint](reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1events~1topics/get) will return a list of available events, which are also listed below.
-
 ### Available Events
-
-Using the [create webhook](reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1webhooks/post) endpoint, you may subscribe to any of the below events.
-
-```yaml json_schema
-$ref: ../reference/partner-openapispec.yaml#/components/schemas/WebhookEventType
-```
-
+A GET request to [webhooks endpoint](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1events~1topics/get) will return a list of available events.
 
 ## Event Ordering
 Order of events
