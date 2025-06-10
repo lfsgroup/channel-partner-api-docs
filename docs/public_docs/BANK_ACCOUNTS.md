@@ -8,10 +8,10 @@ Bank accounts in FeeWise represent settlement destinations for firms' payments. 
 # Core Principles
 - Each firm must have at least one office account
 - Bank account details cannot be modified after creation. Create new accounts instead of modifying existing ones.
-- Each [account type](reference/partner-openapispec.yaml/components/schemas/AccountType) can have a designated default account.
-- When [creating an account](reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1firms~1{firm_id}~1accounts/post), FeeWise will respond to any valid initial requests where the account doesn't already exist with a `201 - Created` status. When the account is later validated/invalidated, a `firm.bank-account.updated` webhook will be emitted with the new status.
+- Each [account type](../../reference/partner-openapispec.yaml#/components/schemas/AccountType) can have a designated default account.
+- When [creating an account](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1firms~1{firm_id}~1accounts/post), FeeWise will respond to any valid initial requests where the account doesn't already exist with a `201 - Created` status. When the account is later validated/invalidated, a `firm.bank-account.updated` webhook will be emitted with the new status.
 - Bank account validation follows [Stripe's validation rules](https://docs.stripe.com/connect/payouts-bank-accounts?bank-account-collection-integration=direct-api&bank-account-collection-method=manual-entry&account-country=US#collecting-external-accounts), which vary by region.
-- Deleting bank accounts using the [`/delete` endpoint](reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1firms~1{firm_id}~1accounts~1{account_id}/delete) performs a soft delete, rather than fully deleting the account.
+- Deleting bank accounts using the [`/delete` endpoint](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1firms~1{firm_id}~1accounts~1{account_id}/delete) performs a soft delete, rather than fully deleting the account.
 
 # Bank Account Flow
 
@@ -33,10 +33,10 @@ sequenceDiagram
 ```
 
 # Creating a Bank Account
-Create a new bank account for a firm using the [create bank account endpoint](reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1firms~1{firm_id}~1accounts/post), using the below model:
+Create a new bank account for a firm using the [create bank account endpoint](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1firms~1{firm_id}~1accounts/post), using the below model:
 
 ```yaml json_schema
-$ref: "../reference/partner-openapispec.yaml#/components/schemas/BankAccount"
+$ref: "../../reference/partner-openapispec.yaml#/components/schemas/BankAccount"
 ```
 
 Some time after creating the bank account, you'll receieve a  `firm.bank-account.updated` webhook indicating whether the account is `Valid` or `Invalid`.
