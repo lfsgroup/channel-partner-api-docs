@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.151
+  version: 0.0.152
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -1388,7 +1388,6 @@ paths:
                     status: Enabled,
                     events: [
                       'artifact.invoice.created',
-                      'payment.card.successful',
                       'payout.paid'
                     ],
                     authentication: {
@@ -1439,7 +1438,6 @@ paths:
                     },
                     events: [
                       'artifact.invoice.created',
-                      'payment.card.successful',
                       'payout.paid'
                     ]
                   }
@@ -1462,7 +1460,6 @@ paths:
                     },
                     events: [
                       'artifact.invoice.created',
-                      'payment.card.successful',
                       'payout.paid'
                     ]
                   }
@@ -1480,7 +1477,6 @@ paths:
                   description: Testing my webhook,
                   events: [
                     'artifact.invoice.created',
-                    'payment.card.successful',
                     'payout.paid'
                   ],
                   status: Enabled,
@@ -2438,7 +2434,7 @@ paths:
             name: uuid
 
     get:
-      summary: List all firms bank account's.
+      summary: List bank accounts
       description: Return all bank accounts linked to a firm.  If no accounts are linked an empty array is returned.
       operationId: getFirmBankAccounts
       tags:
@@ -2492,8 +2488,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     post:
-      summary: Create an account
-      description: Create an Office or Trust account for a Firm
+      summary: Create a bank account
+      description: |
+        Create an Office or Trust account for a Firm.
+
+        If the account doesn't already exist, the new account will be created in `Pending` state. You need to listen for the `firm.bank-account.updated` webhook to know when the account is `Valid` or `Invalid`.
+
+        New account validation is subject to [Stripe's validation rules](https://docs.stripe.com/connect/payouts-bank-accounts?bank-account-collection-integration=direct-api&bank-account-collection-method=manual-entry&account-country=US#collecting-external-accounts), which vary by region. Please refer to these rules if the `firm.bank-account.updated` webhook says your account is `Invalid`.
       operationId: createFirmBankAccount
       tags:
         - Firm
@@ -2589,7 +2590,7 @@ paths:
             name: uuid
 
     get:
-      summary: Get a bank account by ID.
+      summary: Get a bank account by ID
       description: Get a bank account by ID.
       operationId: getFirmBankAccountByID
       tags:
@@ -4218,7 +4219,7 @@ paths:
             path: github.com/gofrs/uuid
             name: uuid
     delete:
-      summary: Delete a payment token.
+      summary: Delete a payment token
       description: Delete a payment token for given firm
       operationId: deletePaymentToken
       tags:
@@ -5158,6 +5159,7 @@ components:
         - NZD
 
     AccountType:
+      description: The type of the bank account.
       type: string
       enum:
         - Office
@@ -5226,9 +5228,10 @@ components:
           $ref: "#/components/schemas/WebhookStatus"
         events:
           type: array
-          example: [ "artifact.invoice.created", "payment.card.successful", "payout.paid" ]
+          example: [ "artifact.invoice.created", "payout.paid" ]
           items:
             type: string
+            example: artifact.invoice.created
         authentication:
           $ref: "#/components/schemas/WebhookApiAuthentication"
       required:
@@ -5415,6 +5418,7 @@ components:
       type: object
       properties:
         account_id:
+          description: The FeeWise ID of the bank account, do not use when creating an account.
           type: string
           format: uuid
           x-go-type: uuid.UUID
@@ -5424,21 +5428,28 @@ components:
         account_type:
           $ref: "#/components/schemas/AccountType"
         account_name:
+          description: The name attached to the bank account.
           type: string
         account_holder_type:
+          description: The type of account holder.
           type: string
           enum:
             - Company
             - Individual
         account_number:
+          description: The firm's bank account number.
           type: string
         branch_code:
+          description: The bank's branch code.
           type: string
         address:
+          description: The bank's address.
           type: string
         alias:
+          description: The name of the account for the Firm, as it will be displayed in the FeeWise firm app.
           type: string
         bank:
+          description: Name of the bank
           type: string
         country_code:
           description: Two-letter ISO code representing the country the bank account is located in.
@@ -5449,6 +5460,7 @@ components:
 
         default_accounts:
           type: array
+          description: The account types this account is the default for (eg the account could be the default for both Billing and Office)
           items:
             type: string
             enum:
@@ -5689,7 +5701,6 @@ components:
       required:
         - payouts
 
-
     WebhookEvent:
       type: object
       required:
@@ -5699,6 +5710,7 @@ components:
       properties:
         event_type:
           type: string
+          example: firm.bank-account.created
         event_id:
           type: string
           format: uuid
