@@ -11,10 +11,10 @@ Partners that subscribe to events will receive event notifications, as HTTP POST
 ## Event Subscriptions
 Subscriptions can be managed using the webhook endpoints (below).
 
-* [create webhook](reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1webhooks/post)
-* [update webhook](reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1webhooks/put)
-* [delete webhook](reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1webhooks/delete)
-* [list webhooks](reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1webhooks/get)
+* [create webhook](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1webhooks/post)
+* [update webhook](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1webhooks/put)
+* [delete webhook](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1webhooks/delete)
+* [list webhooks](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1webhooks/get)
 
 ### Available Events
 A GET request to [webhooks endpoint](../../reference/partner-openapispec.yaml/paths/~1api~1v3~1partner~1events~1topics/get) will return a list of available events.
