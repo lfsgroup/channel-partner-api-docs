@@ -2492,7 +2492,7 @@ paths:
       description: |
         Create an Office or Trust account for a Firm.
 
-        If the account doesn't already exit, the new account will be created in `Pending` state. You need to listen for the `firm.bank-account.updated` webhook to know when the account is `Valid` or `Invalid`.
+        If the account doesn't already exist, the new account will be created in `Pending` state. You need to listen for the `firm.bank-account.updated` webhook to know when the account is `Valid` or `Invalid`.
 
         New account validation is subject to [Stripe's validation rules](https://docs.stripe.com/connect/payouts-bank-accounts?bank-account-collection-integration=direct-api&bank-account-collection-method=manual-entry&account-country=US#collecting-external-accounts), which vary by region. Please refer to these rules if the `firm.bank-account.updated` webhook says your account is `Invalid`.
       operationId: createFirmBankAccount
@@ -5418,7 +5418,7 @@ components:
       type: object
       properties:
         account_id:
-          description: The FeeWise ID of the bank account, not required when creating an account.
+          description: The FeeWise ID of the bank account, do not use when creating an account.
           type: string
           format: uuid
           x-go-type: uuid.UUID
@@ -5437,7 +5437,7 @@ components:
             - Company
             - Individual
         account_number:
-          description: The bank's account number.
+          description: The firm's bank account number.
           type: string
         branch_code:
           description: The bank's branch code.
