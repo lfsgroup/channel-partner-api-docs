@@ -1,56 +1,113 @@
-[ Overview](./README.md)
+[Overview](./README.md)
 
 ![plot](./images/linkedin.png)
 
 # Authentication
-Currently, our APIs are available to be consumed only by our approved partners. 
+Our APIs may be consumed by both Channel Partners (users that run Practice Management Systems) and individual firms.
 
-FeeWise will provide you with the keys and secrets (api-key and signature key) that you will allow the use of our api.
+The main use case is for Channel Partners, but some endpoints are available so firms can manage their resources directly.
+
+<br />
+---
+<br />
+
+## Authentication - Channel Partners
+FeeWise will provide you with the keys and secrets (api-key and channel partner ID) that you will allow the use of our api.
+
+The security schemes required for channel partner API authentication are below:
+
+```yaml json_schema
+$ref: "../../reference/partner-openapispec.yaml#/components/securitySchemes/PartnerAuth"
+```
+
+```yaml json_schema
+$ref: "../../reference/partner-openapispec.yaml#/components/securitySchemes/APIAuth"
+```
 
 ### Keys provided to partners
 
 ### X-CHANNEL-PARTNER-ID
 The channel partner ID is
 
-* provided during on-boarding .
+* provided during on-boarding.
 * a unique identifier for the partner.
 * a required header for all requests.
 
-<br />
-
----
-<br />
 
 ### X-API-KEY
 The X-API-KEY key is...
 
 * provided during on-boarding.
-* a required header for all requests.
-* able to be rotated by using the `/rotate-key` endpoint `TODO`
+* required for all requests authenticated at the Channel Partner level
+* able to be rotated by using the `/rotate-key` endpoint (example for the US region below). Your previous key will continue functioning for the number of hours specified in the request, and you will receive an email when the previous key is retired. You may also refer to the below request, for a general example of making an authenticated request as a channel partner.
 
-nb: The system will support 2 versions of the X-API-KEY
-
-* Once the X-API-KEY is rotated by the partner, the `previous` X-API-KEY will be supported for
-  48 hours, after which, a warning email will be sent to the partners email address.
-  A header, X-API-KEY-WARNING will be added to all requests that are sent with the `previous` key.
+```json http
+{
+  "method": "POST",
+  "baseUrl": "https://us.getfeewise.com/api",
+  "url": "/v3/partner/rotatekey",
+  "headers": {
+    "X-CHANNEL-PARTNER-ID": "your-channel-partner-ID",
+    "X-API-KEY": "your-current-api-key"
+  },
+  "body": {
+    "previous_key_expires_hours": 24
+  }
+}
+```
 
 <br />
-
 ---
 <br />
 
-### X-FEEWISE-SIGNATURE
-The X-FEEWISE-SIGNATURE key is...
+## Authentication - Firms
+Practice management systems will provide firms with their keys and secrets (api-key and firm ID) that will allow the use of our api. For unintegrated firms, these keys will be provided by FeeWise directly.
 
-* provided during on-boarding to FeeWise.
-* `never` sent across the wire, [more detail here](HMAC.md)
-* used by FeeWise to sign api responses. [more detail here](./AUTHENTICATION.md)
+### Keys provided to firms
 
-<br />
+### X-FIRM-ID
+The firm ID is...
 
----
-<br />
+* provided during on-boarding.
+* a unique identifier for the firm.
+* a required header for all requests authenticated at the firm level.
 
-## TODO - Sample Request
+### X-FIRM-API-KEY
+The X-FIRM-API-KEY key is...
 
-## TODO - Sample Response
+* provided by your practice management system, or by FeeWise for unintegrated firms.
+* required for all requests authenticated at the Firm level.
+
+#### Example request
+
+```json http
+{
+  "method": "POST",
+  "baseUrl": "https://us.getfeewise.com/api",
+  "url": "/v3/partner/invoices",
+  "headers": {
+    "X-FIRM-ID": "your-firm-id",
+    "X-FIRM-API-KEY": "your-current-api-key"
+  },
+  "body": {
+    "firm_id": "your-firm-id",
+        "external_id": "inv-99",
+        "amount": "200",
+        "artifact_type": "Invoice",
+        "external_reference": "REF-001",
+        "settlement_account_type": "Office",
+      "matter": {
+        "external_id": "matter-99",
+        "external_reference": "MY-MATTER",
+        "description": "A serious legal matter",
+        "type": "A type of matter"
+      },
+      "debtor": {
+        "external_id": "debtor-99",
+        "name": "John Doe",
+        "email": "john@doe.com",
+        "contact_number": "1800 FEE WISE"
+      }
+  }
+}
+```
