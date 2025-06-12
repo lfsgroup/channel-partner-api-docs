@@ -7,26 +7,18 @@ Our APIs may be consumed by both Channel Partners (users that run Practice Manag
 
 The main use case is for Channel Partners, but some endpoints are available so firms can manage their resources directly.
 
-<br />
 ---
-<br />
 
 ## Authentication - Channel Partners
 FeeWise will provide you with the keys and secrets (api-key and channel partner ID) that you will allow the use of our api.
 
 The security schemes required for channel partner API authentication are below:
 
-```yaml json_schema
-$ref: "../../reference/partner-openapispec.yaml#/components/securitySchemes/PartnerAuth"
-```
-
-```yaml json_schema
-$ref: "../../reference/partner-openapispec.yaml#/components/securitySchemes/APIAuth"
-```
+All requests to channel partner endpoints must include an `X-CHANNEL-PARTNER-ID` header, and an `X-API-KEY` header.
 
 ### Keys provided to partners
 
-### X-CHANNEL-PARTNER-ID
+#### X-CHANNEL-PARTNER-ID
 The channel partner ID is
 
 * provided during on-boarding.
@@ -34,7 +26,7 @@ The channel partner ID is
 * a required header for all requests.
 
 
-### X-API-KEY
+#### X-API-KEY
 The X-API-KEY key is...
 
 * provided during on-boarding.
@@ -56,29 +48,29 @@ The X-API-KEY key is...
 }
 ```
 
-<br />
 ---
-<br />
 
 ## Authentication - Firms
 Practice management systems will provide firms with their keys and secrets (api-key and firm ID) that will allow the use of our api. For unintegrated firms, these keys will be provided by FeeWise directly.
 
+All requests to firm-scoped endpoints must include an `X-FIRM-ID` header, and an `X-FIRM-API-KEY` header.
+
 ### Keys provided to firms
 
-### X-FIRM-ID
+#### X-FIRM-ID
 The firm ID is...
 
 * provided during on-boarding.
 * a unique identifier for the firm.
 * a required header for all requests authenticated at the firm level.
 
-### X-FIRM-API-KEY
+#### X-FIRM-API-KEY
 The X-FIRM-API-KEY key is...
 
 * provided by your practice management system, or by FeeWise for unintegrated firms.
 * required for all requests authenticated at the Firm level.
 
-#### Example request
+#### Example authenticated firm request
 
 ```json http
 {
