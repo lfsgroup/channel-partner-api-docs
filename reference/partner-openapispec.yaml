@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.152
+  version: 0.0.153
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -2346,6 +2346,19 @@ paths:
       operationId: putSurchargingStatus
       tags:
         - Firm
+      requestBody:
+        description: Optional parameters for surcharging configuration
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                surcharge_trust_payments:
+                  type: boolean
+                  description: Whether to enable surcharging on trust payments. Defaults to false when enabling surcharging.
+                  default: false
+            example:
+              surcharge_trust_payments: true
       responses:
         '200':
           description: Toggle success
