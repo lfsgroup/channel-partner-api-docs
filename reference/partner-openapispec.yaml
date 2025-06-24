@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.153
+  version: 0.0.154
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -522,7 +522,7 @@ paths:
         description: Field to sort by, from the transaction model
         schema:
           type: string
-          enum: [account_id, account_type, amount, matter_reference, payment_date, payment_method, reference, scheme, status]
+          enum: [account_id, account_type, amount, matter_reference, payment_date, payment_method, reference, scheme, status, artifact_type, matter_description, account_alias]
           default: payment_date
 
       - name: order
@@ -545,7 +545,7 @@ paths:
           type: array
           items:
             type: string
-            enum: [Clearing,Failed,Initialised,Paid,Processing]
+            enum: [Clearing,Failed,Initialised,Paid,Processing,Refunded]
 
       - name: account_id_filter
         in: query
