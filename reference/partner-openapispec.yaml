@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.154
+  version: 0.0.155
   title: FeeWise Partner API
   description: API for partners
 security:
@@ -4504,8 +4504,9 @@ paths:
         - Payments
       requestBody:
         description:
-          POST Body contains Metadata to apply to the charge. 
+          POST Body contains optional Metadata and Debtor info to apply to the charge.  
           Warning, will replace the charge's existing metadata.
+          Debtor external_id can not be updated at this point in the flow and will be ignored.
         content:
           application/json:
             schema:
@@ -4513,10 +4514,18 @@ paths:
               properties:
                 metadata:
                   $ref: '#/components/schemas/ChannelPartnerMetadata'
+                debtor:
+                  $ref: '#/components/schemas/Debtor'
             example:
                 metadata:
                     key1: value1
                     key2: value2
+                debtor:
+                    external_id: case-client-1234
+                    first_name: Vincent
+                    last_name: Vega
+                    email: vincent@email.com
+                    contact_number: "1300234567"
       operationId: postConfirmChargePayment
       responses:
         '200':
