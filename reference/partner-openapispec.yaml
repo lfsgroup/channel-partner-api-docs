@@ -1,10 +1,10 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.155
+  version: 0.0.156
   title: FeeWise Partner API
   description: API for partners
-security:
-  - PartnerAuth: [ ]
+security: #global settings
+  - PartnerAuth: []
     APIAuth: [ ]
 
 tags:
@@ -24,14 +24,77 @@ tags:
     description: Retrieve payment transactions
   - name: Payouts
     description: Payouts from the platform to the firms
+  - name: Auth
+    description: Auth related items
 
 
 paths:
+
+  /api/v3/partner/firms/{firm_id}/auth:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+
+    post:
+      summary: Retrieve the details of a firm's API key
+      description:
+          A firm specific api key can be used to make requests to the FeeWise API. 
+          If no key exists, a new key will be created. 
+          nb As the endpoint is idempotent, POST is used. (i.e. subsequent invocations will result in the same value)
+      operationId: RetrieveFirmAPIKey
+      tags:
+        - Auth
+      security:
+        - PartnerAuth: []
+      responses:
+        '200':
+          description: Key retrieved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FirmAuthResponse'
+              example:
+                auth:
+                  x_firm_id: "550e8400-e29b-41d4-a716-446655440000"
+                  x_firm_api_key: "6799e037-0520-42b1-a7f1-0e51801986f5"
+
+        '401':
+          description: Unauthorized - invalid partner credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '404':
+          description: Firm not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /api/v3/partner/invoices:
     post:
+      security:
+        - PartnerAuth: [ ]
+        - FirmAuth: [ ]
       summary: Create an Invoice
       description: |
-        Create an invoice for a channel partner.  
+        Create an invoice for a firm.  
         NB the fields `invoice_id`, `payment_uri` and `status` must NOT be supplied. If supplied, BadResponse will be returned.  
         These are populated once the invoice has been created and will be available in the response.
         The external_id is a unique field, if the same external_id is provided, the matching invoice will be updated instead.
@@ -169,6 +232,9 @@ paths:
             path: github.com/gofrs/uuid
             name: uuid
     get:
+      security:
+        - PartnerAuth: [ ]
+        - FirmAuth: [ ]
       summary: Get a specified invoice by id.
       description: Get a specified invoice by id.
       tags:
@@ -291,9 +357,12 @@ paths:
 
     get:
       description: |
-        Search for payouts for a channel partner..        
+        Search for payouts for a specific firm        
         Filters supplied in the query params must *all* be met.
       operationId: getPayoutsForFirm
+      security:
+        - PartnerAuth: [ ]
+        - FirmAuth: [ ]
       tags:
         - Payouts
       responses:
@@ -567,8 +636,11 @@ paths:
 
     get:
       description: |
-        Search for transactions for a channel partner..        
+        Search for transactions for a specific firm        
         Filters supplied in the query params must *all* be met.
+      security:
+        - PartnerAuth: [ ]
+        - FirmAuth: [ ]
       operationId: getFirmTransactionsV4
       tags:
         - Transactions
@@ -1363,7 +1435,6 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-
   /api/v3/partner/webhooks:
     get:
       summary: Get list of webhooks for the partner
@@ -1404,7 +1475,7 @@ paths:
         '500':
           description: Error processing
           content:
-            application/jsopn:
+            application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     post:
@@ -1501,7 +1572,7 @@ paths:
         '500':
           description: Error processing
           content:
-            application/jsopn:
+            application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     put:
@@ -1574,6 +1645,9 @@ paths:
 
   /api/v3/partner/events/topics:
     get:
+      security:
+        - PartnerAuth: [ ]
+        - FirmAuth: [ ]
       summary: Get a list of event topics for the channel partner
       description: |
         All currently available event topics for the channel partner are returned.         
@@ -2112,6 +2186,9 @@ paths:
 
   /api/v3/partner/firms/{firm_id}/magic-link:
     post:
+      security:
+        - PartnerAuth: [ ]
+        - FirmAuth: [ ]
       tags:
         - Firm
       parameters:
@@ -2219,10 +2296,10 @@ paths:
       description: |
            Get firm details by Firm ID (UUID) - This is the FeeWise unique ID for a firm OR
            by External ID (string), the partner's own unique id for a firm. Both will return the same model
-           Firm surcharge settings is defined here. Surcharge price rates can be found as customer variable fee and customer fixed fee per product here: '/api/v3/partner/firms/{firm_id}/pricing'. 
+           Firm surcharge settings is defined here. Surcharge price rates can be found as customer variable fee and customer fixed fee per product here: '/api/v3/partner/firms/{firm_id}/pricing'.
       operationId: getFirmDetails
       tags:
-      
+
         - Firm
       responses:
         '200':
@@ -2295,7 +2372,6 @@ paths:
                   surcharge_trust_payments: true
                   status: Enabled
                   start_date: '2023-09-18T14:30:00Z'
-
         '400':
           description: Bad request
         '404':
@@ -2447,6 +2523,9 @@ paths:
             name: uuid
 
     get:
+      security:
+        - PartnerAuth: [  ]
+        - FirmAuth: [ ]
       summary: List bank accounts
       description: Return all bank accounts linked to a firm.  If no accounts are linked an empty array is returned.
       operationId: getFirmBankAccounts
@@ -4077,7 +4156,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'                
+                $ref: '#/components/schemas/ErrorResponse'
 
   /api/v3/partner/firms/{firm_id}/customers:
     parameters:
@@ -4374,7 +4453,7 @@ paths:
             name: uuid
     get:
       summary: List the pricing products for a firm and their constraints.
-      description: Returns an array of pricing products for a specific firm. Surcharge price rates are customer variable fee and customer fixed fee. 
+      description: Returns an array of pricing products for a specific firm. Surcharge price rates are customer variable fee and customer fixed fee.
       operationId: getFirmPricing
       tags:
         - Firm
@@ -4610,10 +4689,18 @@ components:
       type: apiKey
       in: header
       name: X-CHANNEL-PARTNER-ID
+    FirmAuth:
+      type: apiKey
+      in: header
+      name: X-FIRM-ID
     APIAuth:
       type: apiKey
       in: header
       name: X-API-KEY
+    FirmApiKey:
+      type: apiKey
+      in: header
+      name: X-FIRM-API-KEY
 
   schemas:
 
@@ -5312,6 +5399,30 @@ components:
       enum:
         - sent
         - failed
+
+    FirmAuthResponse:
+      type: object
+      properties:
+        auth:
+          $ref: "#/components/schemas/FirmAuth"
+      required:
+        - auth
+
+    FirmAuth:
+      type: object
+      properties:
+        x_firm_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        x_firm_api_key:
+          type: string
+      required:
+        - x_firm_id
+        - x_firm_api_key
 
     EventTopics:
       type: object
@@ -7252,7 +7363,7 @@ components:
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
-            name: uuid            
+            name: uuid
         amount:
           type: string
           format: decimal
