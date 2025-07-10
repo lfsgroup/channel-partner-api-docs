@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.156
+  version: 0.0.157
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -5815,6 +5815,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Payment'
+        metadata:
+          $ref: '#/components/schemas/ChannelPartnerMetadata'
       required:
         - payout_reference
         - payout_total
