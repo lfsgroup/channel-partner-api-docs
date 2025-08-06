@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.157
+  version: 0.0.158
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -4439,6 +4439,75 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v3/partner/firms/{firm_id}/products:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+
+    post:
+      operationId: toggleFirmProducts
+      tags:
+        - Firm
+      description: |
+        Toggle the optional products that are enabled for a firm.
+
+        Can be used to enable or disable optional payment types, such as Klarna and Affirm.
+        The products with `Enabled` values will be enabled, products with `Disabled` will be disabled, and omitted products will be ignored.
+        All enabled products for the firm will be returned.
+      requestBody:
+        description: An object of optional products that should be enabled for a firm. Only present values will be updated.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionalProductSettings"
+
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  products:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Product"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '401':
+          description: Unauthorized request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '403':
+          description: Forbidden request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+        '500':
+          description: Generic Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /api/v3/partner/firms/{firm_id}/pricing:
     parameters:
       - in: path
@@ -5293,6 +5362,8 @@ components:
       enum:
         - Card
         - DirectDebit
+        - Klarna
+        - Affirm
 
     SurchargeChoice:
       type: string
@@ -7281,6 +7352,22 @@ components:
         - ACH
         - PAD
         - BACS
+        - Klarna
+        - Affirm
+
+    EnabledType:
+      type: string
+      enum:
+        - Enabled
+        - Disabled
+
+    OptionalProductSettings:
+      type: object
+      properties:
+        Klarna:
+          $ref: "#/components/schemas/EnabledType"
+        Affirm:
+          $ref: "#/components/schemas/EnabledType"
 
     Product:
       description: Payment Products, used in the partner api
