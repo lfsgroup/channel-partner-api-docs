@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.158
+  version: 0.0.159
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -89,6 +89,13 @@ paths:
 
   /api/v3/partner/invoices:
     post:
+      parameters:
+        - in: header
+          name: source-id
+          required: false
+          schema:
+            type: string
+            description: Source ID of the upstream system that is creating the invoice.
       security:
         - PartnerAuth: [ ]
         - FirmAuth: [ ]
@@ -110,7 +117,7 @@ paths:
               $ref: '#/components/schemas/Invoice'
             example:
               firm_id: facade00-0000-4000-a000-000000000000
-              external_id: e69f9433-885b-4321-bb48-9f5084850893
+              external_id: 165e38e2-2587-45f4-9c23-827ceba4dab6
               amount: '123.45'
               settlement_account_type: Office
               external_reference: inv-123
@@ -118,6 +125,8 @@ paths:
               due_date: '1953-07-23T13:56:24.084Z'
               surcharge_choice_override: Customer
               description: Charge for case setup
+              artifact_subtype: "Default"
+              created_at: '1953-07-23T13:56:24.084Z'
               matter: {
                 external_id: my-unique-external-id,
                 external_reference: my-external-reference,
@@ -164,7 +173,7 @@ paths:
                 invoice:
                   invoice_id: bf311c82-a0d1-4e31-998b-f00de9250d4a
                   firm_id: facade00-0000-4000-a000-000000000000
-                  external_id: e69f9433-885b-4321-bb48-9f5084850893
+                  external_id: 0d7e0062-f0cf-49c3-bc0e-854cdb6af042
                   amount: '123.45'
                   settlement_account_type: Office
                   external_reference: inv-123
@@ -172,6 +181,8 @@ paths:
                   due_date: '1953-07-23T13:56:24.084Z'
                   surcharge_choice_override: Customer
                   description: Charge for case setup
+                  artifact_subtype: "Default"
+                  created_at: '1953-07-23T13:56:24.084Z'
                   matter: {
                     external_id: my-unique-external-id,
                     external_reference: my-external-reference,
@@ -947,7 +958,7 @@ paths:
                 invoice:
                   invoice_id: bf311c82-a0d1-4e31-998b-f00de9250d4a
                   firm_id: facade00-0000-4000-a000-000000000000
-                  external_id: e69f9433-885b-4321-bb48-9f5084850893
+                  external_id: 36542a63-87cd-4819-9d30-b75616601181
                   amount: '7890.12'
                   settlement_account_type: Office
                   external_reference: inv-123
@@ -1121,6 +1132,13 @@ paths:
       operationId: createTrustDeposit
       tags:
         - Payments
+      parameters:
+        - in: header
+          name: source-id
+          required: false
+          schema:
+            type: string
+            description: Source ID of the upstream system that is creating the trust deposit.
       requestBody:
         description: Trust deposit details
         required: true
@@ -1130,13 +1148,15 @@ paths:
               $ref: '#/components/schemas/TrustDeposit'
             example:
               firm_id: facade00-0000-4000-a000-000000000000
-              external_id: e69f9433-885b-4321-bb48-9f5084850893
+              external_id: a52174d4-1911-45e5-994d-0bea7bea6f29
               amount: '123.45'
               external_reference: inv-123
               currency: AUD
               due_date: '1953-07-23T13:56:24.084Z'
               surcharge_choice_override: Customer
               description: Charge for case setup
+              external_created_at: '1953-07-23T13:56:24.084Z'
+              artifact_type: "Interest"
               matter: {
                 external_id: my-unique-external-id,
                 external_reference: my-external-reference,
@@ -1183,7 +1203,7 @@ paths:
                 trust_deposit:
                   trust_deposit_id: 96ccd810-d21a-4d56-8ad9-956328e2b802
                   firm_id: facade00-0000-4000-a000-000000000000
-                  external_id: e69f9433-885b-4321-bb48-9f5084850893
+                  external_id: eae5c5f6-838c-4b78-8a68-3bf401ab378d
                   amount: '123.45'
                   external_reference: inv-123
                   currency: AUD
@@ -1367,7 +1387,7 @@ paths:
                 trust_deposit:
                   trust_deposit_id: bf311c82-a0d1-4e31-998b-f00de9250d4a
                   firm_id: facade00-0000-4000-a000-000000000000
-                  external_id: e69f9433-885b-4321-bb48-9f5084850893
+                  external_id: 9cf1320b-6ede-4140-a4c3-7f1889adf819
                   amount: "7890.12"
                   external_reference: inv-123
                   currency: AUD
@@ -3369,6 +3389,13 @@ paths:
 
   /api/v3/partner/matters:
     post:
+      parameters:
+        - in: header
+          name: source-id
+          required: false
+          schema:
+            type: string
+            description: Source ID of the upstream system that is creating the matter.
       description: |
         Create a matter, with all matter information, debtor details and artifacts, invoice or trust deposit.
       summary: Create a matter
@@ -3393,7 +3420,7 @@ paths:
                 email: frank@email.com
                 contact_number: "1300234567"
               artifacts:
-                - external_id: e69f9433-885b-4321-bb48-9f5084850893
+                - external_id: 6c79c1a6-c87d-42f0-a67e-848b1ec79519
                   artifact_type: Invoice
                   amount: "100.00"
                   settlement_account_type: Office
@@ -3418,6 +3445,8 @@ paths:
                     - Created initial case file
                   payment_methods_override:
                     - Card
+                  artifact_subtype: "Interest"
+                  created_at: "1953-07-23T13:56:24.084Z"
                 - external_id: 46b3eed1-b469-46f3-ab93-2bb6921b8592
                   artifact_type: Invoice
                   amount: "150.00"
@@ -3438,6 +3467,8 @@ paths:
                     - Created initial case file
                   payment_methods_override:
                     - Card
+                  artifact_subtype: "Interest"
+                  created_at: "1953-07-23T13:56:24.084Z"
       responses:
         '200':
           description: Matter was created
@@ -3517,6 +3548,12 @@ paths:
   /api/v3/partner/statements/debtors/{debtor_id}/matters/{matter_id}:
     get:
       parameters:
+        - in: header
+          name: source-id
+          required: false
+          schema:
+            type: string
+            description: Source ID of the upstream system that is creating the invoice.
         - in: path
           name: debtor_id
           schema:
@@ -3537,6 +3574,19 @@ paths:
               path: github.com/gofrs/uuid
               name: uuid
           required: true
+        - in: query
+          name: ref_artifact_id
+          description: |
+               Optional referring artifact id. 
+               If provided, details of the originating artifact, e.g. invoice or trust deposit, may be displayed on the payment pages. 
+          required: false
+          schema:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
         - in: query
           name: to
           required: false
@@ -4804,7 +4854,7 @@ components:
         external_id:
           type: string
           description: This is the id supplied by the channel partner / PMS and can be used for filtering invoices. This should be unique for the PMS but this is not enforced.
-          example: e69f9433-885b-4321-bb48-9f5084850893
+          example: 87a39550-d50f-4fb6-ab3e-6a58099da9ca
         external_reference:
           type: string
           description: This a reference supplied by the channel partner / PMS and can be used for filtering invoices.
@@ -4874,10 +4924,26 @@ components:
             - Submitted
             - Authorised
             - Voided
+        artifact_subtype:
+          $ref: '#/components/schemas/ArtifactSubtype'
+        created_at:
+          type: string
+          description: The date the partner created the artifact.
+          format: date-time
+        source_id:
+          type: string
+          description: The source ID that was passed in when creating the artifact.
       required:
         - firm_id
         - external_id
         - amount
+
+    ArtifactSubtype:
+      type: string
+      description: The subtype of artifact eg. Interest for an Invoice payment.
+      enum:
+        - Default
+        - Interest
 
     InvoiceResponse:
       type: object
@@ -4917,7 +4983,7 @@ components:
         external_id:
           type: string
           description: This is the id supplied by the channel partner / PMS and can be used for filtering trust deposits. This should be unique for the PMS but this is not enforced.
-          example: e69f9433-885b-4321-bb48-9f5084850893
+          example: ab0a9548-a0cb-4210-bfa5-e195bf01378c
         external_reference:
           type: string
           description: This a reference supplied by the channel partner / PMS and can be used for filtering trust deposits.
@@ -4988,6 +5054,15 @@ components:
             - Submitted
             - Authorised
             - Voided
+        artifact_subtype:
+          $ref: '#/components/schemas/ArtifactSubtype'
+        created_at:
+          type: string
+          description: The date the partner created the artifact.
+          format: date-time
+        source_id:
+          type: string
+          description: The source ID that was passed in when creating the artifact.
       required:
         - firm_id
         - external_id
@@ -5065,6 +5140,9 @@ components:
           x-go-type: decimal.Decimal
           x-go-type-import:
             path: github.com/shopspring/decimal
+        source_id:
+          type: string
+          description: The source ID that was passed in when creating the matter.
       required:
         - "external_id"
 
@@ -5093,6 +5171,9 @@ components:
           description: List of artifacts associated with the matter, sorted by date asc
           items:
             $ref: '#/components/schemas/Artifact'
+        source_id:
+          type: string
+          description: The source ID that was passed in when creating the matter.
       required:
         - "matter_id"
         - "external_id"
@@ -5169,7 +5250,7 @@ components:
         external_id:
           type: string
           description: This is the id supplied by the channel partner / PMS and can be used for filtering artifacts. This should be unique for the PMS but this is not enforced.
-          example: e69f9433-885b-4321-bb48-9f5084850893
+          example: 1fc1862d-5144-4f5a-9d35-fceaf3e2c030
         external_reference:
           type: string
           description: This a reference supplied by the channel partner / PMS and can be used for filtering artifacts.
@@ -5236,6 +5317,15 @@ components:
             - Submitted
             - Authorised
             - Voided
+        artifact_subtype:
+          $ref: '#/components/schemas/ArtifactSubtype'
+        created_at:
+          type: string
+          description: The date the partner created the artifact.
+          format: date-time
+        source_id:
+          type: string
+          description: The source ID that was passed in when creating the artifact.
       required:
         - external_id
         - amount
