@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.160
+  version: 0.0.161
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -2250,6 +2250,44 @@ paths:
           description: Access to Firm Unauthorized
         '404':
           description: Firm not found
+
+  /api/v3/partner/firms/connect/{firm_connect_id}/associate:
+    post:
+      security:
+        - PartnerAuth: [ ]
+      tags:
+        - Firm
+      parameters:
+        - in: path
+          name: firm_connect_id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: affiliate_id
+          required: true
+          schema:
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+      summary: Associate a firm with an affiliate
+      description: |
+        Enables partners to establish an affiliation with FeeWise-registered firms. Partners must obtain the firm's unique FeeWise Connect ID from the firm's dashboard and submit it through this endpoint to create the association. The FeeWise Connect ID can be retrieved by the firm from the settings page.
+
+        On association, a `FirmAffiliationCreated` webhook event will be emitted.
+      operationId: associate
+      responses:
+        '201':
+          description: Affiliation successfully created
+        '500':
+          description: Server Error
+        '401':
+          description: Access to Firm or Affiliate Unauthorized
+        '404':
+          description: Firm or affiliate not found
 
   /api/v3/partner/firms/{firm_id}:
     parameters:
@@ -5014,6 +5052,12 @@ components:
         source_id:
           type: string
           description: The source ID that was passed in when creating the artifact.
+        payment_redirect_url:
+            type: string
+            description: Optional URL the payer will be redirected to after payment
+            format: uri
+            pattern: '^https://.+'
+            example: "https://example.com/payment-success"
       required:
         - firm_id
         - external_id
@@ -6110,6 +6154,7 @@ components:
             - $ref: '#/components/schemas/FirmBankAccountEvent'
             - $ref: '#/components/schemas/FirmSurchargeSettingsEvent'
             - $ref: '#/components/schemas/FirmPricingUpdatedEvent'
+            - $ref: '#/components/schemas/FirmAffiliationCreatedEvent'
 
     ApiKeyRotation:
       type: object
@@ -7051,6 +7096,31 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Product"
+
+    FirmAffiliationCreatedEvent:
+      type: object
+      description: A webhook event that's emitted whenever a firm is associated with an affiliate.
+      required:
+        - firm_id
+        - affiliate_id
+        - metadata
+      properties:
+        firm_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        affiliate_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        metadata:
+          $ref: '#/components/schemas/ChannelPartnerMetadata'
 
     SurchargeSettings:
       type: object
