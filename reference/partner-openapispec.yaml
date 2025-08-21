@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.161
+  version: 0.0.162
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -262,6 +262,51 @@ paths:
           description: Bad request
         '404':
           description: Requested invoice not found
+        '500':
+          description: Error processing
+
+  /api/v3/partner/firms/{firm_id}/artifacts/{artifact_id}/update-redirect:
+    parameters:
+      - in: path
+        name: artifact_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+    patch:
+      security:
+        - PartnerAuth: [ ]
+        - FirmAuth: [ ]
+      summary: Update the payment redirect URL for an artifact
+      description: Update the optional URL the payer will be redirected to after payment.
+      tags:
+        - Payments
+      operationId: updateArtifactRedirectURL
+      responses:
+        '200':
+          description: Updated the redirect URL for the requested artifact
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtifactResponse'
+        '400':
+          description: Bad request
+        '404':
+          description: Requested artifact not found
         '500':
           description: Error processing
 
@@ -5077,6 +5122,14 @@ components:
           $ref: '#/components/schemas/Invoice'
       required:
         - invoice
+
+    ArtifactResponse:
+      type: object
+      properties:
+        artifact:
+          $ref: '#/components/schemas/Artifact'
+      required:
+        - artifact
 
     TrustDeposit:
       type: object
