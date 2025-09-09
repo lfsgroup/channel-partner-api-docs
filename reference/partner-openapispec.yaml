@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.162
+  version: 0.0.163
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -6281,6 +6281,11 @@ components:
         payment_url:
           type: string
           description: The URI to get the client payment instructions for this matter statement
+        pdf_url:
+          type: string
+          description: |
+            The URI to get the client payment instructions for this matter statement.
+            The url will be embedded into PDF invoices and will always resolve to the `complex` (detailed) matter statement payment view 
       required:
         - firm_id
         - matter
@@ -6308,6 +6313,11 @@ components:
         payment_url:
           type: string
           description: The URI to get the client payment instructions for this debtor statement
+        pdf_url:
+          type: string
+          description: |
+            The URI to get the client payment instructions for this matter statement.
+            The url will be embedded into PDF invoices and will always resolve to the `complex` (detailed) matter statement payment view 
       required:
         - firm_id
         - debtor
