@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.163
+  version: 0.0.164
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -98,7 +98,9 @@ paths:
             description: Source ID of the upstream system that is creating the invoice.
       security:
         - PartnerAuth: [ ]
+          APIAuth: [ ]
         - FirmAuth: [ ]
+          FirmApiKey: [ ]
       summary: Create an Invoice
       description: |
         Create an invoice for a firm.  
@@ -245,7 +247,9 @@ paths:
     get:
       security:
         - PartnerAuth: [ ]
+          APIAuth: [ ]
         - FirmAuth: [ ]
+          FirmApiKey: [ ]
       summary: Get a specified invoice by id.
       description: Get a specified invoice by id.
       tags:
@@ -290,7 +294,9 @@ paths:
     patch:
       security:
         - PartnerAuth: [ ]
+          APIAuth: [ ]
         - FirmAuth: [ ]
+          FirmApiKey: [ ]
       summary: Update the payment redirect URL for an artifact
       description: Update the optional URL the payer will be redirected to after payment.
       tags:
@@ -418,7 +424,9 @@ paths:
       operationId: getPayoutsForFirm
       security:
         - PartnerAuth: [ ]
+          APIAuth: [ ]
         - FirmAuth: [ ]
+          FirmApiKey: [ ]
       tags:
         - Payouts
       responses:
@@ -696,7 +704,9 @@ paths:
         Filters supplied in the query params must *all* be met.
       security:
         - PartnerAuth: [ ]
+          APIAuth: [ ]
         - FirmAuth: [ ]
+          FirmApiKey: [ ]
       operationId: getFirmTransactionsV4
       tags:
         - Transactions
@@ -1712,7 +1722,9 @@ paths:
     get:
       security:
         - PartnerAuth: [ ]
+          APIAuth: [ ]
         - FirmAuth: [ ]
+          FirmApiKey: [ ]
       summary: Get a list of event topics for the channel partner
       description: |
         All currently available event topics for the channel partner are returned.         
@@ -2253,7 +2265,9 @@ paths:
     post:
       security:
         - PartnerAuth: [ ]
+          APIAuth: [ ]
         - FirmAuth: [ ]
+          FirmApiKey: [ ]
       tags:
         - Firm
       parameters:
@@ -2300,6 +2314,7 @@ paths:
     post:
       security:
         - PartnerAuth: [ ]
+          APIAuth: [ ]
       tags:
         - Firm
       parameters:
@@ -2627,8 +2642,10 @@ paths:
 
     get:
       security:
-        - PartnerAuth: [  ]
+        - PartnerAuth: [ ]
+          APIAuth: [ ]
         - FirmAuth: [ ]
+          FirmApiKey: [ ]
       summary: List bank accounts
       description: Return all bank accounts linked to a firm.  If no accounts are linked an empty array is returned.
       operationId: getFirmBankAccounts
@@ -3460,7 +3477,9 @@ paths:
     get:
       security:
         - PartnerAuth: [ ]
+          APIAuth: [ ]
         - FirmAuth: [ ]
+          FirmApiKey: [ ]
       summary: Get Refund Details
       description: |
         Get refund details by Payment ID (UUID) and Artifact ID (UUID). 
