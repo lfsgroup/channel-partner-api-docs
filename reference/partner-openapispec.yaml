@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.164
+  version: 0.0.165
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -1808,12 +1808,11 @@ paths:
               example:
                 events: [
                   {
-                    "webhook_event_id": "96d5e476-35d1-4209-a672-d179e0b5111c",
-                    "externalId": "bd7fc497-8ad3-4a1f-9a07-7d364e7ab011",
-                    "topic": "payout.paid",
+                    "event_id": "96d5e476-35d1-4209-a672-d179e0b5111c",
+                    "event_type": "payout.paid",
                     "status": "sent",
-                    "sent_at": "2022-07-28T05:39:32.029314Z",
-                    "payload": {
+                    "created_at": "2022-07-27T04:02:26.662446Z",
+                    "event": {
                       "topic": "payout.paid",
                       "object": {
                         "payments": [
@@ -1827,9 +1826,7 @@ paths:
                         "disbursement_reference": "qp.14f4c4207",
                         "batch_disbursement_reference": "rp.af27f7727"
                       },
-                      "event_id": "612d6c74-78e8-4c69-915b-cc05d92e5372",
                       "party_id": "ca838b5d-8064-4910-aa54-bce2e6e81fbc",
-                      "created_at": "2022-07-27T04:02:26.662446Z",
                       "channel_partner_id": "5ca1ab1e-cafe-4000-a000-deadbeefdead"
                     },
                   },
@@ -5814,36 +5811,29 @@ components:
     Event:
       type: object
       properties:
-        webhook_event_id:
+        event_id:
           type: string
           format: uuid
           x-go-type: uuid.UUID
           x-go-type-import:
             path: github.com/gofrs/uuid
             name: uuid
-        externalId:
-          type: string
-          description: The id of the firm the webhook was related to.
-        topic:
+        event_type:
           type: string
           description: The topic of the event.
-        status:
-          $ref: "#/components/schemas/WebhookSendStatus"
-        payload:
+        event:
           type: object
           additionalProperties: true
           description: The webhooks payload and metadata about how and when the data was sent.
-        sent_at:
+        created_at:
           type: string
           format: date-time
           description: The timestamp the webhook send was attempted.
       required:
-        - webhook_event_id
-        - topic
-        - sent_at
-        - status
-        - payload
-        - externalId
+        - event_id
+        - event_type
+        - created_at
+        - event
 
     Events:
       type: object
@@ -7203,6 +7193,7 @@ components:
             name: uuid
         metadata:
           $ref: '#/components/schemas/ChannelPartnerMetadata'
+
 
     SurchargeSettings:
       type: object
