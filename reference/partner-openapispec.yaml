@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.165
+  version: 0.0.166
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -6768,6 +6768,8 @@ components:
           $ref: '#/components/schemas/BankAccount'
         trust_account:
           $ref: '#/components/schemas/BankAccount'
+        riskAssessment:
+          $ref: '#/components/schemas/RiskAssessment'
         roles:
           type: array
           items:
@@ -6931,6 +6933,22 @@ components:
         - billing_email
         - website
 
+    RiskAssessment:
+      type: object
+      description: Allows partners to provide a risk assessment for a firm.
+      properties:
+        level:
+          type: string
+          enum:
+            - Standard
+            - High
+          description: Risk level to be assigned to the firm.
+        reason:
+          type: string
+          maxLength: 500
+          description: Explanation of the reason for the risk score.
+      required:
+        - level
 
     Address:
       type: object
