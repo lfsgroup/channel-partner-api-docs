@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.166
+  version: 0.0.167
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -5648,6 +5648,7 @@ components:
         - DirectDebit
         - Klarna
         - Affirm
+        - PayByBank
 
     SurchargeChoice:
       type: string
@@ -7713,6 +7714,7 @@ components:
         - BACS
         - Klarna
         - Affirm
+        - PayByBank
 
     EnabledType:
       type: string
