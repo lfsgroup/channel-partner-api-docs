@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.168
+  version: 0.0.169
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -301,6 +301,25 @@ paths:
       description: Update the optional URL the payer will be redirected to after payment.
       tags:
         - Payments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: |
+                The artifact redirect URL to be set.
+              properties:
+                payment_redirect_url:
+                  type: string
+                  description: URL the payer will be redirected to after payment
+                  format: uri
+                  pattern: '^https://.+'
+                  example: "https://example.com/payment-success"
+              example:
+                payment_redirect_url: 'https://www.example.com/transactions'
+              required:
+                - payment_redirect_url
       operationId: updateArtifactRedirectURL
       responses:
         '200':
@@ -5520,6 +5539,12 @@ components:
         source_id:
           type: string
           description: The source ID that was passed in when creating the artifact.
+        payment_redirect_url:
+          type: string
+          description: Optional URL the payer will be redirected to after payment
+          format: uri
+          pattern: '^https://.+'
+          example: "https://example.com/payment-success"
       required:
         - external_id
         - amount
