@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.169
+  version: 0.0.171
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -6243,7 +6243,7 @@ components:
             - $ref: '#/components/schemas/FirmSurchargeSettingsEvent'
             - $ref: '#/components/schemas/FirmPricingUpdatedEvent'
             - $ref: '#/components/schemas/FirmAffiliationCreatedEvent'
-            - $ref: '#/components/schemas/MatterPaymentReceiptEvent'
+            - $ref: '#/components/schemas/MatterReceiptSyncEvent'
 
     ApiKeyRotation:
       type: object
@@ -6491,7 +6491,7 @@ components:
         - amount_paid
         - account
 
-    MatterPaymentReceiptEvent:
+    MatterReceiptSyncEvent:
       type: object
       properties:
         artifacts:
