@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.171
+  version: 0.0.172
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -5982,6 +5982,34 @@ components:
         - account_number
         - branch_code
 
+    BankAccountSummary:
+      type: object
+      description: The bank account object belonging to Payout events
+      properties:
+          account_type:
+            $ref: '#/components/schemas/AccountType'
+          account_id:
+            description: FW ID of the settlement account
+            type: string
+            format: uuid
+            x-go-type: uuid.UUID
+            x-go-type-import:
+              path: github.com/gofrs/uuid
+              name: uuid
+          external_account_id:
+            type: string
+            description: The ID of the account in the PMS
+          branch_code:
+            type: string
+          account_number:
+            type: string
+          alias:
+            type: string
+            description: The name of the account for the PMS
+          country_code:
+            type: string
+            description: Two-letter ISO code representing the country the bank account is located in.
+
     BankAccountResponse:
       type: object
       properties:
@@ -6151,29 +6179,7 @@ components:
           example: "1000.00"
 
         account:
-          type: object
-          properties:
-            account_type:
-              $ref: '#/components/schemas/AccountType'
-            account_id:
-              description: FW ID of the settlement account
-              type: string
-              format: uuid
-              x-go-type: uuid.UUID
-              x-go-type-import:
-                path: github.com/gofrs/uuid
-                name: uuid
-            branch_code:
-              type: string
-            account_number:
-              type: string
-            alias:
-              type: string
-              description: The name of the account for the PMS
-            country_code:
-              type: string
-              description: Two-letter ISO code representing the country the bank account is located in.
-          description: Details of the account the payout is for.
+          $ref: '#/components/schemas/BankAccountSummary'
         firm_id:
           type: string
           description: The id of the firm the payout was made to.
@@ -6182,6 +6188,9 @@ components:
           x-go-type-import:
             path: github.com/gofrs/uuid
             name: uuid
+        external_firm_id:
+          type: string
+          description: The ID of the firm in the PMS
         status:
           $ref: '#/components/schemas/PayoutStatus'
         transactions:
@@ -6199,7 +6208,7 @@ components:
         - date
         - transactions
         - status
-
+        
     Payouts:
       type: object
       properties:
