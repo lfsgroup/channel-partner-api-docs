@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.172
+  version: 0.0.173
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -5996,7 +5996,7 @@ components:
             x-go-type-import:
               path: github.com/gofrs/uuid
               name: uuid
-          external_account_id:
+          external_id:
             type: string
             description: The ID of the account in the PMS
           branch_code:
@@ -6219,6 +6219,17 @@ components:
       required:
         - payouts
 
+    MatterBankDepositSyncEvent:
+      description: |
+        For FeeWise specific features, PaymentLinks, PaymentPlan Payments, Card Safe etc... The Channel Partner can elect to allow firms to associate FeeWise specific feature payments with artifacts in their own system. Firm users (e.g. bookkeepers) can then use the FeeWise transactions dashboard to select matters / invoices in the partners systems to associate the payments with. (nb: The Channel partner must provide FeeWise an endpoint to retrieve matters/invoices for the firm; to be be used for the association). 
+          
+        The MatterBankDepositSyncEvent is used to notify the Channel Partner that:  
+        The firm user has used the FeeWise transactions dashboard to associate a matter / invoice in the Channel Partners system with FeeWise specific features. (At this point, the payout has already been made from FeeWise to the firm's bank account)
+        A deposit for this payment can now be made, in the Channel Partners system
+        The event is emitted after a payout has been paid AND all unintegrated payments associated with the payout have been associated with a partner artifact.
+      allOf:
+        - $ref: "#/components/schemas/Payout"
+
     WebhookEvent:
       type: object
       required:
@@ -6252,6 +6263,7 @@ components:
             - $ref: '#/components/schemas/FirmSurchargeSettingsEvent'
             - $ref: '#/components/schemas/FirmPricingUpdatedEvent'
             - $ref: '#/components/schemas/FirmAffiliationCreatedEvent'
+            - $ref: '#/components/schemas/MatterBankDepositSyncEvent'
             - $ref: '#/components/schemas/MatterReceiptSyncEvent'
 
     ApiKeyRotation:
