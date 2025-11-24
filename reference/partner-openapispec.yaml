@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.173
+  version: 0.0.174
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -2854,6 +2854,69 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+    patch:
+      summary:
+        Patch an external account ID for a bank account.
+      description: |
+        Patch an external account ID for a bank account.
+
+        Most properties of bank accounts are immutable once created, however the external account ID can be updated.
+        nb: Successful calls to this endpoint will throw a `firm.bank-account.updated` event.
+      operationId: patchFirmBankAccountExternalAccountID
+      requestBody:
+        description: Bank account external account ID
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                external_id:
+                  type: string
+                  description: The ID of the account in the PMS
+                  example: "1234567890"
+      tags:
+        - Firm
+        - Bank Account
+      responses:
+        '200':
+          description: Bank account updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankAccount'
+              example:
+                account_id: 9ba5022f-9a5c-4dcb-bfe4-655764837543
+                account_name: Main Business
+                account_type: Office
+                account_number: '1234567'
+                branch_code: '999999'
+                country_code: US
+                alias: Office account
+                account_holder_type: Company
+                bank: Rapid Bank
+                is_default: true
+                external_id: "1234567890"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        '404':
+          description: Firm or account not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
     delete:
           summary: Delete a bank account
           description: |
@@ -5932,6 +5995,9 @@ components:
           x-go-type-import:
             path: github.com/gofrs/uuid
             name: uuid
+        external_id:
+          description: The ID of the account in the PMS
+          type: string
         account_type:
           $ref: "#/components/schemas/AccountType"
         account_name:
