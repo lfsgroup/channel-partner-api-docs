@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.175
+  version: 0.0.176
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -6300,6 +6300,8 @@ components:
             version:
               description: Future feature implementation
               type: string
+          required:
+            - version
 
     WebhookEvent:
       type: object
