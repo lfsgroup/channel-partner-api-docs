@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.174
+  version: 0.0.175
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -6295,6 +6295,11 @@ components:
         The event is emitted after a payout has been paid AND all unintegrated payments associated with the payout have been associated with a partner artifact.
       allOf:
         - $ref: "#/components/schemas/Payout"
+        - type: object
+          properties:
+            version:
+              description: Future feature implementation
+              type: string
 
     WebhookEvent:
       type: object
