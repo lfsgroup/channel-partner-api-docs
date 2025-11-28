@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.176
+  version: 0.0.177
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -5554,8 +5554,18 @@ components:
           $ref: "#/components/schemas/AccountType"
         settlement_account_id:
           description: |
-            The id of the account the artifact settlement should be paid to. 
+            The FeeWise id of the bank account the artifact settlement should be paid to. 
             NB, if both the settlement_account_type and settlement_account_id are specified, it is a bad request
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        settlement_account_external_id:
+          description: |
+            The id of the account the artifact settlement should be paid to, in the partner's system.. 
+            NB, This property is only for the partners reference, only the settlement_account_id property will be used by FeeWise
           type: string
           format: uuid
           x-go-type: uuid.UUID
@@ -6948,7 +6958,7 @@ components:
           $ref: '#/components/schemas/BankAccount'
         trust_account:
           $ref: '#/components/schemas/BankAccount'
-        riskAssessment:
+        risk_assessment:
           $ref: '#/components/schemas/RiskAssessment'
         roles:
           type: array
