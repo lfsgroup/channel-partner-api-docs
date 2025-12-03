@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.177
+  version: 0.0.178
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -6307,11 +6307,34 @@ components:
         - $ref: "#/components/schemas/Payout"
         - type: object
           properties:
-            version:
-              description: Future feature implementation
-              type: string
+            receipt_ids:
+              description: |
+                Receipt IDs from the partner system that associate the payments in this event to the partner artifacts (invoices, trust deposits, etc...)
+              type: array
+              items:
+                $ref: "#/components/schemas/ReceiptObject"
           required:
-            - version
+            - receipt_ids
+
+    ReceiptObject:
+      type: object
+      description: |
+        The relationship between FW artifact ID and the ID used to create the receipt in the external PMS system.
+      properties:
+        artifact_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        receipt_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
 
     WebhookEvent:
       type: object
@@ -6645,6 +6668,15 @@ components:
           type: string
           description: The payment method detail
           example: "Visa ending in 1234"
+        settlement_account_external_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+          description: |
+            The id of the account the artifact settlement will be receipted to, in the partner's system.
       required:
         - amount_paid
         - payment_date
