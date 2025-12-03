@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.178
+  version: 0.0.179
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -6320,6 +6320,9 @@ components:
       type: object
       description: |
         The relationship between FW artifact ID and the ID used to create the receipt in the external PMS system.
+      required:
+        - artifact_id
+        - receipt_id
       properties:
         artifact_id:
           type: string
