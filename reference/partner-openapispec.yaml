@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.179
+  version: 0.0.180
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -6607,6 +6607,9 @@ components:
             country_code:
               type: string
               description: The country the account is in
+            external_id:
+              type: string
+              description: The external ID of the account
           required:
             - account_type
             - branch_code
