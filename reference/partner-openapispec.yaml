@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.180
+  version: 0.0.182
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -86,6 +86,219 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v3/partner/firms/{firm_id}/bpay:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+    post:
+      security:
+        - PartnerAuth: [ ]
+          APIAuth: [ ]
+        - FirmAuth: [ ]
+          FirmApiKey: [ ]
+      summary: Generate a BPAY CRN number. Used in AU only
+      description: |
+        Generate CRN
+      operationId: generateCRN
+      tags:
+        - Payments
+      requestBody:
+        description: CRN details
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BpayMapping'
+            example:
+              settlement_account_id: cbb297c0-14a9-46bc-ad91-1d0ef9b42df9
+              artifact_external_id: 465a78ad-93cc-432e-a836-9824d49506d6
+              matter: {
+                external_id: my-unique-external-id,
+                external_reference: my-external-reference,
+                description: 'The matter of Frank vs Herman ',
+                type: court
+              }
+              debtor: {
+                external_id: case-client-1234,
+                first_name: Frank,
+                last_name: John,
+                email: frank@email.com,
+                contact_number: '1300234567'
+              }
+              metadata:
+                key1: value
+                key2: value2
+
+      responses:
+        '200':
+          description: Created CRN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BpayResponse'
+              example:
+                bpay:
+                  crn: "123456678912"
+                  biller_code: "123456"
+                  settlement_account_id: cbb297c0-14a9-46bc-ad91-1d0ef9b42df9
+                  artifact_external_id: 465a78ad-93cc-432e-a836-9824d49506d6
+                  matter:
+                    matter_id: cbb297c0-14a9-46bc-ad91-1d0ef9b42df9
+                    external_id: my-unique-external-id
+                    external_reference: my-external-reference
+                    description: 'The matter of Frank vs Herman'
+                    type: court
+                  debtor:
+                    debtor_id: cbb297c0-14a9-46bc-ad91-1d0ef9b42df9
+                    external_id: case-client-1234
+                    first_name: Frank
+                    last_name: John
+                    email: frank@email.com
+                    contact_number: '1300234567'
+        '409':
+          description: Invalid settlement account.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: settlement account is invalid.
+                title: Conflict
+                type: invalid_settlement_account
+
+  /api/v3/partner/firms/{firm_id}/bpay/bulk:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+    post:
+      security:
+        - PartnerAuth: [ ]
+          APIAuth: [ ]
+        - FirmAuth: [ ]
+          FirmApiKey: [ ]
+      summary: Generate bulk BPAY CRN numbers. Used in AU only
+      description: |
+        Generate Bulk CRNs for a firm
+      operationId: generateBulkCRN
+      tags:
+        - Payments
+      requestBody:
+        description: CRN details
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/BpayMapping'
+              maxItems: 2000
+            example:
+
+              - crn: "123456678912"
+                biller_code: "123456"
+                settlement_account_id: cbb297c0-14a9-46bc-ad91-1d0ef9b42df9
+                artifact_external_id: 465a78ad-93cc-432e-a836-9824d49506d6
+                matter:
+                  matter_id: cbb297c0-14a9-46bc-ad91-1d0ef9b42df9
+                  external_id: my-unique-external-id
+                  external_reference: my-external-reference
+                  description: 'The matter of Frank vs Herman'
+                  type: court
+                debtor:
+                  debtor_id: cbb297c0-14a9-46bc-ad91-1d0ef9b42df9
+                  external_id: case-client-1234
+                  first_name: Frank
+                  last_name: John
+                  email: frank@email.com
+                  contact_number: '1300234567'
+              - crn: "123456678912"
+                biller_code: "123456"
+                settlement_account_id: cbb297c0-14a9-46bc-ad91-1d0ef9b42df9
+                artifact_external_id: 465a78ad-93cc-432e-a836-9824d49506d6
+                matter:
+                  matter_id: cbb297c0-14a9-46bc-ad91-1d0ef9b42df9
+                  external_id: my-unique-external-id
+                  external_reference: my-external-reference
+                  description: 'The matter of Frank vs Herman'
+                  type: court
+                debtor:
+                  debtor_id: cbb297c0-14a9-46bc-ad91-1d0ef9b42df9
+                  external_id: case-client-1234
+                  first_name: Frank
+                  last_name: John
+                  email: frank@email.com
+                  contact_number: '1300234567'
+
+      responses:
+        '200':
+          description: Created CRN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BpayBulkResponse'
+              example:
+                bpay_mapping:
+                  - crn: "123456678912"
+                    biller_code: "123456"
+                    settlement_account_id: cbb297c0-14a9-46bc-ad91-1d0ef9b42df9
+                    artifact_external_id: 465a78ad-93cc-432e-a836-9824d49506d6
+                    matter:
+                      matter_id: cbb297c0-14a9-46bc-ad91-1d0ef9b42df9
+                      external_id: my-unique-external-id
+                      external_reference: my-external-reference
+                      description: 'The matter of Frank vs Herman'
+                      type: court
+                    debtor:
+                      debtor_id: cbb297c0-14a9-46bc-ad91-1d0ef9b42df9
+                      external_id: case-client-1234
+                      first_name: Frank
+                      last_name: John
+                      email: frank@email.com
+                      contact_number: '1300234567'
+                  - crn: "123456678912"
+                    biller_code: "123456"
+                    settlement_account_id: cbb297c0-14a9-46bc-ad91-1d0ef9b42df9
+                    artifact_external_id: 465a78ad-93cc-432e-a836-9824d49506d6
+                    matter:
+                      matter_id: cbb297c0-14a9-46bc-ad91-1d0ef9b42df9
+                      external_id: my-unique-external-id
+                      external_reference: my-external-reference
+                      description: 'The matter of Frank vs Herman'
+                      type: court
+                    debtor:
+                      debtor_id: cbb297c0-14a9-46bc-ad91-1d0ef9b42df9
+                      external_id: case-client-1234
+                      first_name: Frank
+                      last_name: John
+                      email: frank@email.com
+                      contact_number: '1300234567'
+        '409':
+          description: Invalid settlement account.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                detail: settlement account is invalid.
+                title: Conflict
+                type: invalid_settlement_account
 
   /api/v3/partner/invoices:
     post:
@@ -5084,6 +5297,48 @@ components:
       name: X-FIRM-API-KEY
 
   schemas:
+
+    BpayResponse:
+      type: object
+      description: Wrapper response for BPAY CRN generation.
+      properties:
+        bpay:
+          $ref: '#/components/schemas/BpayMapping'
+
+    BpayBulkResponse:
+      type: object
+      description: Wrapper response for bulk BPAY CRN generation.
+      properties:
+        bpay_mapping:
+          type: array
+          items:
+            $ref: '#/components/schemas/BpayMapping'
+
+    BpayMapping:
+      type: object
+      description: BPAY mapping used to generate and return a CRN for a given artifact.
+      required:
+        - settlement_account_id
+      properties:
+        crn:
+          type: string
+        biller_code:
+          type: string
+        settlement_account_id:
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        artifact_external_id:
+          type: string
+        matter:
+          $ref: '#/components/schemas/Matter'
+        debtor:
+          $ref: '#/components/schemas/Debtor'
+        metadata:
+          $ref: '#/components/schemas/ChannelPartnerMetadata'
 
     Invoice:
       type: object
