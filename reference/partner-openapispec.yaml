@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.182
+  version: 0.0.185
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -697,6 +697,7 @@ paths:
                     payout_reference: fw.65715ef8a
                     payout_total: "2227.72"
                     status: Paid
+                    receipt_ids: [ ]
                     transactions:
                       - artifact_id: c6486563-0fd5-4133-bf56-cdead15a9669
                         artifact_type: Invoice
@@ -718,6 +719,7 @@ paths:
                       country_code: US
                     date: "2023-10-13T04:26:04.002252Z"
                     firm_id: facade00-0000-4000-a000-000000000000
+                    receipt_ids: [ ]
                     payout_reference: fw.01c433c3a
                     payout_total: "5969.5"
                     status: Paid
@@ -6002,6 +6004,7 @@ components:
         - Klarna
         - Affirm
         - PayByBank
+        - BPAY
 
     SurchargeChoice:
       type: string
@@ -6531,6 +6534,12 @@ components:
             $ref: '#/components/schemas/Payment'
         metadata:
           $ref: '#/components/schemas/ChannelPartnerMetadata'
+        receipt_ids:
+          description: |
+            Receipt IDs from the partner system that associate the payments in this event to the partner artifacts (invoices, trust deposits, etc...)
+          type: array
+          items:
+            $ref: "#/components/schemas/ReceiptObject"
       required:
         - payout_reference
         - payout_total
@@ -6549,27 +6558,6 @@ components:
             $ref: "#/components/schemas/Payout"
       required:
         - payouts
-
-    MatterBankDepositSyncEvent:
-      description: |
-        For FeeWise specific features, PaymentLinks, PaymentPlan Payments, Card Safe etc... The Channel Partner can elect to allow firms to associate FeeWise specific feature payments with artifacts in their own system. Firm users (e.g. bookkeepers) can then use the FeeWise transactions dashboard to select matters / invoices in the partners systems to associate the payments with. (nb: The Channel partner must provide FeeWise an endpoint to retrieve matters/invoices for the firm; to be be used for the association). 
-          
-        The MatterBankDepositSyncEvent is used to notify the Channel Partner that:  
-        The firm user has used the FeeWise transactions dashboard to associate a matter / invoice in the Channel Partners system with FeeWise specific features. (At this point, the payout has already been made from FeeWise to the firm's bank account)
-        A deposit for this payment can now be made, in the Channel Partners system
-        The event is emitted after a payout has been paid AND all unintegrated payments associated with the payout have been associated with a partner artifact.
-      allOf:
-        - $ref: "#/components/schemas/Payout"
-        - type: object
-          properties:
-            receipt_ids:
-              description: |
-                Receipt IDs from the partner system that associate the payments in this event to the partner artifacts (invoices, trust deposits, etc...)
-              type: array
-              items:
-                $ref: "#/components/schemas/ReceiptObject"
-          required:
-            - receipt_ids
 
     ReceiptObject:
       type: object
@@ -6627,8 +6615,6 @@ components:
             - $ref: '#/components/schemas/FirmSurchargeSettingsEvent'
             - $ref: '#/components/schemas/FirmPricingUpdatedEvent'
             - $ref: '#/components/schemas/FirmAffiliationCreatedEvent'
-            - $ref: '#/components/schemas/MatterBankDepositSyncEvent'
-            - $ref: '#/components/schemas/MatterReceiptSyncEvent'
 
     ApiKeyRotation:
       type: object
@@ -6879,74 +6865,6 @@ components:
         - amount_paid
         - account
 
-    MatterReceiptSyncEvent:
-      type: object
-      properties:
-        artifacts:
-          type: array
-          items:
-            $ref: "#/components/schemas/ArtifactReceipt"
-        payment_id:
-          type: string
-          format: uuid
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/gofrs/uuid
-            name: uuid
-          description: The payment ID
-          example: "7cf0f73e-4bf4-4f51-8cb4-8db2fcb91b54"
-        amount_paid:
-          type: string
-          format: decimal
-          x-go-type: decimal.Decimal
-          x-go-type-import:
-            path: github.com/shopspring/decimal
-          description: The amount paid
-          example: "125.00"
-        payment_date:
-          type: string
-          format: date-time
-        card_payment:
-          $ref: "#/components/schemas/CardPayment"
-        debit_payment:
-          $ref: "#/components/schemas/DebitPayment"
-        firm_id:
-          type: string
-          format: uuid
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/gofrs/uuid
-            name: uuid
-          description: The firm ID
-          example: "8b14c470-f6df-4522-9dc6-8fc2bb59fc6f"
-        external_firm_id:
-          type: string
-          description: The firm ID from the partner's system
-          example: "external123"
-        payment_method:
-          $ref: '#/components/schemas/PaymentMethod'
-        payment_method_detail:
-          type: string
-          description: The payment method detail
-          example: "Visa ending in 1234"
-        settlement_account_external_id:
-          type: string
-          format: uuid
-          x-go-type: uuid.UUID
-          x-go-type-import:
-            path: github.com/gofrs/uuid
-            name: uuid
-          description: |
-            The id of the account the artifact settlement will be receipted to, in the partner's system.
-      required:
-        - amount_paid
-        - payment_date
-        - payment_id
-        - artifacts
-        - firm_id
-        - external_firm_id
-        - payment_method
-
     PaymentAuthorisedEvent:
       type: object
       properties:
@@ -6984,6 +6902,28 @@ components:
             name: uuid
           description: The firm ID
           example: "8b14c470-f6df-4522-9dc6-8fc2bb59fc6f"
+        external_firm_id:
+          type: string
+          description: The firm ID from the partner's system
+          example: "8b14c470-f6df-4522-9dc6-8fc2bb59fc6f"
+        settlement_account_external_id:
+          description: |
+            The id of the account the artifact settlement should be paid to, in the partner's system.. 
+            NB, This property is only for the partners reference, only the settlement_account_id property will be used by FeeWise
+          type: string
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+          deprecated: true
+        payment_date:
+          type: string
+          format: date-time
+          description: The date the payment was made
+        payer_name:
+          type: string
+          description: The name of the payer
         payment_method:
           $ref: '#/components/schemas/PaymentMethod'
         payment_method_detail:
@@ -8197,6 +8137,7 @@ components:
         - Klarna
         - Affirm
         - PayByBank
+        - BPAY
 
     EnabledType:
       type: string
