@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.185
+  version: 0.0.186
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -5341,6 +5341,10 @@ components:
           $ref: '#/components/schemas/Debtor'
         metadata:
           $ref: '#/components/schemas/ChannelPartnerMetadata'
+      anyOf:
+        - required: [artifact_external_id]
+        - required: [matter]
+        - required: [debtor]
 
     Invoice:
       type: object
