@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.186
+  version: 0.0.187
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -6410,6 +6410,9 @@ components:
         external_id:
           type: string
           description: This is the id of the artifact supplied by the channel partner / PMS.
+        customer_reference_number:
+          description: The customer reference number (CRN) associated with the payment
+          type: string
         external_payment:
           description: |
             If the payment.payment_type is 'External', the external_payment property *may* be available.            
