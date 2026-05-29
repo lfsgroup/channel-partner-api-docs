@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.188
+  version: 0.0.189
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -86,6 +86,65 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+
+
+  /api/v3/partner/firms/{firm_id}/payment/details:
+    parameters:
+      - in: path
+        name: firm_id
+        required: true
+        schema:
+          type: string
+      - in: header
+        name: Accept
+        required: false
+        schema:
+          type: string
+          enum:
+            - application/json
+            - text/html
+          default: application/json
+        description: Desired response content type. Defaults to `application/json`.
+
+    post:
+      security:
+        - PartnerAuth: [ ]
+          APIAuth: [ ]
+        - FirmAuth: [ ]
+          FirmApiKey: [ ]
+      summary: Retrieve the payment details for a matter, debtor, invoice or trust request. Using POST here as we may be creating BPay CRNs etc...
+      description: |
+        Generates and returns the payment details 
+        The response format is determined by the `Accept` request header:
+          - `Accept: application/json` (default) returns a structured JSON payload.
+          - `Accept: text/html` returns the rendered HTML footer as a string.
+      tags:
+        - Payments
+      operationId: PostPaymentDetails
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentDetailsRequest'
+      responses:
+        '200':
+          description: The rendered payment footer
+          content:
+            application/json:
+              schema:
+                properties:
+                  payment_details:
+                    $ref: '#/components/schemas/PaymentDetailsResponse'
+            text/html:
+              schema:
+                type: string
+        '400':
+          description: Bad request
+        '404':
+          description: Requested resource not found
+        '500':
+          description: Error processing
 
   /api/v3/partner/firms/{firm_id}/bpay:
     parameters:
@@ -8312,3 +8371,55 @@ components:
       example:
         amount: "100.00"
         total: "103.10"
+
+    PaymentDetailsRequest:
+      type: object
+      description: id can be either an external_id or an internal_id
+      required:
+        - payment_details_type
+      properties:
+        matter_id:
+          type: string
+        debtor_id:
+          type: string
+        invoice_id:
+          type: string
+        trust_deposit_id:
+          type: string
+        payment_details_type:
+          $ref: '#/components/schemas/PaymentDetailType'
+
+    PaymentDetailType:
+      type: string
+      enum:
+        - invoice
+        - trust_deposit
+        - matter
+        - debtor
+
+    PaymentDetailsResponse:
+      type: object
+      required:
+        - payment_url
+        - qr_code_svg
+      properties:
+        pay_url:
+          type: string
+          format: uri
+          description: The full URL the customer visits to pay.
+        qr_code_svg:
+          type: string
+          description: TODO - need to decide how this is returned, raw svg or base64 encoded, or url, pointing to the image, eg. another endpoint?
+        bpay:
+          $ref: '#/components/schemas/BPayDetails'
+
+    BPayDetails:
+      type: object
+      required:
+        - biller_code
+        - reference
+      properties:
+        biller_code:
+          type: string
+        reference:
+          type: string
