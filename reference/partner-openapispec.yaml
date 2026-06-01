@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.189
+  version: 0.0.190
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -112,7 +112,7 @@ paths:
           APIAuth: [ ]
         - FirmAuth: [ ]
           FirmApiKey: [ ]
-      summary: Retrieve the payment details for a matter, debtor, invoice or trust request. Using POST here as we may be creating BPay CRNs etc...
+      summary: Retrieve the payment details for a matter, debtor, invoice or trust request.
       description: |
         Generates and returns the payment details 
         The response format is determined by the `Accept` request header:
@@ -8403,15 +8403,13 @@ components:
         - payment_url
         - qr_code_svg
       properties:
-        pay_url:
+        payment_url:
           type: string
           format: uri
           description: The full URL the customer visits to pay.
         qr_code_svg:
           type: string
           description: TODO - need to decide how this is returned, raw svg or base64 encoded, or url, pointing to the image, eg. another endpoint?
-        bpay:
-          $ref: '#/components/schemas/BPayDetails'
 
     BPayDetails:
       type: object
