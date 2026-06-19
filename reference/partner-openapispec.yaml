@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.190
+  version: 0.0.191
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -92,6 +92,7 @@ paths:
     parameters:
       - in: path
         name: firm_id
+        description: Can be internal FeeWise ID or Partners Firm ID
         required: true
         schema:
           type: string
@@ -114,10 +115,14 @@ paths:
           FirmApiKey: [ ]
       summary: Retrieve the payment details for a matter, debtor, invoice or trust request.
       description: |
-        Generates and returns the payment details 
+        Generates and returns the payment details for a single item.
+
         The response format is determined by the `Accept` request header:
-          - `Accept: application/json` (default) returns a structured JSON payload.
-          - `Accept: text/html` returns the rendered HTML footer as a string.
+          - `Accept: application/json` (default) returns a structured JSON
+            payload containing the payment URL, QR code and the rendered footer
+            HTML (base64-encoded) as a property of the json.
+          - `Accept: text/html` is a convenience that returns the fully-rendered
+            footer HTML directly as the response body (no base64).
       tags:
         - Payments
       operationId: PostPaymentDetails
@@ -133,12 +138,69 @@ paths:
           content:
             application/json:
               schema:
+                type: object
                 properties:
                   payment_details:
                     $ref: '#/components/schemas/PaymentDetailsResponse'
             text/html:
               schema:
                 type: string
+                description: The fully-rendered payment footer HTML.
+        '400':
+          description: Bad request
+        '404':
+          description: Requested resource not found
+        '500':
+          description: Error processing
+
+  /api/v3/partner/firms/{firm_id}/payment/details/bulk:
+    parameters:
+      - in: path
+        name: firm_id
+        description: Can be internal FeeWise ID or Partners Firm ID
+        required: true
+        schema:
+          type: string
+
+    post:
+      security:
+        - PartnerAuth: [ ]
+          APIAuth: [ ]
+        - FirmAuth: [ ]
+          FirmApiKey: [ ]
+      summary: Retrieve payment details for multiple matters, debtors, invoices or trust requests in bulk.
+      description: |
+        Generates and returns payment details for multiple items in a single request.
+
+        Always returns a structured JSON payload. Each item contains the payment
+        URL, QR code and the rendered footer HTML (base64-encoded). This mirrors
+        the single endpoint's `application/json` response; there is no
+        `text/html` mode for bulk.
+      tags:
+        - Payments
+      operationId: PostPaymentDetailsBulk
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/PaymentDetailsRequest'
+              maxItems: 2000
+      responses:
+        '200':
+          description: The payment details for each requested item
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payment_details:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PaymentDetailsResponse'
+
         '400':
           description: Bad request
         '404':
@@ -8399,9 +8461,11 @@ components:
 
     PaymentDetailsResponse:
       type: object
+      description: A single payment footer, including all of its representations.
       required:
         - payment_url
         - qr_code_svg
+        - html
       properties:
         payment_url:
           type: string
@@ -8409,7 +8473,11 @@ components:
           description: The full URL the customer visits to pay.
         qr_code_svg:
           type: string
-          description: TODO - need to decide how this is returned, raw svg or base64 encoded, or url, pointing to the image, eg. another endpoint?
+          description: Raw SVG markup for the QR code encoding the payment_url.
+        html:
+          type: string
+          format: byte
+          description: Base64-encoded HTML rendering of the payment footer.
 
     BPayDetails:
       type: object
