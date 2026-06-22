@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.191
+  version: 0.0.192
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -8463,10 +8463,25 @@ components:
       type: object
       description: A single payment footer, including all of its representations.
       required:
+        - payment_details_type
         - payment_url
         - qr_code_svg
         - html
       properties:
+        matter_id:
+          type: string
+          description: Echoes the matter_id from the request, if provided.
+        debtor_id:
+          type: string
+          description: Echoes the debtor_id from the request, if provided.
+        invoice_id:
+          type: string
+          description: Echoes the invoice_id from the request, if provided.
+        trust_deposit_id:
+          type: string
+          description: Echoes the trust_deposit_id from the request, if provided.
+        payment_details_type:
+          $ref: '#/components/schemas/PaymentDetailType'
         payment_url:
           type: string
           format: uri
