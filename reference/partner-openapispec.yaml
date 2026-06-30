@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.192
+  version: 0.0.193
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -8488,7 +8488,8 @@ components:
           description: The full URL the customer visits to pay.
         qr_code_svg:
           type: string
-          description: Raw SVG markup for the QR code encoding the payment_url.
+          format: byte
+          description: Base64-encoded SVG markup for the QR code encoding the payment_url.
         html:
           type: string
           format: byte
