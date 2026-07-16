@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.193
+  version: 0.0.194
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -8494,6 +8494,9 @@ components:
           type: string
           format: byte
           description: Base64-encoded HTML rendering of the payment footer.
+        error:
+          type: string
+          description: Only set if the artifact has an error retrieving.
 
     BPayDetails:
       type: object
