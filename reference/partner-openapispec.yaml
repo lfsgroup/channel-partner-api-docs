@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.194
+  version: 0.0.195
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -6130,6 +6130,7 @@ components:
         - Affirm
         - PayByBank
         - BPAY
+        - PayTo
 
     SurchargeChoice:
       type: string
@@ -8268,6 +8269,7 @@ components:
         - Affirm
         - PayByBank
         - BPAY
+        - PayTo
 
     EnabledType:
       type: string
