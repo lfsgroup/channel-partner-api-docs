@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.195
+  version: 0.0.196
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -1530,6 +1530,117 @@ paths:
         '500':
           description: Error processing
 
+  /api/v3/partner/firms/external/{external_firm_id}/artifacts:
+    parameters:
+      - in: path
+        name: external_firm_id
+        required: true
+        description: The ID of the firm in the partner's system.
+        schema:
+          type: string
+      - in: query
+        name: updated_from
+        required: false
+        description: Return artifacts (invoices, trust deposits, etc...) updated at or after this timestamp.
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: updated_to
+        required: false
+        description: Inclusively filter artifacts updated at or before this timestamp.
+        schema:
+          type: string
+          format: date-time
+      - in: query
+        name: artifact_types
+        required: false
+        description: Inclusively filter by artifact type. Multiple values are comma-separated.
+        style: form
+        explode: false
+        schema:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArtifactType'
+    get:
+      deprecated: true
+      summary: Get a firm's artifacts by its external ID
+      description: Internal-use endpoint for retrieving artifacts belonging to a firm identified by the partner's external ID.
+      operationId: getArtifactsByFirmExternalID
+      tags:
+        - Payments
+      responses:
+        '200':
+          description: Artifacts belonging to the firm.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FirmArtifactsResponse'
+        '400':
+          description: Bad request (invalid date range, invalid artifact type, etc.)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Firm not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v3/partner/firms/external/{external_firm_id}/artifacts/{feewise_payment_reference_number}:
+    parameters:
+      - in: path
+        name: external_firm_id
+        required: true
+        description: The ID of the firm in the partner's system.
+        schema:
+          type: string
+      - in: path
+        name: feewise_payment_reference_number
+        required: true
+        description: The FeeWise payment reference number of the artifact.
+        schema:
+          type: string
+    get:
+      deprecated: true
+      summary: Get a firm's artifact by its FeeWise payment reference number
+      description: Internal-use endpoint for retrieving artifacts belonging to a firm identified by the partner's external firm ID & the FeeWise payment reference number.
+      operationId: getArtifactByFirmExternalIDAndPaymentReferenceNumber
+      tags:
+        - Payments
+      responses:
+        '200':
+          description: Artifacts belonging to the firm.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FirmArtifactSummary'
+        '400':
+          description: Bad request (invalid external firm ID, invalid FeeWise payment reference number, etc.)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Firm not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error processing.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /api/v3/partner/trust-deposits:
     post:
@@ -6013,6 +6124,116 @@ components:
       required:
         - artifact_details
 
+    FirmArtifactSummary:
+      type: object
+      required:
+        - artifact_type
+        - artifact_id
+        - external_artifact_id
+        - artifact_number
+        - feewise_payment_reference_number
+        - amount_due
+        - date
+        - due_date
+        - external_matter_id
+        - matter_number
+        - matter_type
+        - debtor_external_id
+        - payment_url
+      properties:
+        artifact_type:
+          type: string
+          description: Lowercase artifact type.
+          example: invoice
+        artifact_id:
+          type: string
+          format: uuid
+          description: The FeeWise ID of the artifact.
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        external_artifact_id:
+          type: string
+          description: The ID of the artifact in the partner's system.
+        artifact_number:
+          type: string
+          description: The artifact number in the partner's system.
+        matter_id:
+          type: string
+          description: The FeeWise ID of the matter.
+          format: uuid
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        external_matter_id:
+          type: string
+          description: The ID of the matter in the partner's system.
+        matter_number:
+          type: string
+        matter_type:
+          type: string
+        amount_due:
+          type: string
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+        date:
+          type: string
+          format: date-time
+          description: The date of the artifact.
+        due_date:
+          type: string
+          format: date-time
+        debtor_id:
+          type: string
+          format: uuid
+          description: The FeeWise ID of the debtor.
+          x-go-type: uuid.UUID
+          x-go-type-import:
+            path: github.com/gofrs/uuid
+            name: uuid
+        debtor_external_id:
+          type: string
+          description: The ID of the debtor in the partner's system.
+        debtor_name:
+          type: string
+          description: The name of the debtor.
+        debtor_email:
+          type: string
+          description: The email address of the debtor.
+        debtor_phone_number:
+          type: string
+          description: The phone number of the debtor.
+        last_updated_at:
+          type: string
+          format: date-time
+          description: The timestamp the artifact was last updated.
+        feewise_payment_reference_number:
+          type: string
+          format: 12-digit-number
+          pattern: '^\d{12}$'
+          description: FeeWise-generated payment reference number.
+          example: "123456789012"
+        payment_url:
+          type: string
+          description: The payment URL for the artifact.
+          format: uri
+          pattern: '^https://.+'
+          example: "https://example.com/payment-success"
+
+    FirmArtifactsResponse:
+      type: object
+      required:
+        - artifacts
+      properties:
+        artifacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/FirmArtifactSummary'
+
     PaymentTokenBody:
       type: object
       properties:
@@ -8499,14 +8720,3 @@ components:
         error:
           type: string
           description: Only set if the artifact has an error retrieving.
-
-    BPayDetails:
-      type: object
-      required:
-        - biller_code
-        - reference
-      properties:
-        biller_code:
-          type: string
-        reference:
-          type: string
