@@ -1,6 +1,6 @@
 openapi: "3.0.0"
 info:
-  version: 0.0.197
+  version: 0.0.198
   title: FeeWise Partner API
   description: API for partners
 security: #global settings
@@ -7067,7 +7067,10 @@ components:
           example: charge-123
         amount:
           type: string
-          description: The total amount the charge is for.
+          description: |
+            The total amount the charge is for.
+            When is_fixed_amount is false, this is the suggested amount the customer's payment is prefilled with.
+            Questions: Can we pass in a zero amount (e.g. and have is_fixed_amount false)
           format: decimal
           x-go-type: decimal.Decimal
           x-go-type-import:
@@ -7079,6 +7082,24 @@ components:
           x-go-type: decimal.Decimal
           x-go-type-import:
             path: github.com/shopspring/decimal
+        is_fixed_amount:
+          type: boolean
+          description: |
+            When true (the default), the customer can only pay the exact amount.
+            When false, the customer can edit the amount they pay, prefilled with amount.
+          default: true
+          example: false
+        max_amount:
+          type: string
+          description: |
+            The maximum amount the customer can pay against the charge when is_fixed_amount is false.
+            If omitted, max_amount will be ignored.
+            If is_fixed_amount is true, max_amount will be ignored
+          format: decimal
+          x-go-type: decimal.Decimal
+          x-go-type-import:
+            path: github.com/shopspring/decimal
+          example: "500.00"
         currency:
           $ref: "#/components/schemas/Currency"
         due_date:
@@ -7107,7 +7128,12 @@ components:
             $ref: '#/components/schemas/PaymentMethod'
         description:
           type: string
-          description: Description of the charge.
+          description: Description / Summary of the charge.
+        detail:
+            type: string
+            description: |
+              Detailed description / context of the charge 
+              e.g. to be used as a sub-heading in a UI
         store_payment_methods:
           type: array
           description: Choose which payment methods to save when the customer pays a charge.
